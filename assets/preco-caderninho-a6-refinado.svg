@@ -2,10 +2,10 @@
   <title id="title">Oferta dos caderninhos A6</title>
   <desc id="desc">Um por quinze reais. Quatro por quarenta e cinco reais. Leve quatro e Pague três.</desc>
   <style>
-     @font-face { font-family: PlayfairLocal; src: url("fonts/PlayfairDisplay-Variable.ttf"); }
-     @font-face { font-family: ManropeLocal; src: url("fonts/Manrope-Variable.ttf"); }
-     .price { font-family: PlayfairLocal, Georgia, serif; font-weight: 650; letter-spacing: 0; }
-     .promo { font-family: ManropeLocal, "Segoe UI", sans-serif; font-size: 37px; font-weight: 700; fill: #3d2119; letter-spacing: 0; }
+    @font-face { font-family: PlayfairLocal; src: url("fonts/PlayfairDisplay-Variable.ttf"); }
+    @font-face { font-family: ManropeLocal; src: url("fonts/Manrope-Variable.ttf"); }
+    .price { font-family: PlayfairLocal, Georgia, serif; font-weight: 650; letter-spacing: 0; }
+    .promo { font-family: ManropeLocal, "Segoe UI", sans-serif; font-size: 37px; font-weight: 700; fill: #3d2119; letter-spacing: 0; }
   </style>
   <path d="M78 24H822C824 58 844 78 878 80V302C844 304 824 324 822 358H78C76 324 56 304 22 302V80C56 78 76 58 78 24Z" fill="#472319"/>
   <path d="M92 42H808C814 72 832 90 860 96V286C832 292 814 310 808 340H92C86 310 68 292 40 286V96C68 90 86 72 92 42Z" fill="none" stroke="#b96d4f" stroke-width="4"/>

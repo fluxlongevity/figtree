@@ -614,6 +614,36 @@
       background: rgba(255, 252, 246, .74);
     }
 
+    .cart-item-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .cart-item-thumb {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border: 1px solid rgba(89, 54, 34, .12);
+      border-radius: 6px;
+      padding: 3px;
+      flex-shrink: 0;
+    }
+
+    .cart-item-thumb img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .cart-item-details {
+      min-width: 0;
+    }
+
     .cart-item strong {
       display: block;
       font-size: 15px;
@@ -906,10 +936,11 @@
         const number = String(index + 1).padStart(2, "0");
         return {
           name: `Capa ${index + 1}`,
-          src: `assets/capa-${number}n.webp`
+          src: `assets/capa-${number}n.webp`,
+          thumbSrc: `assets/capa-${number}.webp`
         };
       }),
-      { name: "Capa lisa", src: "assets/mockup-capa-lisa.webp" }
+      { name: "Capa lisa", src: "assets/mockup-capa-lisa.webp", thumbSrc: "assets/mockup-capa-lisa.webp" }
     ];
 
     const interiors = [
@@ -938,6 +969,7 @@
     const state = {
       coverName: covers[0].name,
       coverSrc: covers[0].src,
+      coverThumb: covers[0].thumbSrc,
       interiorName: interiors[0].name,
       interiorSrc: interiors[0].src
     };
@@ -1030,9 +1062,14 @@
           const row = document.createElement("div");
           row.className = "cart-item";
           row.innerHTML = `
-            <div>
-              <strong>${item.qty}x ${item.coverName}</strong>
-              <span>Miolo: ${item.interiorName}</span>
+            <div class="cart-item-info">
+              <span class="cart-item-thumb">
+                <img src="${item.coverThumb}" alt="${item.coverName}">
+              </span>
+              <div class="cart-item-details">
+                <strong>${item.qty}x ${item.coverName}</strong>
+                <span>Miolo: ${item.interiorName}</span>
+              </div>
             </div>
             <button class="remove-item" type="button" aria-label="Remover item ${index + 1}">×</button>
           `;
@@ -1120,6 +1157,7 @@
           button.classList.add("is-selected");
           state.coverName = cover.name;
           state.coverSrc = cover.src;
+          state.coverThumb = cover.thumbSrc;
           updateSummary();
         };
 
@@ -1217,6 +1255,7 @@
       } else {
         cart.push({
           coverName: state.coverName,
+          coverThumb: state.coverThumb,
           interiorName: state.interiorName,
           qty
         });
