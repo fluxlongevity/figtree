@@ -900,8 +900,8 @@
         <h2 class="section-title"><span class="step">4</span>Seus dados</h2>
         <div class="form-grid">
           <div class="field">
-            <label for="name">Nome</label>
-            <input id="name" autocomplete="name" placeholder="Seu nome" />
+            <label for="name">Nome *</label>
+            <input id="name" autocomplete="name" placeholder="Seu nome (obrigatório)" required />
           </div>
           <div class="field">
             <label for="phone">WhatsApp</label>
@@ -926,7 +926,7 @@
         <div class="summary-line"><span>Total de cadernos</span><strong id="summaryQty">0</strong></div>
         <div class="total"><span>Total</span><strong id="summaryTotal">R$ 0</strong></div>
         <p class="discount-note" id="discountNote">A promoção 4 por R$ 45 é calculada pelo total de cadernos no pedido.</p>
-        <a class="whatsapp-button is-disabled" id="whatsappButton" href="#" target="_blank" rel="noopener">Enviar pedido pelo WhatsApp</a>
+        <a class="whatsapp-button is-disabled" id="whatsappButton" href="#" target="_blank" rel="noopener">Adicione itens ao pedido</a>
       </aside>
     </section>
   </main>
@@ -1169,8 +1169,22 @@
         discountNote.textContent = "A promoção 4 por R$ 45 entra automaticamente quando o pedido chegar a 4 cadernos.";
       }
 
-      whatsappButton.classList.toggle("is-disabled", cart.length === 0);
-      whatsappButton.href = cart.length > 0
+      const nameVal = document.getElementById("name").value.trim();
+      const isCartEmpty = cart.length === 0;
+      const isNameEmpty = nameVal.length === 0;
+      const isDisabled = isCartEmpty || isNameEmpty;
+
+      whatsappButton.classList.toggle("is-disabled", isDisabled);
+      
+      if (isCartEmpty) {
+        whatsappButton.textContent = "Adicione itens ao pedido";
+      } else if (isNameEmpty) {
+        whatsappButton.textContent = "Preencha seu Nome para enviar";
+      } else {
+        whatsappButton.textContent = "Enviar pedido pelo WhatsApp";
+      }
+
+      whatsappButton.href = !isDisabled
         ? `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(getOrderMessage())}`
         : "#";
     }
