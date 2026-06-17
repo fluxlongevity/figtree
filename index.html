@@ -941,6 +941,24 @@
     </div>
   </div>
 
+  <!-- Modal de Confirmação Customizado (Bonito) -->
+  <div class="preview-modal" id="confirmModal" aria-hidden="true">
+    <div class="preview-dialog" style="width: min(420px, 94%);" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div class="preview-header">
+        <h2 id="confirmTitle" style="font-size: 24px; font-family: var(--serif);">Adicionar outro caderno?</h2>
+      </div>
+      <div class="preview-body" style="padding: 24px; text-align: center; background: #fff8ec;">
+        <p style="margin: 0 0 22px; font-size: 16px; line-height: 1.55; color: var(--ink);">
+          O caderno foi adicionado ao seu pedido!<br><strong>Deseja escolher outro caderno com outra configuração?</strong>
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center; width: 100%;">
+          <button class="add-item" type="button" id="confirmYes" style="box-shadow: none; min-height: 44px; padding: 0 20px; font-size: 15px; font-weight: 800;">Sim, adicionar outro</button>
+          <button class="remove-item" type="button" id="confirmNo" style="width: auto; height: 44px; border-radius: 10px; padding: 0 20px; background: #f1dfce; font-size: 15px; font-weight: 800;">Não, finalizar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SELLER_WHATSAPP = "5521969467886";
 
@@ -1314,9 +1332,25 @@
     previewModal.addEventListener("click", event => {
       if (event.target === previewModal) closePreview();
     });
+
+    // Configuração do Modal de Confirmação Customizado
+    const confirmModal = document.getElementById("confirmModal");
+    const confirmYes = document.getElementById("confirmYes");
+    const confirmNo = document.getElementById("confirmNo");
+
+    function closeConfirm() {
+      confirmModal.classList.remove("is-open");
+      confirmModal.setAttribute("aria-hidden", "true");
+    }
+
+    confirmModal.addEventListener("click", event => {
+      if (event.target === confirmModal) closeConfirm();
+    });
+
     document.addEventListener("keydown", event => {
-      if (event.key === "Escape" && previewModal.classList.contains("is-open")) {
-        closePreview();
+      if (event.key === "Escape") {
+        if (previewModal.classList.contains("is-open")) closePreview();
+        if (confirmModal.classList.contains("is-open")) closeConfirm();
       }
     });
 
@@ -1328,6 +1362,37 @@
     document.getElementById("plus").addEventListener("click", () => {
       quantityInput.value = Math.min(50, Number(quantityInput.value) + 1);
       updateSummary();
+    });
+
+    confirmYes.addEventListener("click", () => {
+      closeConfirm();
+      // Zera as seleções de capa, miolo e quantidade
+      state.coverName = covers[0].name;
+      state.coverSrc = covers[0].src;
+      state.coverThumb = covers[0].thumbSrc;
+      state.interiorName = interiors[0].name;
+      state.interiorSrc = interiors[0].src;
+      quantityInput.value = 1;
+      
+      renderCovers();
+      renderInteriors();
+      updateSummary();
+
+      // Posiciona a tela no topo da escolha da capa (Step 1)
+      const choiceRow = document.querySelector(".choice-row");
+      if (choiceRow) {
+        choiceRow.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+
+    confirmNo.addEventListener("click", () => {
+      closeConfirm();
+      // Rola a tela até o formulário de dados (Passo 4)
+      const nameInput = document.getElementById("name");
+      if (nameInput) {
+        nameInput.scrollIntoView({ behavior: "smooth", block: "center" });
+        nameInput.focus();
+      }
     });
 
     document.getElementById("addItem").addEventListener("click", () => {
@@ -1346,26 +1411,9 @@
       quantityInput.value = 1;
       updateSummary();
 
-      // Pergunta se o comprador quer incluir um novo caderno
-      if (confirm("Deseja adicionar outro caderno com capa ou miolo diferente ao seu pedido?")) {
-        // Zera as seleções de capa, miolo e quantidade
-        state.coverName = covers[0].name;
-        state.coverSrc = covers[0].src;
-        state.coverThumb = covers[0].thumbSrc;
-        state.interiorName = interiors[0].name;
-        state.interiorSrc = interiors[0].src;
-        quantityInput.value = 1;
-        
-        renderCovers();
-        renderInteriors();
-        updateSummary();
-
-        // Posiciona a tela na primeira capa (Step 1)
-        const coverGridEl = document.getElementById("coverGrid");
-        if (coverGridEl) {
-          coverGridEl.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
-      }
+      // Abre o modal de confirmação customizado e bonito
+      confirmModal.classList.add("is-open");
+      confirmModal.setAttribute("aria-hidden", "false");
     });
 
     ["name", "phone", "delivery", "notes"].forEach(id => {
