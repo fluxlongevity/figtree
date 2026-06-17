@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="400" viewBox="0 0 900 400" role="img" aria-labelledby="title desc">
+  <title id="title">Oferta dos caderninhos A6</title>
+  <desc id="desc">Um por quinze reais. Quatro por quarenta e cinco reais. Leve quatro e pague três.</desc>
+  <style>
+    @font-face { font-family: PlayfairLocal; src: url("fonts/PlayfairDisplay-Variable.ttf"); }
+    @font-face { font-family: ManropeLocal; src: url("fonts/Manrope-Variable.ttf"); }
+    .price { font-family: PlayfairLocal, Georgia, serif; font-weight: 650; letter-spacing: 0; }
+    .promo { font-family: ManropeLocal, "Segoe UI", sans-serif; font-size: 37px; font-weight: 700; fill: #3d2119; letter-spacing: 0; }
+  </style>
+  <path d="M78 24H822C824 58 844 78 878 80V302C844 304 824 324 822 358H78C76 324 56 304 22 302V80C56 78 76 58 78 24Z" fill="#472319"/>
+  <path d="M92 42H808C814 72 832 90 860 96V286C832 292 814 310 808 340H92C86 310 68 292 40 286V96C68 90 86 72 92 42Z" fill="none" stroke="#b96d4f" stroke-width="4"/>
+  <path d="M108 59H792C800 82 816 98 840 106V276C816 284 800 300 792 323H108C100 300 84 284 60 276V106C84 98 100 82 108 59Z" fill="none" stroke="#d9a07f" stroke-width="1.5" opacity=".72"/>
+  <text class="price" x="450" y="141" text-anchor="middle" font-size="74" fill="#c97859">1 por R$ 15</text>
+  <text class="price" x="450" y="236" text-anchor="middle" font-size="82" fill="#f7dcc0">4 por R$ 45</text>
+  <rect x="210" y="298" width="480" height="78" rx="39" fill="#bd704f"/>
+  <path d="M236 310H664" fill="none" stroke="#d99a7b" stroke-width="1.5" opacity=".8"/>
+  <text class="promo" x="450" y="338" text-anchor="middle" dominant-baseline="middle">Leve 4 e pague 3</text>
+</svg>

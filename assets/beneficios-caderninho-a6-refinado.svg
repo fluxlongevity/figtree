@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="260" viewBox="0 0 900 260" role="img" aria-labelledby="title desc">
+  <title id="title">Opções dos caderninhos A6</title>
+  <desc id="desc">Com pauta, sem pauta e várias capas.</desc>
+  <style>
+    @font-face { font-family: ManropeLocal; src: url("fonts/Manrope-Variable.ttf"); }
+    .label { font-family: ManropeLocal, "Segoe UI", sans-serif; font-size: 31px; font-weight: 700; fill: #48271d; letter-spacing: 0; }
+    .icon { fill: none; stroke: #fff0dc; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+  </style>
+  <g transform="translate(166 0)">
+    <text class="label" x="0" y="38" text-anchor="middle">Com pauta</text>
+    <circle cx="0" cy="145" r="76" fill="#ad6247"/>
+    <circle cx="0" cy="145" r="68" fill="none" stroke="#d89a7a" stroke-width="2" opacity=".7"/>
+    <g class="icon" transform="translate(-42 95)">
+      <path d="M8 2H61L78 19V98H8Z"/>
+      <path d="M61 2V21H80M22 39H64M22 52H64M22 65H64M22 78H55"/>
+    </g>
+  </g>
+  <g transform="translate(450 0)">
+    <text class="label" x="0" y="38" text-anchor="middle">Sem pauta</text>
+    <circle cx="0" cy="145" r="76" fill="#4c281e"/>
+    <circle cx="0" cy="145" r="68" fill="none" stroke="#95644f" stroke-width="2" opacity=".8"/>
+    <g class="icon" transform="translate(-42 95)">
+      <path d="M8 2H61L78 19V98H8Z"/>
+      <path d="M61 2V21H80"/>
+    </g>
+  </g>
+  <g transform="translate(734 0)">
+    <text class="label" x="0" y="38" text-anchor="middle">Várias capas</text>
+    <circle cx="0" cy="145" r="76" fill="#bd704f"/>
+    <circle cx="0" cy="145" r="68" fill="none" stroke="#e1aa8c" stroke-width="2" opacity=".8"/>
+    <g class="icon" transform="translate(-46 96)">
+      <path d="M19 18H72V96H19Z"/>
+      <path d="M8 30V106H61M30 6H84V84M40 29H62M40 42H57"/>
+    </g>
+  </g>
+</svg>

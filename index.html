@@ -1,0 +1,1159 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pedido de Caderninho A6</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;600;700;800&display=swap");
+
+    :root {
+      --bg: #efe2cf;
+      --paper: #fff8ec;
+      --paper-strong: #fffdf7;
+      --kraft: #b68455;
+      --ink: #3a1d16;
+      --muted: #76533f;
+      --accent: #c87955;
+      --accent-dark: #53251b;
+      --sage: #b9c5a8;
+      --line: rgba(82, 48, 30, .18);
+      --shadow: 0 22px 56px rgba(66, 39, 22, .18);
+      --serif: "Cormorant Garamond", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      --sans: "Inter", Arial, Helvetica, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: var(--sans);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 8%, rgba(178, 197, 166, .46), transparent 23rem),
+        radial-gradient(circle at 92% 5%, rgba(235, 194, 125, .42), transparent 27rem),
+        linear-gradient(145deg, #fbf2e7 0%, var(--bg) 52%, #dec3a2 100%);
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 44px;
+    }
+
+    .hero {
+      display: grid;
+      justify-items: center;
+      text-align: center;
+      position: relative;
+      padding-top: 12px;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0 -20vw;
+      background-image:
+        radial-gradient(rgba(65, 39, 24, .08) .7px, transparent .8px),
+        radial-gradient(rgba(255, 255, 255, .18) .8px, transparent .9px);
+      background-size: 18px 18px, 27px 27px;
+      opacity: .34;
+      pointer-events: none;
+    }
+
+    .hero > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      margin: 0;
+      width: min(760px, 100%);
+      line-height: 0;
+    }
+
+    .hero-title-art,
+    .price-art,
+    .benefits-art {
+      display: block;
+      height: auto;
+    }
+
+    .hero-title-art {
+      width: 100%;
+    }
+
+    .product-stage {
+      width: min(1050px, 100%);
+      margin: 8px auto -12px;
+      position: relative;
+    }
+
+    .fan-image {
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 18px 30px rgba(62, 38, 23, .18));
+    }
+
+    .price-art {
+      width: min(620px, 96%);
+      margin: -4px auto 0;
+      filter: drop-shadow(0 16px 24px rgba(67, 34, 24, .18));
+    }
+
+    .benefits-art {
+      width: min(560px, 100%);
+      margin: 20px auto 0;
+    }
+
+    .order-area {
+      display: grid;
+      gap: 18px;
+      margin-top: 30px;
+    }
+
+    .choice-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel,
+    .summary {
+      border: 1px solid rgba(89, 54, 34, .16);
+      border-radius: 12px;
+      background: rgba(255, 248, 235, .84);
+      box-shadow: 0 16px 36px rgba(70, 45, 29, .10);
+      padding: 22px;
+      backdrop-filter: blur(7px);
+      min-width: 0;
+    }
+
+    .panel + .panel {
+      margin-top: 18px;
+    }
+
+    .choice-row .panel + .panel {
+      margin-top: 0;
+    }
+
+    .section-title {
+      margin: 0 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--serif);
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    .step {
+      width: 34px;
+      height: 34px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--accent-dark);
+      color: #fff3e6;
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+
+    .cover-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .cover-option,
+    .interior-option {
+      border: 1px solid rgba(84, 51, 31, .16);
+      border-radius: 10px;
+      background: #fffaf1;
+      color: var(--ink);
+      cursor: pointer;
+      text-align: left;
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    }
+
+    .cover-option {
+      padding: 9px;
+    }
+
+    .cover-option:hover,
+    .interior-option:hover,
+    .cover-option:focus-visible,
+    .interior-option:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(78, 48, 30, .14);
+      outline: none;
+    }
+
+    .cover-option.is-selected,
+    .interior-option.is-selected {
+      border-color: #4b2118;
+      box-shadow: 0 0 0 3px rgba(189, 117, 79, .24);
+    }
+
+    .cover-thumb {
+      position: relative;
+      display: block;
+      aspect-ratio: 1024 / 1536;
+      border-radius: 8px;
+      background: #eee0cf;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(80, 48, 31, .08);
+    }
+
+    .zoom-button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(58, 29, 22, .22);
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      background: rgba(255, 250, 241, .92);
+      color: var(--ink);
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(55, 31, 19, .16);
+      z-index: 4;
+      transition: transform .16s ease, background .16s ease;
+    }
+
+    .zoom-button:hover,
+    .zoom-button:focus-visible {
+      transform: scale(1.06);
+      background: #fff7e8;
+      outline: none;
+    }
+
+    .zoom-button svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.4;
+    }
+
+    .cover-thumb-base,
+    .cover-thumb-art {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .cover-thumb-base {
+      object-fit: cover;
+    }
+
+    .cover-thumb-art {
+      left: 26.4%;
+      top: 23.4%;
+      width: 48.4%;
+      height: 50.2%;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+      opacity: .96;
+    }
+
+    .cover-name {
+      display: block;
+      margin-top: 8px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .01em;
+    }
+
+    .interior-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .interior-option {
+      padding: 12px;
+      position: relative;
+    }
+
+    .interior-preview {
+      position: relative;
+      display: block;
+    }
+
+    .interior-preview img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #eee0cc;
+    }
+
+    .interior-option strong {
+      display: block;
+      margin-top: 10px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .interior-option span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .preview-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(37, 21, 14, .62);
+      backdrop-filter: blur(5px);
+    }
+
+    .preview-modal.is-open {
+      display: flex;
+    }
+
+    .preview-dialog {
+      width: min(920px, 100%);
+      max-height: min(92vh, 900px);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      border: 1px solid rgba(255, 246, 232, .36);
+      border-radius: 14px;
+      background: #fff7ea;
+      box-shadow: 0 30px 80px rgba(30, 17, 10, .36);
+      overflow: hidden;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(82, 48, 30, .15);
+    }
+
+    .preview-header h2 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .preview-close {
+      width: 40px;
+      height: 40px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--accent-dark);
+      color: #fff7ea;
+      cursor: pointer;
+      font-size: 25px;
+      line-height: 1;
+    }
+
+    .preview-body {
+      min-height: 0;
+      padding: 18px;
+      display: grid;
+      place-items: center;
+      overflow: auto;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(185, 197, 168, .24), transparent 22rem),
+        #f6ead9;
+    }
+
+    .preview-cover-large {
+      position: relative;
+      width: min(420px, 82vw);
+      aspect-ratio: 1024 / 1536;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 22px 52px rgba(52, 31, 19, .24);
+    }
+
+    .preview-cover-large img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .preview-cover-large .preview-cover-base {
+      object-fit: cover;
+    }
+
+    .preview-cover-large .preview-cover-art {
+      left: 26.4%;
+      top: 23.4%;
+      width: 48.4%;
+      height: 50.2%;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+      opacity: .96;
+    }
+
+    .preview-interior-large {
+      width: min(860px, 100%);
+      max-height: 72vh;
+      object-fit: contain;
+      border-radius: 10px;
+      box-shadow: 0 20px 48px rgba(52, 31, 19, .20);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      margin: 0 0 7px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border: 1px solid rgba(89, 54, 34, .20);
+      border-radius: 10px;
+      padding: 13px 14px;
+      color: var(--ink);
+      background: var(--paper-strong);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(189, 117, 79, .18);
+    }
+
+    .qty-row {
+      display: grid;
+      grid-template-columns: minmax(0, 220px) minmax(180px, 1fr);
+      gap: 14px;
+      align-items: end;
+    }
+
+    .qty-control {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) 44px;
+      overflow: hidden;
+      border: 1px solid rgba(89, 54, 34, .20);
+      border-radius: 10px;
+      background: var(--paper-strong);
+    }
+
+    .qty-control input {
+      border: 0;
+      border-left: 1px solid rgba(89, 54, 34, .14);
+      border-right: 1px solid rgba(89, 54, 34, .14);
+      border-radius: 0;
+      text-align: center;
+      font-weight: 800;
+    }
+
+    .qty-button {
+      border: 0;
+      background: #fff3e2;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .add-item {
+      min-height: 52px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--accent-dark);
+      color: #fff5e8;
+      cursor: pointer;
+      font-weight: 900;
+      padding: 0 18px;
+      box-shadow: 0 12px 24px rgba(83, 37, 27, .18);
+    }
+
+    .current-selection {
+      margin: 0 0 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: rgba(255, 252, 246, .72);
+      border: 1px solid rgba(89, 54, 34, .12);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .current-selection strong {
+      color: var(--ink);
+    }
+
+    .small-note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .summary {
+      position: static;
+    }
+
+    .summary h2 {
+      margin: 0 0 16px;
+      font-family: var(--serif);
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .cart-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .empty-cart {
+      margin: 0;
+      padding: 14px;
+      border: 1px dashed rgba(89, 54, 34, .22);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid rgba(89, 54, 34, .14);
+      border-radius: 10px;
+      background: rgba(255, 252, 246, .74);
+    }
+
+    .cart-item strong {
+      display: block;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+
+    .cart-item span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .remove-item {
+      border: 0;
+      border-radius: 999px;
+      width: 32px;
+      height: 32px;
+      background: #f1dfce;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 0;
+      border-top: 1px solid rgba(89, 54, 34, .12);
+      color: var(--muted);
+    }
+
+    .summary-line strong {
+      color: var(--ink);
+      text-align: right;
+    }
+
+    .total {
+      margin-top: 14px;
+      border-radius: 10px;
+      background: var(--accent-dark);
+      color: #fff4e6;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .total strong {
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .discount-note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .whatsapp-button {
+      width: 100%;
+      min-height: 54px;
+      margin-top: 18px;
+      border: 0;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      background: #1f7d43;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 900;
+      box-shadow: 0 14px 30px rgba(31, 125, 67, .22);
+    }
+
+    .whatsapp-button.is-disabled {
+      background: #9a8c7b;
+      box-shadow: none;
+      pointer-events: none;
+      cursor: default;
+    }
+
+    @media (max-width: 980px) {
+      .choice-row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .choice-row .panel + .panel {
+        margin-top: 18px;
+      }
+
+      .cover-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        width: min(100% - 20px, 1120px);
+        padding-top: 12px;
+      }
+
+      .hero {
+        padding-top: 8px;
+      }
+
+      .product-stage {
+        width: 100%;
+        margin: 8px 0 -6px;
+      }
+
+      .price-art {
+        width: min(100%, 560px);
+        margin-top: -6px;
+      }
+
+      .benefits-art {
+        width: min(100%, 500px);
+        margin-top: 14px;
+      }
+
+      .panel,
+      .summary {
+        padding: 18px;
+      }
+
+      .cover-grid,
+      .interior-grid,
+      .choice-row,
+      .form-grid,
+      .qty-row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 430px) {
+      .product-stage {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero" aria-labelledby="pageTitle">
+      <h1 id="pageTitle">
+        <img class="hero-title-art" src="assets/titulo-caderninho-a6-refinado.svg?v=2" alt="Caderninho A6 de Bolso. Bonito, leve e prático." />
+      </h1>
+
+      <div class="product-stage" aria-label="Caderninhos A6 em formato de leque">
+        <img class="fan-image" src="assets/leque-cadernos-a6-capas.png" alt="Leque com várias capas de caderninhos A6 kraft" />
+      </div>
+
+      <img class="price-art" src="assets/preco-caderninho-a6-refinado.svg?v=2" alt="1 por R$ 15. 4 por R$ 45. Leve 4 e pague 3." />
+      <img class="benefits-art" src="assets/beneficios-caderninho-a6-refinado.svg?v=2" alt="Com pauta, sem pauta e várias opções de capas." />
+    </section>
+
+    <section class="order-area" aria-label="Formulário de pedido">
+      <div class="choice-row">
+        <section class="panel">
+          <h2 class="section-title"><span class="step">1</span>Escolha a capa</h2>
+          <div class="cover-grid" id="coverGrid"></div>
+        </section>
+
+        <section class="panel">
+          <h2 class="section-title"><span class="step">2</span>Escolha o miolo</h2>
+          <div class="interior-grid" id="interiorGrid"></div>
+        </section>
+      </div>
+
+      <section class="panel">
+        <h2 class="section-title"><span class="step">3</span>Adicione ao pedido</h2>
+        <p class="current-selection" id="currentSelection"></p>
+        <div class="qty-row">
+          <div class="field">
+            <label for="quantity">Quantidade desta configuração</label>
+            <div class="qty-control">
+              <button class="qty-button" type="button" id="minus" aria-label="Diminuir quantidade">−</button>
+              <input id="quantity" type="number" min="1" max="50" step="1" value="1" />
+              <button class="qty-button" type="button" id="plus" aria-label="Aumentar quantidade">+</button>
+            </div>
+          </div>
+          <button class="add-item" type="button" id="addItem">Adicionar esta configuração</button>
+        </div>
+        <p class="small-note">Depois de adicionar, você pode escolher outra capa ou outro miolo e adicionar mais cadernos ao mesmo pedido.</p>
+      </section>
+
+      <section class="panel">
+        <h2 class="section-title"><span class="step">4</span>Seus dados</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label for="name">Nome</label>
+            <input id="name" autocomplete="name" placeholder="Seu nome" />
+          </div>
+          <div class="field">
+            <label for="phone">WhatsApp</label>
+            <input id="phone" autocomplete="tel" inputmode="tel" placeholder="(21) 99999-9999" />
+          </div>
+          <div class="field full">
+            <label for="delivery">Entrega</label>
+            <input id="delivery" placeholder="Bloco/apto ou combinar" />
+          </div>
+          <div class="field full">
+            <label for="notes">Observações</label>
+            <textarea id="notes" placeholder="Ex.: entregar à noite, chamar antes, etc."></textarea>
+          </div>
+        </div>
+      </section>
+
+      <aside class="summary" aria-label="Resumo do pedido">
+        <h2>Resumo do pedido</h2>
+        <div class="cart-list" id="cartList">
+          <p class="empty-cart">Escolha capa, miolo e quantidade. Depois clique em “Adicionar esta configuração”.</p>
+        </div>
+        <div class="summary-line"><span>Total de cadernos</span><strong id="summaryQty">0</strong></div>
+        <div class="total"><span>Total</span><strong id="summaryTotal">R$ 0</strong></div>
+        <p class="discount-note" id="discountNote">A promoção 4 por R$ 45 é calculada pelo total de cadernos no pedido.</p>
+        <a class="whatsapp-button is-disabled" id="whatsappButton" href="#" target="_blank" rel="noopener">Enviar pedido pelo WhatsApp</a>
+      </aside>
+    </section>
+  </main>
+
+  <div class="preview-modal" id="previewModal" aria-hidden="true">
+    <div class="preview-dialog" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+      <div class="preview-header">
+        <h2 id="previewTitle">Visualização</h2>
+        <button class="preview-close" type="button" id="previewClose" aria-label="Fechar visualização">×</button>
+      </div>
+      <div class="preview-body" id="previewBody"></div>
+    </div>
+  </div>
+
+  <script>
+    const SELLER_WHATSAPP = "5521969467886";
+
+    const covers = [
+      ...Array.from({ length: 10 }, (_, index) => {
+        const number = String(index + 1).padStart(2, "0");
+        return {
+          name: `Capa ${index + 1}`,
+          src: `assets/capa-${number}.png`
+        };
+      }),
+      { name: "Capa lisa", src: "" }
+    ];
+
+    const interiors = [
+      {
+        name: "Pautado simples",
+        detail: "Linhas sem data e sem dias.",
+        src: "assets/miolo-pautado-sem-data-dias.png"
+      },
+      {
+        name: "Pautado com data",
+        detail: "Com dias da semana, quadrinhos e data.",
+        src: "assets/miolo-pautado-com-data-dias-01.png"
+      },
+      {
+        name: "Sem pauta com data",
+        detail: "Sem linhas, com dias da semana e data.",
+        src: "assets/miolo-liso-com-data-dias.png"
+      },
+      {
+        name: "Sem pauta liso",
+        detail: "Páginas totalmente livres.",
+        src: "assets/miolo-liso-sem-data-dias.png"
+      }
+    ];
+
+    const state = {
+      coverName: covers[0].name,
+      coverSrc: covers[0].src,
+      interiorName: interiors[0].name,
+      interiorSrc: interiors[0].src
+    };
+
+    const cart = [];
+
+    const currency = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      maximumFractionDigits: 0
+    });
+
+    const coverGrid = document.getElementById("coverGrid");
+    const interiorGrid = document.getElementById("interiorGrid");
+    const currentSelection = document.getElementById("currentSelection");
+    const quantityInput = document.getElementById("quantity");
+    const cartList = document.getElementById("cartList");
+    const summaryQty = document.getElementById("summaryQty");
+    const summaryTotal = document.getElementById("summaryTotal");
+    const discountNote = document.getElementById("discountNote");
+    const whatsappButton = document.getElementById("whatsappButton");
+    const previewModal = document.getElementById("previewModal");
+    const previewTitle = document.getElementById("previewTitle");
+    const previewBody = document.getElementById("previewBody");
+    const previewClose = document.getElementById("previewClose");
+
+    const zoomIcon = `
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="6"></circle>
+        <path d="m16 16 4 4"></path>
+      </svg>
+    `;
+
+    function calculateTotal(qty) {
+      const kits = Math.floor(qty / 4);
+      const remainder = qty % 4;
+      return kits * 45 + remainder * 15;
+    }
+
+    function normalizeQuantity() {
+      const qty = Math.min(50, Math.max(1, Number(quantityInput.value) || 1));
+      quantityInput.value = qty;
+      return qty;
+    }
+
+    function updateCurrentSelection() {
+      const qty = normalizeQuantity();
+      currentSelection.innerHTML = `Selecionado agora: <strong>${qty}x ${state.coverName}</strong> com miolo <strong>${state.interiorName}</strong>.`;
+    }
+
+    function getTotalQuantity() {
+      return cart.reduce((sum, item) => sum + item.qty, 0);
+    }
+
+    function getOrderMessage() {
+      const name = document.getElementById("name").value.trim() || "Não informado";
+      const phone = document.getElementById("phone").value.trim() || "Não informado";
+      const delivery = document.getElementById("delivery").value.trim() || "Combinar";
+      const notes = document.getElementById("notes").value.trim() || "Nenhuma";
+      const totalQty = getTotalQuantity();
+      const total = calculateTotal(totalQty);
+      const itemLines = cart.map((item, index) => `${index + 1}. ${item.qty}x ${item.coverName} - miolo: ${item.interiorName}`);
+
+      return [
+        "Novo pedido de caderninho A6",
+        "",
+        `Nome: ${name}`,
+        `WhatsApp do cliente: ${phone}`,
+        "",
+        "Itens:",
+        ...itemLines,
+        "",
+        `Total de cadernos: ${totalQty}`,
+        `Total: ${currency.format(total)}`,
+        `Entrega: ${delivery}`,
+        `Observações: ${notes}`
+      ].join("\n");
+    }
+
+    function renderCart() {
+      cartList.innerHTML = "";
+
+      if (cart.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "empty-cart";
+        empty.textContent = "Escolha capa, miolo e quantidade. Depois clique em “Adicionar esta configuração”.";
+        cartList.appendChild(empty);
+      } else {
+        cart.forEach((item, index) => {
+          const row = document.createElement("div");
+          row.className = "cart-item";
+          row.innerHTML = `
+            <div>
+              <strong>${item.qty}x ${item.coverName}</strong>
+              <span>Miolo: ${item.interiorName}</span>
+            </div>
+            <button class="remove-item" type="button" aria-label="Remover item ${index + 1}">×</button>
+          `;
+          row.querySelector("button").addEventListener("click", () => {
+            cart.splice(index, 1);
+            updateSummary();
+          });
+          cartList.appendChild(row);
+        });
+      }
+    }
+
+    function updateSummary() {
+      updateCurrentSelection();
+      renderCart();
+
+      const totalQty = getTotalQuantity();
+      const total = calculateTotal(totalQty);
+      const kits = Math.floor(totalQty / 4);
+      const remaining = totalQty % 4;
+
+      summaryQty.textContent = totalQty;
+      summaryTotal.textContent = currency.format(total);
+
+      if (totalQty === 0) {
+        discountNote.textContent = "A promoção 4 por R$ 45 é calculada pelo total de cadernos no pedido.";
+      } else if (kits > 0 && remaining > 0) {
+        discountNote.textContent = `${kits} kit(s) promocional(is) de 4 por R$ 45 + ${remaining} unidade(s) avulsa(s).`;
+      } else if (kits > 0) {
+        discountNote.textContent = `${kits} kit(s) promocional(is) de 4 por R$ 45 aplicado(s).`;
+      } else {
+        discountNote.textContent = "A promoção 4 por R$ 45 entra automaticamente quando o pedido chegar a 4 cadernos.";
+      }
+
+      whatsappButton.classList.toggle("is-disabled", cart.length === 0);
+      whatsappButton.href = cart.length > 0
+        ? `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(getOrderMessage())}`
+        : "#";
+    }
+
+    function openCoverPreview(cover) {
+      previewTitle.textContent = cover.name;
+      previewBody.innerHTML = `
+        <div class="preview-cover-large">
+          <img class="preview-cover-base" src="assets/mockup-capa-lisa.png" alt="">
+          ${cover.src ? `<img class="preview-cover-art" src="${cover.src}" alt="">` : ""}
+        </div>
+      `;
+      previewModal.classList.add("is-open");
+      previewModal.setAttribute("aria-hidden", "false");
+      previewClose.focus();
+    }
+
+    function openInteriorPreview(interior) {
+      previewTitle.textContent = interior.name;
+      previewBody.innerHTML = `<img class="preview-interior-large" src="${interior.src}" alt="${interior.name}">`;
+      previewModal.classList.add("is-open");
+      previewModal.setAttribute("aria-hidden", "false");
+      previewClose.focus();
+    }
+
+    function closePreview() {
+      previewModal.classList.remove("is-open");
+      previewModal.setAttribute("aria-hidden", "true");
+      previewBody.innerHTML = "";
+    }
+
+    function renderCovers() {
+      coverGrid.innerHTML = "";
+      covers.forEach((cover, index) => {
+        const button = document.createElement("div");
+        button.setAttribute("role", "button");
+        button.tabIndex = 0;
+        button.className = `cover-option${index === 0 ? " is-selected" : ""}`;
+        button.dataset.coverName = cover.name;
+        button.innerHTML = `
+          <span class="cover-thumb">
+            <img class="cover-thumb-base" src="assets/mockup-capa-lisa.png" alt="">
+            ${cover.src ? `<img class="cover-thumb-art" src="${cover.src}" alt="">` : ""}
+            <button class="zoom-button" type="button" aria-label="Ver detalhes de ${cover.name}">${zoomIcon}</button>
+          </span>
+          <span class="cover-name">${cover.name}</span>
+        `;
+
+        const selectCover = () => {
+          document.querySelectorAll(".cover-option").forEach(item => item.classList.remove("is-selected"));
+          button.classList.add("is-selected");
+          state.coverName = cover.name;
+          state.coverSrc = cover.src;
+          updateSummary();
+        };
+
+        button.addEventListener("click", event => {
+          if (event.target.closest(".zoom-button")) return;
+          selectCover();
+        });
+
+        button.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectCover();
+          }
+        });
+
+        button.querySelector(".zoom-button").addEventListener("click", event => {
+          event.stopPropagation();
+          openCoverPreview(cover);
+        });
+
+        coverGrid.appendChild(button);
+      });
+    }
+
+    function renderInteriors() {
+      interiorGrid.innerHTML = "";
+      interiors.forEach((interior, index) => {
+        const button = document.createElement("div");
+        button.setAttribute("role", "button");
+        button.tabIndex = 0;
+        button.className = `interior-option${index === 0 ? " is-selected" : ""}`;
+        button.innerHTML = `
+          <span class="interior-preview">
+            <img src="${interior.src}" alt="${interior.name}">
+            <button class="zoom-button" type="button" aria-label="Ver detalhes de ${interior.name}">${zoomIcon}</button>
+          </span>
+          <strong>${interior.name}</strong>
+          <span>${interior.detail}</span>
+        `;
+
+        const selectInterior = () => {
+          document.querySelectorAll(".interior-option").forEach(item => item.classList.remove("is-selected"));
+          button.classList.add("is-selected");
+          state.interiorName = interior.name;
+          state.interiorSrc = interior.src;
+          updateSummary();
+        };
+
+        button.addEventListener("click", event => {
+          if (event.target.closest(".zoom-button")) return;
+          selectInterior();
+        });
+
+        button.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectInterior();
+          }
+        });
+
+        button.querySelector(".zoom-button").addEventListener("click", event => {
+          event.stopPropagation();
+          openInteriorPreview(interior);
+        });
+
+        interiorGrid.appendChild(button);
+      });
+    }
+
+    previewClose.addEventListener("click", closePreview);
+    previewModal.addEventListener("click", event => {
+      if (event.target === previewModal) closePreview();
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && previewModal.classList.contains("is-open")) {
+        closePreview();
+      }
+    });
+
+    document.getElementById("minus").addEventListener("click", () => {
+      quantityInput.value = Math.max(1, Number(quantityInput.value) - 1);
+      updateSummary();
+    });
+
+    document.getElementById("plus").addEventListener("click", () => {
+      quantityInput.value = Math.min(50, Number(quantityInput.value) + 1);
+      updateSummary();
+    });
+
+    document.getElementById("addItem").addEventListener("click", () => {
+      const qty = normalizeQuantity();
+      const existing = cart.find(item => item.coverName === state.coverName && item.interiorName === state.interiorName);
+      if (existing) {
+        existing.qty += qty;
+      } else {
+        cart.push({
+          coverName: state.coverName,
+          interiorName: state.interiorName,
+          qty
+        });
+      }
+      quantityInput.value = 1;
+      updateSummary();
+    });
+
+    ["name", "phone", "delivery", "notes"].forEach(id => {
+      document.getElementById(id).addEventListener("input", updateSummary);
+    });
+
+    quantityInput.addEventListener("input", updateCurrentSelection);
+
+    renderCovers();
+    renderInteriors();
+    updateSummary();
+  </script>
+</body>
+</html>

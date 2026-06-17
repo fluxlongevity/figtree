@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" role="img" aria-labelledby="title desc">
+  <title id="title">Caderninho A6 de Bolso</title>
+  <desc id="desc">Bonito, leve e prático</desc>
+  <style>
+    @font-face { font-family: PlayfairLocal; src: url("fonts/PlayfairDisplay-Variable.ttf"); }
+    @font-face { font-family: ManropeLocal; src: url("fonts/Manrope-Variable.ttf"); }
+    .title { font-family: PlayfairLocal, Georgia, serif; font-size: 96px; font-weight: 650; fill: #452419; letter-spacing: 0; }
+    .subtitle { font-family: ManropeLocal, "Segoe UI", sans-serif; font-size: 33px; font-weight: 700; fill: #a7563e; letter-spacing: 1.2px; }
+  </style>
+  <text class="title" x="450" y="98" text-anchor="middle">Caderninho</text>
+  <text class="title" x="450" y="200" text-anchor="middle">A6 de Bolso</text>
+  <path d="M118 240H210M690 240H782" fill="none" stroke="#b66b4d" stroke-width="2" stroke-linecap="round" opacity=".75"/>
+  <circle cx="224" cy="240" r="3" fill="#b66b4d"/>
+  <circle cx="676" cy="240" r="3" fill="#b66b4d"/>
+  <text class="subtitle" x="450" y="240" text-anchor="middle" dominant-baseline="middle">Bonito, leve e prático</text>
+</svg>
