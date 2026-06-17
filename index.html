@@ -638,6 +638,7 @@
       display: block;
       height: 100%;
       width: auto;
+      margin: 0 auto;
       object-fit: contain;
     }
 
@@ -1064,9 +1065,9 @@
           row.className = "cart-item";
           row.innerHTML = `
             <div class="cart-item-info">
-              <span class="cart-item-thumb">
+              <div class="cart-item-thumb">
                 <img src="${item.coverThumb}" alt="${item.coverName}">
-              </span>
+              </div>
               <div class="cart-item-details">
                 <strong>${item.qty}x ${item.coverName}</strong>
                 <span>Miolo: ${item.interiorName}</span>
