@@ -740,8 +740,7 @@
     .whatsapp-button.is-disabled {
       background: #9a8c7b;
       box-shadow: none;
-      pointer-events: none;
-      cursor: default;
+      cursor: not-allowed;
     }
 
     @media (max-width: 980px) {
@@ -1418,6 +1417,42 @@
 
     ["name", "phone", "delivery", "notes"].forEach(id => {
       document.getElementById(id).addEventListener("input", updateSummary);
+    });
+
+    whatsappButton.addEventListener("click", event => {
+      const nameVal = document.getElementById("name").value.trim();
+      const deliveryVal = document.getElementById("delivery").value.trim();
+      const isCartEmpty = cart.length === 0;
+      const isNameEmpty = nameVal.length === 0;
+      const isDeliveryEmpty = deliveryVal.length === 0;
+
+      if (isCartEmpty) {
+        event.preventDefault();
+        alert("Seu resumo está vazio! Por favor, escolha e adicione pelo menos um caderno antes de enviar.");
+        return;
+      }
+      
+      if (isNameEmpty) {
+        event.preventDefault();
+        alert("Por favor, preencha o campo de Nome para podermos identificar seu pedido.");
+        const nameInput = document.getElementById("name");
+        if (nameInput) {
+          nameInput.scrollIntoView({ behavior: "smooth", block: "center" });
+          nameInput.focus();
+        }
+        return;
+      }
+
+      if (isDeliveryEmpty) {
+        event.preventDefault();
+        alert("Por favor, preencha o campo de Entrega (bloco/apto ou combinar) para finalizar seu pedido.");
+        const deliveryInput = document.getElementById("delivery");
+        if (deliveryInput) {
+          deliveryInput.scrollIntoView({ behavior: "smooth", block: "center" });
+          deliveryInput.focus();
+        }
+        return;
+      }
     });
 
     quantityInput.addEventListener("input", updateCurrentSelection);
