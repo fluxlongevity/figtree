@@ -143,6 +143,50 @@
       margin: 20px auto 0;
     }
 
+    .showcase-gallery {
+      width: min(1040px, 100%);
+      margin: 34px auto 0;
+    }
+
+    .showcase-title {
+      margin: 0 0 16px;
+      text-align: center;
+      font-family: var(--serif);
+      font-size: clamp(29px, 4vw, 40px);
+      line-height: 1;
+      color: var(--ink);
+    }
+
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .showcase-item {
+      margin: 0;
+      overflow: hidden;
+      border: 1px solid rgba(82, 47, 31, .18);
+      border-radius: 8px;
+      background: #f8f0e5;
+      box-shadow: 0 14px 28px rgba(68, 39, 23, .12);
+    }
+
+    .showcase-item img {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 2 / 3;
+    }
+
+    .showcase-item figcaption {
+      padding: 10px 12px 12px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
     .order-area {
       display: grid;
       gap: 18px;
@@ -723,6 +767,29 @@
         margin-top: 14px;
       }
 
+      .showcase-gallery {
+        width: 100%;
+        margin-top: 24px;
+      }
+
+      .showcase-title {
+        margin-bottom: 14px;
+      }
+
+      .showcase-grid {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding: 0 2px 12px;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: thin;
+      }
+
+      .showcase-item {
+        flex: 0 0 min(78vw, 310px);
+        scroll-snap-align: center;
+      }
+
       .panel,
       .summary {
         padding: 18px;
@@ -759,6 +826,24 @@
 
       <img class="price-art" src="assets/preco-caderninho-a6-refinado.svg?v=2" alt="1 por R$ 15. 4 por R$ 45. Leve 4 e pague 3." />
       <img class="benefits-art" src="assets/beneficios-caderninho-a6-refinado.svg?v=2" alt="Com pauta, sem pauta e várias opções de capas." />
+    </section>
+
+    <section class="showcase-gallery" aria-labelledby="showcaseTitle">
+      <h2 class="showcase-title" id="showcaseTitle">Veja os caderninhos de perto</h2>
+      <div class="showcase-grid">
+        <figure class="showcase-item">
+          <img src="assets/mockup-produto-fechado.webp" alt="Caderninho A6 kraft fechado com capa floral" loading="lazy" />
+          <figcaption>Caderno fechado</figcaption>
+        </figure>
+        <figure class="showcase-item">
+          <img src="assets/mockup-produto-frente-verso.webp" alt="Caderninho A6 aberto mostrando frente e verso da capa" loading="lazy" />
+          <figcaption>Frente e verso</figcaption>
+        </figure>
+        <figure class="showcase-item">
+          <img src="assets/mockup-produto-tamanho-bolso.webp" alt="Comparação do tamanho do caderninho A6 com um celular" loading="lazy" />
+          <figcaption>Tamanho de bolso</figcaption>
+        </figure>
+      </div>
     </section>
 
     <section class="order-area" aria-label="Formulário de pedido">
