@@ -1345,6 +1345,27 @@
       }
       quantityInput.value = 1;
       updateSummary();
+
+      // Pergunta se o comprador quer incluir um novo caderno
+      if (confirm("Deseja adicionar outro caderno com capa ou miolo diferente ao seu pedido?")) {
+        // Zera as seleções de capa, miolo e quantidade
+        state.coverName = covers[0].name;
+        state.coverSrc = covers[0].src;
+        state.coverThumb = covers[0].thumbSrc;
+        state.interiorName = interiors[0].name;
+        state.interiorSrc = interiors[0].src;
+        quantityInput.value = 1;
+        
+        renderCovers();
+        renderInteriors();
+        updateSummary();
+
+        // Posiciona a tela na primeira capa (Step 1)
+        const coverGridEl = document.getElementById("coverGrid");
+        if (coverGridEl) {
+          coverGridEl.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
     });
 
     ["name", "phone", "delivery", "notes"].forEach(id => {
