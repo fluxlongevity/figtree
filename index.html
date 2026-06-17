@@ -944,6 +944,35 @@
   <script>
     const SELLER_WHATSAPP = "5521969467886";
 
+    function crc16(data) {
+      let crc = 0xFFFF;
+      for (let i = 0; i < data.length; i++) {
+        crc ^= data.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
+          if ((crc & 0x8000) !== 0) {
+            crc = ((crc << 1) ^ 0x1021) & 0xFFFF;
+          } else {
+            crc = (crc << 1) & 0xFFFF;
+          }
+        }
+      }
+      return crc.toString(16).toUpperCase().padStart(4, "0");
+    }
+
+    function generatePixCopiaCola(amount) {
+      const part1 = "00020126720014BR.GOV.BCB.PIX0136ba2d7d8e-3a98-4379-8a26-0f97f45375c90210Caderno A6520400005303986";
+      let amountField = "";
+      if (amount !== undefined && amount !== null && amount > 0) {
+        const amountStr = amount.toFixed(2);
+        const length = String(amountStr.length).padStart(2, "0");
+        amountField = `54${length}${amountStr}`;
+      }
+      const part2 = "5802BR5922ANDRE MARTINS FIGUEIRA6009Sao Paulo62290525REC6A32D3302DC3C5918190026304";
+      const combined = part1 + amountField + part2;
+      const checksum = crc16(combined);
+      return combined + checksum;
+    }
+
     const covers = [
       ...Array.from({ length: 10 }, (_, index) => {
         const number = String(index + 1).padStart(2, "0");
@@ -1058,7 +1087,10 @@
         `Total de cadernos: ${totalQty}`,
         `Total: ${currency.format(total)}`,
         `Entrega: ${delivery}`,
-        `Observações: ${notes}`
+        `Observações: ${notes}`,
+        "",
+        "Pix Copia e Cola (para pagamento):",
+        generatePixCopiaCola(total)
       ].join("\n");
     }
 
