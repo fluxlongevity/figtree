@@ -321,26 +321,12 @@
       stroke-width: 2.4;
     }
 
-    .cover-thumb-base,
-    .cover-thumb-art {
+    .cover-thumb-base {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
-    }
-
-    .cover-thumb-base {
       object-fit: cover;
-    }
-
-    .cover-thumb-art {
-      left: 26.4%;
-      top: 23.4%;
-      width: 48.4%;
-      height: 50.2%;
-      object-fit: contain;
-      mix-blend-mode: multiply;
-      opacity: .96;
     }
 
     .cover-name {
@@ -472,20 +458,7 @@
       inset: 0;
       width: 100%;
       height: 100%;
-    }
-
-    .preview-cover-large .preview-cover-base {
       object-fit: cover;
-    }
-
-    .preview-cover-large .preview-cover-art {
-      left: 26.4%;
-      top: 23.4%;
-      width: 48.4%;
-      height: 50.2%;
-      object-fit: contain;
-      mix-blend-mode: multiply;
-      opacity: .96;
     }
 
     .preview-interior-large {
@@ -825,7 +798,7 @@
       </h1>
 
       <div class="product-stage" aria-label="Caderninhos A6 em formato de leque">
-        <img class="fan-image" src="assets/leque-cadernos-a6-capas.png" alt="Leque com várias capas de caderninhos A6 kraft" />
+        <img class="fan-image" src="assets/leque-cadernos-a6-capas.webp" alt="Leque com várias capas de caderninhos A6 kraft" />
       </div>
 
       <img class="price-art" src="assets/preco-caderninho-a6-refinado.svg?v=2" alt="1 por R$ 15. 4 por R$ 45. Leve 4 e pague 3." />
@@ -933,32 +906,32 @@
         const number = String(index + 1).padStart(2, "0");
         return {
           name: `Capa ${index + 1}`,
-          src: `assets/capa-${number}.png`
+          src: `assets/capa-${number}n.webp`
         };
       }),
-      { name: "Capa lisa", src: "" }
+      { name: "Capa lisa", src: "assets/mockup-capa-lisa.webp" }
     ];
 
     const interiors = [
       {
         name: "Pautado simples",
         detail: "Linhas sem data e sem dias.",
-        src: "assets/miolo-pautado-sem-data-dias.png"
+        src: "assets/miolo-pautado-sem-data-dias.webp"
       },
       {
         name: "Pautado com data",
         detail: "Com dias da semana, quadrinhos e data.",
-        src: "assets/miolo-pautado-com-data-dias-01.png"
+        src: "assets/miolo-pautado-com-data-dias-01.webp"
       },
       {
         name: "Sem pauta com data",
         detail: "Sem linhas, com dias da semana e data.",
-        src: "assets/miolo-liso-com-data-dias.png"
+        src: "assets/miolo-liso-com-data-dias.webp"
       },
       {
         name: "Sem pauta liso",
         detail: "Páginas totalmente livres.",
-        src: "assets/miolo-liso-sem-data-dias.png"
+        src: "assets/miolo-liso-sem-data-dias.webp"
       }
     ];
 
@@ -1104,8 +1077,7 @@
       previewTitle.textContent = cover.name;
       previewBody.innerHTML = `
         <div class="preview-cover-large">
-          <img class="preview-cover-base" src="assets/mockup-capa-lisa.png" alt="">
-          ${cover.src ? `<img class="preview-cover-art" src="${cover.src}" alt="">` : ""}
+          <img class="preview-cover-base" src="${cover.src}" alt="${cover.name}">
         </div>
       `;
       previewModal.classList.add("is-open");
@@ -1137,8 +1109,7 @@
         button.dataset.coverName = cover.name;
         button.innerHTML = `
           <span class="cover-thumb">
-            <img class="cover-thumb-base" src="assets/mockup-capa-lisa.png" alt="">
-            ${cover.src ? `<img class="cover-thumb-art" src="${cover.src}" alt="">` : ""}
+            <img class="cover-thumb-base" src="${cover.src}" alt="${cover.name}">
             <button class="zoom-button" type="button" aria-label="Ver detalhes de ${cover.name}">${zoomIcon}</button>
           </span>
           <span class="cover-name">${cover.name}</span>
