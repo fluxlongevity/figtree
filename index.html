@@ -958,6 +958,22 @@
     </div>
   </div>
 
+  <!-- Modal de Alerta Customizado (Bonito) -->
+  <div class="preview-modal" id="alertModal" aria-hidden="true">
+    <div class="preview-dialog" style="width: min(420px, 94%);" role="dialog" aria-modal="true" aria-labelledby="alertTitle">
+      <div class="preview-header">
+        <h2 id="alertTitle" style="font-size: 24px; font-family: var(--serif);">Atenção</h2>
+        <button class="preview-close" type="button" id="alertClose" aria-label="Fechar alerta">×</button>
+      </div>
+      <div class="preview-body" style="padding: 24px; text-align: center; background: #fff8ec;">
+        <p id="alertMessage" style="margin: 0 0 22px; font-size: 16px; line-height: 1.55; color: var(--ink);"></p>
+        <div style="display: flex; justify-content: center; width: 100%;">
+          <button class="add-item" type="button" id="alertOk" style="box-shadow: none; min-height: 44px; padding: 0 28px; font-size: 15px; font-weight: 800;">Entendido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SELLER_WHATSAPP = "5521969467886";
 
@@ -1346,10 +1362,44 @@
       if (event.target === confirmModal) closeConfirm();
     });
 
+    // Configuração do Modal de Alerta Customizado (Bonito)
+    const alertModal = document.getElementById("alertModal");
+    const alertTitle = document.getElementById("alertTitle");
+    const alertMessage = document.getElementById("alertMessage");
+    const alertOk = document.getElementById("alertOk");
+    const alertClose = document.getElementById("alertClose");
+    let pendingFocusElement = null;
+
+    function showCustomAlert(title, message, focusElement) {
+      alertTitle.textContent = title;
+      alertMessage.innerHTML = message;
+      pendingFocusElement = focusElement;
+      alertModal.classList.add("is-open");
+      alertModal.setAttribute("aria-hidden", "false");
+      alertOk.focus();
+    }
+
+    function closeAlert() {
+      alertModal.classList.remove("is-open");
+      alertModal.setAttribute("aria-hidden", "true");
+      if (pendingFocusElement) {
+        pendingFocusElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        pendingFocusElement.focus();
+        pendingFocusElement = null;
+      }
+    }
+
+    alertOk.addEventListener("click", closeAlert);
+    alertClose.addEventListener("click", closeAlert);
+    alertModal.addEventListener("click", event => {
+      if (event.target === alertModal) closeAlert();
+    });
+
     document.addEventListener("keydown", event => {
       if (event.key === "Escape") {
         if (previewModal.classList.contains("is-open")) closePreview();
         if (confirmModal.classList.contains("is-open")) closeConfirm();
+        if (alertModal.classList.contains("is-open")) closeAlert();
       }
     });
 
@@ -1428,29 +1478,19 @@
 
       if (isCartEmpty) {
         event.preventDefault();
-        alert("Seu resumo está vazio! Por favor, escolha e adicione pelo menos um caderno antes de enviar.");
+        showCustomAlert("Resumo do pedido vazio", "Seu resumo está vazio! Por favor, escolha e adicione pelo menos um caderno antes de enviar.", null);
         return;
       }
       
       if (isNameEmpty) {
         event.preventDefault();
-        alert("Por favor, preencha o campo de Nome para podermos identificar seu pedido.");
-        const nameInput = document.getElementById("name");
-        if (nameInput) {
-          nameInput.scrollIntoView({ behavior: "smooth", block: "center" });
-          nameInput.focus();
-        }
+        showCustomAlert("Nome obrigatório", "Por favor, preencha o campo de <strong>Nome</strong> para podermos identificar seu pedido.", document.getElementById("name"));
         return;
       }
 
       if (isDeliveryEmpty) {
         event.preventDefault();
-        alert("Por favor, preencha o campo de Entrega (bloco/apto ou combinar) para finalizar seu pedido.");
-        const deliveryInput = document.getElementById("delivery");
-        if (deliveryInput) {
-          deliveryInput.scrollIntoView({ behavior: "smooth", block: "center" });
-          deliveryInput.focus();
-        }
+        showCustomAlert("Entrega obrigatória", "Por favor, preencha o campo de <strong>Entrega</strong> (bloco/apto ou combinar) para finalizar seu pedido.", document.getElementById("delivery"));
         return;
       }
     });
