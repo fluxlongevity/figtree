@@ -908,8 +908,8 @@
             <input id="phone" autocomplete="tel" inputmode="tel" placeholder="(21) 99999-9999" />
           </div>
           <div class="field full">
-            <label for="delivery">Entrega</label>
-            <input id="delivery" placeholder="Bloco/apto ou combinar" />
+            <label for="delivery">Entrega *</label>
+            <input id="delivery" placeholder="Bloco/apto ou combinar (obrigatório)" required />
           </div>
           <div class="field full">
             <label for="notes">Observações</label>
@@ -1170,9 +1170,11 @@
       }
 
       const nameVal = document.getElementById("name").value.trim();
+      const deliveryVal = document.getElementById("delivery").value.trim();
       const isCartEmpty = cart.length === 0;
       const isNameEmpty = nameVal.length === 0;
-      const isDisabled = isCartEmpty || isNameEmpty;
+      const isDeliveryEmpty = deliveryVal.length === 0;
+      const isDisabled = isCartEmpty || isNameEmpty || isDeliveryEmpty;
 
       whatsappButton.classList.toggle("is-disabled", isDisabled);
       
@@ -1180,6 +1182,8 @@
         whatsappButton.textContent = "Adicione itens ao pedido";
       } else if (isNameEmpty) {
         whatsappButton.textContent = "Preencha seu Nome para enviar";
+      } else if (isDeliveryEmpty) {
+        whatsappButton.textContent = "Preencha a Entrega para enviar";
       } else {
         whatsappButton.textContent = "Enviar pedido pelo WhatsApp";
       }
