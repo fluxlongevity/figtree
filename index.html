@@ -619,6 +619,17 @@
       align-items: center;
       gap: 12px;
       min-width: 0;
+      cursor: pointer;
+      border-radius: 6px;
+      padding: 4px;
+      margin: -4px;
+      transition: background-color .15s ease;
+    }
+
+    .cart-item-info:hover,
+    .cart-item-info:focus-visible {
+      background-color: rgba(89, 54, 34, .08);
+      outline: none;
     }
 
     .cart-item-thumb {
@@ -1075,7 +1086,27 @@
             </div>
             <button class="remove-item" type="button" aria-label="Remover item ${index + 1}">×</button>
           `;
-          row.querySelector("button").addEventListener("click", () => {
+          const infoEl = row.querySelector(".cart-item-info");
+          infoEl.setAttribute("role", "button");
+          infoEl.setAttribute("tabindex", "0");
+          infoEl.setAttribute("title", "Clique para ver a imagem ampliada");
+
+          const showZoom = () => {
+            const coverObj = covers.find(c => c.name === item.coverName);
+            if (coverObj) {
+              openCoverPreview(coverObj);
+            }
+          };
+
+          infoEl.addEventListener("click", showZoom);
+          infoEl.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              showZoom();
+            }
+          });
+
+          row.querySelector(".remove-item").addEventListener("click", () => {
             cart.splice(index, 1);
             updateSummary();
           });
