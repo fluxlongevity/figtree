@@ -434,11 +434,13 @@
     }
 
     .preview-body {
+      position: relative;
       min-height: 0;
-      padding: 18px;
-      display: grid;
-      place-items: center;
-      overflow: auto;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
       background:
         radial-gradient(circle at 20% 10%, rgba(185, 197, 168, .24), transparent 22rem),
         #f6ead9;
@@ -857,11 +859,12 @@
     .preview-slide {
       flex: 0 0 100%;
       width: 100%;
+      height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
       scroll-snap-align: center;
-      padding: 0 52px;
+      padding: 24px 52px;
       box-sizing: border-box;
     }
 
@@ -1358,13 +1361,12 @@
       previewTitle.textContent = zoomItems[startIndex].name;
       
       let html = `
-        <div class="preview-body-container">
-          <button class="carousel-btn prev-btn" id="carouselPrev" type="button" aria-label="Anterior">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
-          <div class="preview-carousel" id="previewCarousel">
+        <button class="carousel-btn prev-btn" id="carouselPrev" type="button" aria-label="Anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <div class="preview-carousel" id="previewCarousel">
       `;
       
       zoomItems.forEach((item, index) => {
@@ -1386,13 +1388,12 @@
       });
       
       html += `
-          </div>
-          <button class="carousel-btn next-btn" id="carouselNext" type="button" aria-label="Próximo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
         </div>
+        <button class="carousel-btn next-btn" id="carouselNext" type="button" aria-label="Próximo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
       `;
       
       previewBody.innerHTML = html;
@@ -1405,14 +1406,23 @@
       previewModal.setAttribute("aria-hidden", "false");
       previewClose.focus();
       
+      const scrollToActive = () => {
+        const activeSlide = carousel.querySelector(`.preview-slide[data-index="${startIndex}"]`);
+        if (activeSlide) {
+          carousel.scrollLeft = activeSlide.offsetLeft;
+        }
+      };
+      
+      scrollToActive();
+      setTimeout(scrollToActive, 50);
       setTimeout(() => {
-        carousel.scrollLeft = startIndex * carousel.clientWidth;
         carousel.style.scrollBehavior = "smooth";
-      }, 50);
+      }, 100);
       
       let lastIndex = startIndex;
       carousel.addEventListener("scroll", () => {
-        const index = Math.round(carousel.scrollLeft / carousel.clientWidth);
+        const width = carousel.clientWidth || 1;
+        const index = Math.round(carousel.scrollLeft / width);
         if (index >= 0 && index < zoomItems.length && index !== lastIndex) {
           lastIndex = index;
           previewTitle.textContent = zoomItems[index].name;
@@ -1420,16 +1430,18 @@
       });
       
       prevBtn.addEventListener("click", () => {
-        const index = Math.round(carousel.scrollLeft / carousel.clientWidth);
+        const width = carousel.clientWidth || 1;
+        const index = Math.round(carousel.scrollLeft / width);
         if (index > 0) {
-          carousel.scrollLeft = (index - 1) * carousel.clientWidth;
+          carousel.scrollLeft = (index - 1) * width;
         }
       });
       
       nextBtn.addEventListener("click", () => {
-        const index = Math.round(carousel.scrollLeft / carousel.clientWidth);
+        const width = carousel.clientWidth || 1;
+        const index = Math.round(carousel.scrollLeft / width);
         if (index < zoomItems.length - 1) {
-          carousel.scrollLeft = (index + 1) * carousel.clientWidth;
+          carousel.scrollLeft = (index + 1) * width;
         }
       });
     }
