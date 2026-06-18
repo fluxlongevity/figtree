@@ -159,7 +159,7 @@
 
     .showcase-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 14px;
     }
 
@@ -830,6 +830,78 @@
         margin-right: 0;
       }
     }
+
+    .preview-body-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-carousel {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      width: 100%;
+      height: 100%;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .preview-carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .preview-slide {
+      flex: 0 0 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      scroll-snap-align: center;
+      padding: 0 52px;
+      box-sizing: border-box;
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(58, 29, 22, .22);
+      background: rgba(255, 250, 241, .92);
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 18px rgba(55, 31, 19, .16);
+      transition: transform .16s ease, background .16s ease;
+      z-index: 10;
+    }
+
+    .carousel-btn:hover {
+      transform: translateY(-50%) scale(1.06);
+      background: #fff7e8;
+    }
+
+    .carousel-btn svg {
+      width: 24px;
+      height: 24px;
+      stroke-width: 2.5;
+    }
+
+    .prev-btn {
+      left: 12px;
+    }
+
+    .next-btn {
+      right: 12px;
+    }
   </style>
 </head>
 <body>
@@ -853,6 +925,10 @@
         <figure class="showcase-item">
           <img src="assets/mockup-produto-fechado.webp" alt="Caderninho A6 kraft fechado com capa floral" loading="lazy" />
           <figcaption>Caderno fechado</figcaption>
+        </figure>
+        <figure class="showcase-item">
+          <img src="assets/miolo-pautado-com-data-dias-01.webp" alt="Caderninho A6 aberto mostrando miolo pautado com data" loading="lazy" />
+          <figcaption>Caderno aberto</figcaption>
         </figure>
         <figure class="showcase-item">
           <img src="assets/mockup-produto-frente-verso.webp" alt="Caderninho A6 aberto mostrando frente e verso da capa" loading="lazy" />
@@ -1206,9 +1282,9 @@
           infoEl.setAttribute("title", "Clique para ver a imagem ampliada");
 
           const showZoom = () => {
-            const coverObj = covers.find(c => c.name === item.coverName);
-            if (coverObj) {
-              openCoverPreview(coverObj);
+            const coverIndex = covers.findIndex(c => c.name === item.coverName);
+            if (coverIndex !== -1) {
+              openZoomCarousel("covers", coverIndex);
             }
           };
 
@@ -1275,24 +1351,87 @@
         : "#";
     }
 
-    function openCoverPreview(cover) {
-      previewTitle.textContent = cover.name;
-      previewBody.innerHTML = `
-        <div class="preview-cover-large">
-          <img class="preview-cover-base" src="${cover.src}" alt="${cover.name}">
+    let zoomItems = [];
+    function openZoomCarousel(type, startIndex) {
+      zoomItems = type === "covers" ? covers : interiors;
+      
+      previewTitle.textContent = zoomItems[startIndex].name;
+      
+      let html = `
+        <div class="preview-body-container">
+          <button class="carousel-btn prev-btn" id="carouselPrev" type="button" aria-label="Anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <div class="preview-carousel" id="previewCarousel">
+      `;
+      
+      zoomItems.forEach((item, index) => {
+        html += `
+          <div class="preview-slide" data-index="${index}">
+        `;
+        if (type === "covers") {
+          html += `
+            <div class="preview-cover-large">
+              <img class="preview-cover-base" src="${item.src}" alt="${item.name}">
+            </div>
+          `;
+        } else {
+          html += `
+            <img class="preview-interior-large" src="${item.src}" alt="${item.name}">
+          `;
+        }
+        html += `</div>`;
+      });
+      
+      html += `
+          </div>
+          <button class="carousel-btn next-btn" id="carouselNext" type="button" aria-label="Próximo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
         </div>
       `;
+      
+      previewBody.innerHTML = html;
+      
+      const carousel = document.getElementById("previewCarousel");
+      const prevBtn = document.getElementById("carouselPrev");
+      const nextBtn = document.getElementById("carouselNext");
+      
       previewModal.classList.add("is-open");
       previewModal.setAttribute("aria-hidden", "false");
       previewClose.focus();
-    }
-
-    function openInteriorPreview(interior) {
-      previewTitle.textContent = interior.name;
-      previewBody.innerHTML = `<img class="preview-interior-large" src="${interior.src}" alt="${interior.name}">`;
-      previewModal.classList.add("is-open");
-      previewModal.setAttribute("aria-hidden", "false");
-      previewClose.focus();
+      
+      setTimeout(() => {
+        carousel.scrollLeft = startIndex * carousel.clientWidth;
+        carousel.style.scrollBehavior = "smooth";
+      }, 50);
+      
+      let lastIndex = startIndex;
+      carousel.addEventListener("scroll", () => {
+        const index = Math.round(carousel.scrollLeft / carousel.clientWidth);
+        if (index >= 0 && index < zoomItems.length && index !== lastIndex) {
+          lastIndex = index;
+          previewTitle.textContent = zoomItems[index].name;
+        }
+      });
+      
+      prevBtn.addEventListener("click", () => {
+        const index = Math.round(carousel.scrollLeft / carousel.clientWidth);
+        if (index > 0) {
+          carousel.scrollLeft = (index - 1) * carousel.clientWidth;
+        }
+      });
+      
+      nextBtn.addEventListener("click", () => {
+        const index = Math.round(carousel.scrollLeft / carousel.clientWidth);
+        if (index < zoomItems.length - 1) {
+          carousel.scrollLeft = (index + 1) * carousel.clientWidth;
+        }
+      });
     }
 
     function closePreview() {
@@ -1340,7 +1479,7 @@
 
         button.querySelector(".zoom-button").addEventListener("click", event => {
           event.stopPropagation();
-          openCoverPreview(cover);
+          openZoomCarousel("covers", index);
         });
 
         coverGrid.appendChild(button);
@@ -1385,7 +1524,7 @@
 
         button.querySelector(".zoom-button").addEventListener("click", event => {
           event.stopPropagation();
-          openInteriorPreview(interior);
+          openZoomCarousel("interiors", index);
         });
 
         interiorGrid.appendChild(button);
@@ -1514,8 +1653,50 @@
       confirmModal.setAttribute("aria-hidden", "false");
     });
 
-    ["name", "phone", "delivery", "notes"].forEach(id => {
+    ["name", "delivery", "notes"].forEach(id => {
       document.getElementById(id).addEventListener("input", updateSummary);
+    });
+
+    function formatPhone(val) {
+      let digits = val.replace(/\D/g, "");
+      digits = digits.substring(0, 11);
+      if (digits.length <= 2) {
+        return digits.length > 0 ? "(" + digits : "";
+      } else if (digits.length <= 6) {
+        return "(" + digits.substring(0, 2) + ") " + digits.substring(2);
+      } else if (digits.length <= 10) {
+        return "(" + digits.substring(0, 2) + ") " + digits.substring(2, 6) + "-" + digits.substring(6);
+      } else {
+        return "(" + digits.substring(0, 2) + ") " + digits.substring(2, 7) + "-" + digits.substring(7, 11);
+      }
+    }
+
+    const phoneInput = document.getElementById("phone");
+    phoneInput.addEventListener("input", () => {
+      const selectionStart = phoneInput.selectionStart;
+      const originalValue = phoneInput.value;
+      const formatted = formatPhone(originalValue);
+      
+      if (formatted !== originalValue) {
+        phoneInput.value = formatted;
+        
+        const digitsBeforeCursor = originalValue.substring(0, selectionStart).replace(/\D/g, "").length;
+        let cursorInFormatted = 0;
+        let digitsSeen = 0;
+        for (let i = 0; i < formatted.length; i++) {
+          if (digitsSeen < digitsBeforeCursor) {
+            cursorInFormatted = i + 1;
+            if (/\d/.test(formatted[i])) {
+              digitsSeen++;
+            }
+          } else {
+            break;
+          }
+        }
+        phoneInput.setSelectionRange(cursorInFormatted, cursorInFormatted);
+      }
+      
+      updateSummary();
     });
 
     whatsappButton.addEventListener("click", event => {
