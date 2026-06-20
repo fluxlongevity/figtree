@@ -1225,6 +1225,7 @@
     let deliveryBairro = "";
     let lastCalculatedServices = [];
     let wasLastLocal = false;
+    let isCepValid = false;
 
     function crc16(data) {
       let crc = 0xFFFF;
@@ -1615,7 +1616,7 @@
       // Valida se o campo de entrega não está incompleto (deve conter número/complemento além do autocompletado do CEP)
       const isDeliveryIncomplete = isDeliveryEmpty || /,\s*(nº\s*)?$/i.test(deliveryVal);
       
-      const isDisabled = isCartEmpty || isNameEmpty || isDeliveryIncomplete || isCepEmpty || isShippingEmpty;
+      const isDisabled = isCartEmpty || isNameEmpty || isDeliveryIncomplete || isCepEmpty || !isCepValid || isShippingEmpty;
 
       whatsappButton.classList.toggle("is-disabled", isDisabled);
       
@@ -1625,6 +1626,8 @@
         whatsappButton.textContent = "Preencha seu Nome para enviar";
       } else if (isCepEmpty) {
         whatsappButton.textContent = "Preencha o CEP para enviar";
+      } else if (!isCepValid) {
+        whatsappButton.textContent = "CEP inválido ou não encontrado";
       } else if (isShippingEmpty) {
         whatsappButton.textContent = "Selecione o Frete para enviar";
       } else if (isDeliveryIncomplete) {
@@ -2097,7 +2100,8 @@
         cepInput.setSelectionRange(cursor, cursor);
       }
 
-      // Reset do frete se alterar o CEP
+      // Se alterou o CEP, reseta o estado de validade e o frete
+      isCepValid = false;
       selectedShipping = null;
       lastCalculatedServices = [];
       shippingOptionsList.innerHTML = "";
@@ -2116,13 +2120,27 @@
     async function lookupCep(cep) {
       try {
         const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        if (!response.ok) return;
+        if (!response.ok) {
+          // Em caso de falha de conexão com a API, permitimos prosseguir para não travar o fluxo
+          isCepValid = true;
+          return;
+        }
         const data = await response.json();
-        if (data.erro) return;
+        if (data.erro) {
+          showCustomAlert("CEP não encontrado", "O CEP informado não foi encontrado. Por favor, confira os números digitados.", cepInput);
+          isCepValid = false;
+          updateSummary();
+          return;
+        }
 
+        isCepValid = true;
+        updateSummary();
         openAddressModal(cep, data);
       } catch (e) {
         console.error("Erro no ViaCEP:", e);
+        // Fallback caso dê erro de rede na consulta
+        isCepValid = true;
+        updateSummary();
       }
     }
 
@@ -2142,6 +2160,11 @@
 
       if (cepVal.length !== 8) {
         showCustomAlert("CEP inválido", "Por favor, informe um CEP válido com 8 dígitos.", cepInput);
+        return;
+      }
+
+      if (!isCepValid) {
+        showCustomAlert("CEP inválido", "O CEP informado não é válido ou não foi encontrado. Por favor, corrija-o antes de calcular o frete.", cepInput);
         return;
       }
 
@@ -2399,6 +2422,11 @@
 
       if (isCepEmpty) {
         showCustomAlert("CEP obrigatório", "Por favor, preencha o campo de <strong>CEP</strong> e calcule o frete.", document.getElementById("cep"));
+        return;
+      }
+
+      if (!isCepValid) {
+        showCustomAlert("CEP inválido", "O CEP informado não é válido ou não foi encontrado. Por favor, digite um CEP correto.", document.getElementById("cep"));
         return;
       }
 
