@@ -1172,6 +1172,50 @@
     </div>
   </div>
 
+  <!-- Modal de Endereço Customizado (Número e Complemento) -->
+  <div class="preview-modal" id="addressModal" aria-hidden="true">
+    <div class="preview-dialog" style="width: min(460px, 94%);" role="dialog" aria-modal="true" aria-labelledby="addressTitle">
+      <div class="preview-header">
+        <h2 id="addressTitle" style="font-size: 24px; font-family: var(--serif);">Dados de Entrega</h2>
+        <button class="preview-close" type="button" id="addressClose" aria-label="Fechar janela">×</button>
+      </div>
+      <div class="preview-body" style="padding: 24px; display: flex; flex-direction: column; gap: 16px; align-items: stretch; background: #fff8ec; overflow-y: auto;">
+        <p style="margin: 0; font-size: 15px; line-height: 1.45; color: var(--ink);">
+          Por favor, complete as informações para a entrega:
+        </p>
+        
+        <div style="font-size: 14px; font-weight: 600; padding: 10px 12px; background: #f3e5d3; border-radius: 8px; color: var(--ink); border: 1px solid rgba(82, 48, 30, 0.12);" id="addressModalSummary"></div>
+        
+        <div id="addressModalManualFields" style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="field" style="margin: 0;">
+            <label for="addressModalStreet">Rua / Logradouro *</label>
+            <input id="addressModalStreet" type="text" placeholder="Ex: Rua das Flores" />
+          </div>
+          <div class="field" style="margin: 0;">
+            <label for="addressModalDistrict">Bairro *</label>
+            <input id="addressModalDistrict" type="text" placeholder="Ex: Centro" />
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; width: 100%;">
+          <div class="field" style="flex: 1; margin: 0;">
+            <label for="addressModalNum">Número *</label>
+            <input id="addressModalNum" type="text" placeholder="Ex: 123" required />
+          </div>
+          <div class="field" style="flex: 1.5; margin: 0;">
+            <label for="addressModalComp">Complemento</label>
+            <input id="addressModalComp" type="text" placeholder="Ex: Apto 402, Bloco B" />
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 12px; justify-content: flex-end; width: 100%; margin-top: 6px;">
+          <button class="remove-item" type="button" id="addressModalCancel" style="width: auto; height: 44px; border-radius: 10px; padding: 0 20px; background: #f1dfce; font-size: 15px; font-weight: 800; cursor: pointer;">Cancelar</button>
+          <button class="add-item" type="button" id="addressModalConfirm" style="box-shadow: none; min-height: 44px; padding: 0 20px; font-size: 15px; font-weight: 800; cursor: pointer;">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SELLER_WHATSAPP = "5521969467886";
     // URL do Web App do Google Apps Script (Deixe em branco ou insira a URL implantada)
@@ -1828,11 +1872,121 @@
       if (event.target === alertModal) closeAlert();
     });
 
+    // Configuração do Modal de Endereço Customizado (Número e Complemento)
+    const addressModal = document.getElementById("addressModal");
+    const addressClose = document.getElementById("addressClose");
+    const addressModalSummary = document.getElementById("addressModalSummary");
+    const addressModalManualFields = document.getElementById("addressModalManualFields");
+    const addressModalStreet = document.getElementById("addressModalStreet");
+    const addressModalDistrict = document.getElementById("addressModalDistrict");
+    const addressModalNum = document.getElementById("addressModalNum");
+    const addressModalComp = document.getElementById("addressModalComp");
+    const addressModalConfirm = document.getElementById("addressModalConfirm");
+    const addressModalCancel = document.getElementById("addressModalCancel");
+    let currentCepData = null;
+
+    function openAddressModal(cep, data) {
+      currentCepData = { cep, ...data };
+      
+      // Limpa os campos
+      addressModalNum.value = "";
+      addressModalComp.value = "";
+      addressModalStreet.value = "";
+      addressModalDistrict.value = "";
+
+      if (data.logradouro) {
+        addressModalSummary.innerHTML = `<strong>CEP ${cep}:</strong> ${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}`;
+        addressModalManualFields.style.display = "none";
+        addressModalStreet.required = false;
+        addressModalDistrict.required = false;
+      } else {
+        addressModalSummary.innerHTML = `<strong>CEP ${cep} (Geral):</strong> ${data.localidade}/${data.uf}`;
+        addressModalManualFields.style.display = "flex";
+        addressModalStreet.required = true;
+        addressModalDistrict.required = true;
+      }
+
+      addressModal.classList.add("is-open");
+      addressModal.setAttribute("aria-hidden", "false");
+      
+      // Foco automático no primeiro campo a preencher
+      setTimeout(() => {
+        if (data.logradouro) {
+          addressModalNum.focus();
+        } else {
+          addressModalStreet.focus();
+        }
+      }, 50);
+    }
+
+    function closeAddressModal() {
+      addressModal.classList.remove("is-open");
+      addressModal.setAttribute("aria-hidden", "true");
+      currentCepData = null;
+    }
+
+    addressClose.addEventListener("click", closeAddressModal);
+    addressModalCancel.addEventListener("click", closeAddressModal);
+    addressModal.addEventListener("click", event => {
+      if (event.target === addressModal) closeAddressModal();
+    });
+
+    addressModalConfirm.addEventListener("click", () => {
+      if (!currentCepData) return;
+      
+      const numVal = addressModalNum.value.trim();
+      const compVal = addressModalComp.value.trim();
+      
+      let streetVal = (currentCepData.logradouro || "").trim();
+      let districtVal = (currentCepData.bairro || "").trim();
+
+      if (!currentCepData.logradouro) {
+        streetVal = addressModalStreet.value.trim();
+        districtVal = addressModalDistrict.value.trim();
+        
+        if (!streetVal) {
+          showCustomAlert("Rua obrigatória", "Por favor, preencha o nome da sua rua.", addressModalStreet);
+          return;
+        }
+        if (!districtVal) {
+          showCustomAlert("Bairro obrigatório", "Por favor, preencha o nome do seu bairro.", addressModalDistrict);
+          return;
+        }
+      }
+
+      if (!numVal) {
+        showCustomAlert("Número obrigatório", "Por favor, preencha o número para entrega.", addressModalNum);
+        return;
+      }
+
+      // Monta o endereço final
+      let finalAddress = `${streetVal}, ${districtVal} - ${currentCepData.localidade}/${currentCepData.uf}`;
+      if (compVal) {
+        finalAddress += `, Nº ${numVal} - ${compVal}`;
+      } else {
+        finalAddress += `, Nº ${numVal}`;
+      }
+
+      document.getElementById("delivery").value = finalAddress;
+      closeAddressModal();
+      updateSummary();
+    });
+
+    [addressModalStreet, addressModalDistrict, addressModalNum, addressModalComp].forEach(input => {
+      input.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          addressModalConfirm.click();
+        }
+      });
+    });
+
     document.addEventListener("keydown", event => {
       if (event.key === "Escape") {
         if (previewModal.classList.contains("is-open")) closePreview();
         if (confirmModal.classList.contains("is-open")) closeConfirm();
         if (alertModal.classList.contains("is-open")) closeAlert();
+        if (addressModal.classList.contains("is-open")) closeAddressModal();
       }
     });
 
@@ -1958,21 +2112,7 @@
         const data = await response.json();
         if (data.erro) return;
 
-        const deliveryInput = document.getElementById("delivery");
-        let addressText = "";
-        if (data.logradouro) {
-          addressText = `${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}, Nº `;
-        } else {
-          addressText = `${data.localidade}/${data.uf}, `;
-        }
-        
-        deliveryInput.value = addressText;
-        deliveryInput.focus();
-        
-        const len = deliveryInput.value.length;
-        deliveryInput.setSelectionRange(len, len);
-        
-        updateSummary();
+        openAddressModal(cep, data);
       } catch (e) {
         console.error("Erro no ViaCEP:", e);
       }
