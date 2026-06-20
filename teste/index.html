@@ -1223,6 +1223,8 @@
 
     let selectedShipping = null;
     let deliveryBairro = "";
+    let lastCalculatedServices = [];
+    let wasLastLocal = false;
 
     function crc16(data) {
       let crc = 0xFFFF;
@@ -2092,10 +2094,11 @@
       }
 
       // Reset do frete se alterar o CEP
-      if (selectedShipping) {
-        selectedShipping = null;
-        updateSummary();
-      }
+      selectedShipping = null;
+      lastCalculatedServices = [];
+      shippingOptionsList.innerHTML = "";
+      shippingOptionsField.style.display = "none";
+      updateSummary();
 
       // Busca no ViaCEP quando completar 8 dígitos
       const cleanCep = formatted.replace(/\D/g, "");
@@ -2197,26 +2200,28 @@
     }
 
     function renderShippingOptions(services) {
+      // Filtra qualquer LOCAL_GRATIS anterior para guardar apenas os serviços originais
+      lastCalculatedServices = services.filter(s => s.id !== "LOCAL_GRATIS");
+      
       shippingOptionsList.innerHTML = "";
+      
+      let displayServices = [...lastCalculatedServices];
       
       // Se for entrega local (Grajaú ou Andaraí), adiciona a opção Grátis no início
       if (checkIfLocalDelivery()) {
-        const hasFree = services.some(s => s.id === "LOCAL_GRATIS");
-        if (!hasFree) {
-          services = [
-            { id: "LOCAL_GRATIS", name: "Entrega Local (Grátis)", price: 0, discountPrice: 0, deliveryTime: 1 },
-            ...services
-          ];
-        }
+        displayServices = [
+          { id: "LOCAL_GRATIS", name: "Entrega Local (Grátis)", price: 0, discountPrice: 0, deliveryTime: 1 },
+          ...displayServices
+        ];
       }
       
-      if (!services || services.length === 0) {
+      if (displayServices.length === 0) {
         shippingOptionsList.innerHTML = `<p style="margin: 0; color: var(--muted); font-size: 14px;">Nenhuma opção de envio disponível para esta quantidade/região.</p>`;
         shippingOptionsField.style.display = "block";
         return;
       }
 
-      services.forEach((service, idx) => {
+      displayServices.forEach((service, idx) => {
         const card = document.createElement("label");
         card.className = "shipping-option-card";
         
@@ -2260,6 +2265,46 @@
       shippingOptionsField.style.display = "block";
       updateSummary();
     }
+
+    function refreshShippingOptions() {
+      if (lastCalculatedServices && lastCalculatedServices.length > 0) {
+        const isCurrentlyLocal = checkIfLocalDelivery();
+        
+        // Se mudou o status de local (entrou ou saiu do Grajaú/Andaraí), resetamos a seleção
+        if (isCurrentlyLocal !== wasLastLocal) {
+          selectedShipping = null;
+          wasLastLocal = isCurrentlyLocal;
+        }
+        
+        const prevSelectedId = selectedShipping ? selectedShipping.id : null;
+        
+        renderShippingOptions(lastCalculatedServices);
+        
+        // Se havia uma seleção anterior e ela ainda é válida, mantém
+        if (prevSelectedId) {
+          const radioToSelect = shippingOptionsList.querySelector(`input[value="${prevSelectedId}"]`);
+          if (radioToSelect) {
+            radioToSelect.checked = true;
+            let matching = lastCalculatedServices.find(s => s.id === prevSelectedId);
+            if (!matching && prevSelectedId === "LOCAL_GRATIS" && isCurrentlyLocal) {
+              matching = { id: "LOCAL_GRATIS", name: "Entrega Local (Grátis)", price: 0, deliveryTime: 1 };
+            }
+            if (matching) {
+              selectedShipping = {
+                id: matching.id,
+                name: matching.name,
+                price: matching.discountPrice || matching.price,
+                deliveryTime: matching.deliveryTime
+              };
+            }
+          }
+        }
+      }
+    }
+
+    document.getElementById("delivery").addEventListener("input", () => {
+      refreshShippingOptions();
+    });
 
     function renderSimulatedShippingOptions() {
       const simulated = [
