@@ -957,14 +957,14 @@
       color: var(--muted);
     }
 
-    #reopenPixButton, #copyPixCodeBtn, #pixGoToWhatsappBtn, #pixCloseBtn {
+    #reopenPixButton, #copyPixCodeBtn, #pixCloseBtn {
       transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
     }
     #reopenPixButton:hover {
       background: #2ba396 !important;
       box-shadow: 0 14px 30px rgba(43, 163, 150, .32) !important;
     }
-    #reopenPixButton:active, #copyPixCodeBtn:active, #pixGoToWhatsappBtn:active, #pixCloseBtn:active {
+    #reopenPixButton:active, #copyPixCodeBtn:active, #pixCloseBtn:active {
       transform: scale(0.98);
     }
     #copyPixCodeBtn:hover {
@@ -1264,11 +1264,6 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             Copiar Código PIX
           </button>
-          
-          <a class="whatsapp-button" id="pixGoToWhatsappBtn" href="#" target="_blank" style="margin-top: 0; min-height: 44px; font-size: 15px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; background: #1f7d43; text-decoration: none;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="fill: currentColor; flex-shrink: 0;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-            Enviar Pedido pelo WhatsApp
-          </a>
 
           <button class="remove-item" type="button" id="pixCloseBtn" style="width: auto; height: 44px; border-radius: 10px; padding: 0 20px; background: #f1dfce; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 4px;">Fechar</button>
         </div>
@@ -2052,25 +2047,17 @@
       addressModalNum.value = addressModalNum.value.replace(/\D/g, "");
     });
 
-    // Configuração do Modal do Pix Copia e Cola
+     // Configuração do Modal do Pix Copia e Cola
     const pixModal = document.getElementById("pixModal");
     const pixClose = document.getElementById("pixClose");
     const pixCodeText = document.getElementById("pixCodeText");
     const copyPixCodeBtn = document.getElementById("copyPixCodeBtn");
-    const pixGoToWhatsappBtn = document.getElementById("pixGoToWhatsappBtn");
     const pixCloseBtn = document.getElementById("pixCloseBtn");
     const reopenPixButton = document.getElementById("reopenPixButton");
 
-    function openPixModal(amount, whatsappUrl) {
+    function openPixModal(amount) {
       const payload = generatePixCopiaCola(amount);
       pixCodeText.value = payload;
-      
-      if (whatsappUrl) {
-        pixGoToWhatsappBtn.href = whatsappUrl;
-        pixGoToWhatsappBtn.style.display = "flex";
-      } else {
-        pixGoToWhatsappBtn.style.display = "none";
-      }
       
       pixModal.classList.add("is-open");
       pixModal.setAttribute("aria-hidden", "false");
@@ -2112,9 +2099,7 @@
       const totalQty = getTotalQuantity();
       const productTotal = calculateTotal(totalQty);
       const grandTotal = productTotal + (selectedShipping ? selectedShipping.price : 0);
-      const msg = getOrderMessage(lastOrderId);
-      const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
-      openPixModal(grandTotal, whatsappUrl);
+      openPixModal(grandTotal);
     });
 
     document.addEventListener("keydown", event => {
@@ -2603,7 +2588,7 @@
         const msg = getOrderMessage();
         const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
         window.open(whatsappUrl, "_blank");
-        openPixModal(grandTotal, whatsappUrl);
+        openPixModal(grandTotal);
         return;
       }
 
@@ -2627,7 +2612,7 @@
           const msg = getOrderMessage(data.orderId);
           const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
           window.open(whatsappUrl, "_blank");
-          openPixModal(grandTotal, whatsappUrl);
+          openPixModal(grandTotal);
         } else {
           showCustomAlert("Erro ao salvar", "Ocorreu um erro ao salvar o pedido na planilha: " + data.error, null);
         }
@@ -2637,7 +2622,7 @@
         const msg = getOrderMessage();
         const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
         window.open(whatsappUrl, "_blank");
-        openPixModal(grandTotal, whatsappUrl);
+        openPixModal(grandTotal);
       } finally {
         whatsappButton.disabled = false;
         updateSummary();
