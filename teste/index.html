@@ -2242,6 +2242,16 @@
         ];
       }
       
+      // Ordena por valor (menor primeiro) e por prazo (menor primeiro) em caso de empate
+      displayServices.sort((a, b) => {
+        const priceA = a.discountPrice !== undefined ? a.discountPrice : a.price;
+        const priceB = b.discountPrice !== undefined ? b.discountPrice : b.price;
+        if (priceA !== priceB) {
+          return priceA - priceB;
+        }
+        return a.deliveryTime - b.deliveryTime;
+      });
+      
       if (displayServices.length === 0) {
         shippingOptionsList.innerHTML = `<p style="margin: 0; color: var(--muted); font-size: 14px;">Nenhuma opção de envio disponível para esta quantidade/região.</p>`;
         shippingOptionsField.style.display = "block";
