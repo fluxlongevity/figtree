@@ -2380,6 +2380,10 @@
       const deliveryVal = document.getElementById("delivery").value.trim();
       const cepVal = document.getElementById("cep").value.trim();
       
+      const isCartEmpty = cart.length === 0;
+      const isNameEmpty = nameVal.length === 0;
+      const isCepEmpty = cepVal.length === 0;
+      const isShippingEmpty = !selectedShipping;
       const isDeliveryEmpty = deliveryVal.length === 0;
       const isDeliveryIncomplete = isDeliveryEmpty || /,\s*(nº\s*)?$/i.test(deliveryVal);
 
