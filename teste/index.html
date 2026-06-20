@@ -1959,13 +1959,12 @@
         return;
       }
 
-      // Monta o endereço final
-      let finalAddress = `${streetVal}, ${districtVal} - ${currentCepData.localidade}/${currentCepData.uf}`;
+      // Monta o endereço final no formato: Rua, Nº [Num] [- Compl] - Bairro - Cidade/UF
+      let finalAddress = `${streetVal}, Nº ${numVal}`;
       if (compVal) {
-        finalAddress += `, Nº ${numVal} - ${compVal}`;
-      } else {
-        finalAddress += `, Nº ${numVal}`;
+        finalAddress += ` - ${compVal}`;
       }
+      finalAddress += ` - ${districtVal} - ${currentCepData.localidade}/${currentCepData.uf}`;
 
       document.getElementById("delivery").value = finalAddress;
       closeAddressModal();
