@@ -905,6 +905,57 @@
     .next-btn {
       right: 12px;
     }
+
+    .shipping-option-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid rgba(89, 54, 34, .16);
+      border-radius: 10px;
+      background: #fffaf1;
+      cursor: pointer;
+      transition: transform .15s ease, border-color .15s ease;
+    }
+
+    .shipping-option-card:hover {
+      border-color: var(--accent);
+      background: #fffdfb;
+    }
+
+    .shipping-option-card input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent-dark);
+      cursor: pointer;
+      margin: 0;
+      flex-shrink: 0;
+    }
+
+    .shipping-option-details {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .shipping-option-name {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--ink);
+    }
+
+    .shipping-option-price {
+      font-weight: 800;
+      color: var(--accent-dark);
+      font-size: 16px;
+    }
+
+    .shipping-option-time {
+      font-size: 13px;
+      color: var(--muted);
+    }
   </style>
 </head>
 <body>
@@ -1041,9 +1092,20 @@
             <label for="phone">WhatsApp</label>
             <input id="phone" autocomplete="tel" inputmode="tel" placeholder="(21) 99999-9999" />
           </div>
+          <div class="field">
+            <label for="cep">CEP *</label>
+            <div style="display: flex; gap: 8px;">
+              <input id="cep" inputmode="numeric" placeholder="00000-000" style="flex: 1;" required />
+              <button class="add-item" type="button" id="calcShipping" style="min-height: 48px; box-shadow: none; font-size: 14px; padding: 0 16px; flex-shrink: 0;">Calcular Frete</button>
+            </div>
+          </div>
+          <div class="field full" id="shippingOptionsField" style="display: none;">
+            <label>Opções de Envio *</label>
+            <div id="shippingOptionsList" style="display: grid; gap: 8px;"></div>
+          </div>
           <div class="field full">
             <label for="delivery">Entrega *</label>
-            <input id="delivery" placeholder="Bloco/apto ou combinar (obrigatório)" required />
+            <input id="delivery" placeholder="Rua, Bairro - Cidade/UF, Nº e apto (obrigatório)" required />
           </div>
           <div class="field full">
             <label for="notes">Observações</label>
@@ -1058,9 +1120,10 @@
           <p class="empty-cart">Escolha capa, miolo e quantidade. Depois clique em “Adicionar esta configuração”.</p>
         </div>
         <div class="summary-line"><span>Total de cadernos</span><strong id="summaryQty">0</strong></div>
+        <div class="summary-line" id="shippingSummaryLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid rgba(89, 54, 34, .12); color: var(--muted);"><span>Frete (<span id="shippingMethodName">-</span>)</span><strong id="shippingSummaryPrice">R$ 0</strong></div>
         <div class="total"><span>Total</span><strong id="summaryTotal">R$ 0</strong></div>
         <p class="discount-note" id="discountNote">A promoção 4 por R$ 45 é calculada pelo total de cadernos no pedido.</p>
-        <a class="whatsapp-button is-disabled" id="whatsappButton" href="#" target="_blank" rel="noopener">Adicione itens ao pedido</a>
+        <button class="whatsapp-button is-disabled" id="whatsappButton" type="button">Adicione itens ao pedido</button>
       </aside>
     </section>
   </main>
@@ -1111,6 +1174,10 @@
 
   <script>
     const SELLER_WHATSAPP = "5521969467886";
+    // URL do Web App do Google Apps Script (Deixe em branco ou insira a URL implantada)
+    const BACKEND_URL = ""; 
+
+    let selectedShipping = null;
 
     function crc16(data) {
       let crc = 0xFFFF;
@@ -1361,17 +1428,29 @@
       return cart.reduce((sum, item) => sum + item.qty, 0);
     }
 
-    function getOrderMessage() {
+    function getOrderMessage(orderId) {
       const name = document.getElementById("name").value.trim() || "Não informado";
       const phone = document.getElementById("phone").value.trim() || "Não informado";
       const delivery = document.getElementById("delivery").value.trim() || "Combinar";
       const notes = document.getElementById("notes").value.trim() || "Nenhuma";
       const totalQty = getTotalQuantity();
-      const total = calculateTotal(totalQty);
+      const productTotal = calculateTotal(totalQty);
+      
+      let grandTotal = productTotal;
+      let shippingText = "Não selecionado";
+      if (selectedShipping) {
+        grandTotal += selectedShipping.price;
+        shippingText = `${selectedShipping.name} (${currency.format(selectedShipping.price)}) - CEP: ${document.getElementById("cep").value.trim()}`;
+      }
+
       const itemLines = cart.map((item, index) => `${index + 1}. ${item.qty}x ${item.coverName} - miolo: ${item.interiorName}`);
 
+      const header = orderId 
+        ? `Novo pedido de caderninho de bolso 14 x 9 cm (Pedido #${orderId})`
+        : `Novo pedido de caderninho de bolso 14 x 9 cm`;
+
       return [
-        "Novo pedido de caderninho de bolso 14 x 9 cm",
+        header,
         "",
         `Nome: ${name}`,
         `WhatsApp do cliente: ${phone}`,
@@ -1380,13 +1459,15 @@
         ...itemLines,
         "",
         `Total de cadernos: ${totalQty}`,
-        `Total: ${currency.format(total)}`,
+        `Valor dos Cadernos: ${currency.format(productTotal)}`,
+        `Frete: ${shippingText}`,
+        `Total Geral: ${currency.format(grandTotal)}`,
         `Entrega: ${delivery}`,
         `Observações: ${notes}`,
         "",
         "Pix Copia e Cola (para pagamento):",
         "",
-        generatePixCopiaCola(total)
+        generatePixCopiaCola(grandTotal)
       ].join("\n");
     }
 
@@ -1448,12 +1529,22 @@
       renderCart();
 
       const totalQty = getTotalQuantity();
-      const total = calculateTotal(totalQty);
+      const productTotal = calculateTotal(totalQty);
       const kits = Math.floor(totalQty / 4);
       const remaining = totalQty % 4;
 
+      let grandTotal = productTotal;
+      if (selectedShipping) {
+        grandTotal += selectedShipping.price;
+        document.getElementById("shippingSummaryLine").style.display = "flex";
+        document.getElementById("shippingMethodName").textContent = selectedShipping.name;
+        document.getElementById("shippingSummaryPrice").textContent = currency.format(selectedShipping.price);
+      } else {
+        document.getElementById("shippingSummaryLine").style.display = "none";
+      }
+
       summaryQty.textContent = totalQty;
-      summaryTotal.textContent = currency.format(total);
+      summaryTotal.textContent = currency.format(grandTotal);
 
       if (totalQty === 0) {
         discountNote.textContent = "A promoção 4 por R$ 45 é calculada pelo total de cadernos no pedido.";
@@ -1467,10 +1558,14 @@
 
       const nameVal = document.getElementById("name").value.trim();
       const deliveryVal = document.getElementById("delivery").value.trim();
+      const cepVal = document.getElementById("cep").value.trim();
       const isCartEmpty = cart.length === 0;
       const isNameEmpty = nameVal.length === 0;
       const isDeliveryEmpty = deliveryVal.length === 0;
-      const isDisabled = isCartEmpty || isNameEmpty || isDeliveryEmpty;
+      const isCepEmpty = cepVal.length === 0;
+      const isShippingEmpty = !selectedShipping;
+      
+      const isDisabled = isCartEmpty || isNameEmpty || isDeliveryEmpty || isCepEmpty || isShippingEmpty;
 
       whatsappButton.classList.toggle("is-disabled", isDisabled);
       
@@ -1478,15 +1573,15 @@
         whatsappButton.textContent = "Adicione itens ao pedido";
       } else if (isNameEmpty) {
         whatsappButton.textContent = "Preencha seu Nome para enviar";
+      } else if (isCepEmpty) {
+        whatsappButton.textContent = "Preencha o CEP para enviar";
+      } else if (isShippingEmpty) {
+        whatsappButton.textContent = "Selecione o Frete para enviar";
       } else if (isDeliveryEmpty) {
         whatsappButton.textContent = "Preencha a Entrega para enviar";
       } else {
         whatsappButton.textContent = "Enviar pedido pelo WhatsApp";
       }
-
-      whatsappButton.href = !isDisabled
-        ? `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(getOrderMessage())}`
-        : "#";
     }
 
     let zoomItems = [];
@@ -1800,9 +1895,205 @@
       confirmModal.setAttribute("aria-hidden", "false");
     });
 
-    ["name", "delivery", "notes"].forEach(id => {
+    ["name", "delivery", "notes", "cep"].forEach(id => {
       document.getElementById(id).addEventListener("input", updateSummary);
     });
+
+    // --- MÁSCARA E BUSCA AUTOMÁTICA DE CEP (VIACEP) ---
+    function formatCep(val) {
+      let digits = val.replace(/\D/g, "");
+      digits = digits.substring(0, 8);
+      if (digits.length <= 5) {
+        return digits;
+      }
+      return digits.substring(0, 5) + "-" + digits.substring(5);
+    }
+
+    const cepInput = document.getElementById("cep");
+    cepInput.addEventListener("input", async () => {
+      const selectionStart = cepInput.selectionStart;
+      const originalValue = cepInput.value;
+      const formatted = formatCep(originalValue);
+      
+      if (formatted !== originalValue) {
+        cepInput.value = formatted;
+        
+        // Ajustar cursor
+        const digitsBefore = originalValue.substring(0, selectionStart).replace(/\D/g, "").length;
+        let cursor = 0;
+        let digitsSeen = 0;
+        for (let i = 0; i < formatted.length; i++) {
+          if (digitsSeen < digitsBefore) {
+            cursor = i + 1;
+            if (/\d/.test(formatted[i])) digitsSeen++;
+          } else {
+            break;
+          }
+        }
+        cepInput.setSelectionRange(cursor, cursor);
+      }
+
+      // Reset do frete se alterar o CEP
+      if (selectedShipping) {
+        selectedShipping = null;
+        updateSummary();
+      }
+
+      // Busca no ViaCEP quando completar 8 dígitos
+      const cleanCep = formatted.replace(/\D/g, "");
+      if (cleanCep.length === 8) {
+        await lookupCep(cleanCep);
+      }
+      
+      updateSummary();
+    });
+
+    async function lookupCep(cep) {
+      try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        if (!response.ok) return;
+        const data = await response.json();
+        if (data.erro) return;
+
+        const deliveryInput = document.getElementById("delivery");
+        let addressText = "";
+        if (data.logradouro) {
+          addressText = `${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}, Nº `;
+        } else {
+          addressText = `${data.localidade}/${data.uf}, `;
+        }
+        
+        deliveryInput.value = addressText;
+        deliveryInput.focus();
+        
+        const len = deliveryInput.value.length;
+        deliveryInput.setSelectionRange(len, len);
+        
+        updateSummary();
+      } catch (e) {
+        console.error("Erro no ViaCEP:", e);
+      }
+    }
+
+    // --- CÁLCULO DE FRETE (SUPERFRETE VIA APPS SCRIPT) ---
+    const calcShippingBtn = document.getElementById("calcShipping");
+    const shippingOptionsField = document.getElementById("shippingOptionsField");
+    const shippingOptionsList = document.getElementById("shippingOptionsList");
+
+    calcShippingBtn.addEventListener("click", async () => {
+      const cepVal = cepInput.value.replace(/\D/g, "");
+      const totalQty = getTotalQuantity();
+
+      if (totalQty === 0) {
+        showCustomAlert("Carrinho vazio", "Adicione pelo menos um caderno ao pedido antes de calcular o frete.", null);
+        return;
+      }
+
+      if (cepVal.length !== 8) {
+        showCustomAlert("CEP inválido", "Por favor, informe um CEP válido com 8 dígitos.", cepInput);
+        return;
+      }
+
+      if (!BACKEND_URL) {
+        // Fallback simulação caso o Web App ainda não esteja configurado
+        showCustomAlert("Simulação de Frete", "O Backend URL ainda não foi configurado. Carregando opções simuladas para teste de layout.", null);
+        renderSimulatedShippingOptions();
+        return;
+      }
+
+      calcShippingBtn.disabled = true;
+      calcShippingBtn.textContent = "Calculando...";
+
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "calcular_frete",
+            cep_destino: cepVal,
+            quantidade: totalQty
+          })
+        });
+
+        if (!response.ok) throw new Error("Falha na resposta do servidor.");
+        const data = await response.json();
+
+        if (data.success) {
+          renderShippingOptions(data.services);
+        } else {
+          showCustomAlert("Erro no cálculo", "Não foi possível calcular o frete: " + data.error, null);
+        }
+      } catch (err) {
+        console.error("Erro ao calcular frete:", err);
+        showCustomAlert("Erro de conexão", "Ocorreu um erro ao conectar ao servidor de frete. Carregando opções simuladas para testes.", null);
+        renderSimulatedShippingOptions();
+      } finally {
+        calcShippingBtn.disabled = false;
+        calcShippingBtn.textContent = "Calcular Frete";
+      }
+    });
+
+    function renderShippingOptions(services) {
+      shippingOptionsList.innerHTML = "";
+      
+      if (!services || services.length === 0) {
+        shippingOptionsList.innerHTML = `<p style="margin: 0; color: var(--muted); font-size: 14px;">Nenhuma opção de envio disponível para esta quantidade/região.</p>`;
+        shippingOptionsField.style.display = "block";
+        return;
+      }
+
+      services.forEach((service, idx) => {
+        const card = document.createElement("label");
+        card.className = "shipping-option-card";
+        
+        const isSelected = selectedShipping && selectedShipping.id === service.id;
+        
+        card.innerHTML = `
+          <input type="radio" name="shipping_option" value="${service.id}" ${idx === 0 && !selectedShipping ? "checked" : isSelected ? "checked" : ""}>
+          <div class="shipping-option-details">
+            <div>
+              <span class="shipping-option-name">${service.name}</span>
+              <span class="shipping-option-time" style="display: block; margin-top: 2px;">Prazo: ${service.deliveryTime} dia(s)</span>
+            </div>
+            <span class="shipping-option-price">${currency.format(service.discountPrice || service.price)}</span>
+          </div>
+        `;
+        
+        const radio = card.querySelector('input[type="radio"]');
+        
+        if (idx === 0 && !selectedShipping) {
+          selectedShipping = {
+            id: service.id,
+            name: service.name,
+            price: service.discountPrice || service.price,
+            deliveryTime: service.deliveryTime
+          };
+        }
+
+        radio.addEventListener("change", () => {
+          selectedShipping = {
+            id: service.id,
+            name: service.name,
+            price: service.discountPrice || service.price,
+            deliveryTime: service.deliveryTime
+          };
+          updateSummary();
+        });
+
+        shippingOptionsList.appendChild(card);
+      });
+
+      shippingOptionsField.style.display = "block";
+      updateSummary();
+    }
+
+    function renderSimulatedShippingOptions() {
+      const simulated = [
+        { id: "PAC", name: "Simulado PAC", price: 14.90, discountPrice: 14.90, deliveryTime: 8 },
+        { id: "SEDEX", name: "Simulado SEDEX", price: 23.50, discountPrice: 23.50, deliveryTime: 3 },
+        { id: "MINI", name: "Simulado Mini Envios", price: 9.90, discountPrice: 9.90, deliveryTime: 12 }
+      ];
+      renderShippingOptions(simulated);
+    }
 
     function cleanPhoneDigits(val) {
       let digits = val.replace(/\D/g, "");
@@ -1859,29 +2150,100 @@
       updateSummary();
     });
 
-    whatsappButton.addEventListener("click", event => {
+    whatsappButton.addEventListener("click", async () => {
       const nameVal = document.getElementById("name").value.trim();
+      const phoneVal = document.getElementById("phone").value.trim();
       const deliveryVal = document.getElementById("delivery").value.trim();
+      const cepVal = document.getElementById("cep").value.trim();
+      
       const isCartEmpty = cart.length === 0;
       const isNameEmpty = nameVal.length === 0;
+      const isCepEmpty = cepVal.length === 0;
+      const isShippingEmpty = !selectedShipping;
       const isDeliveryEmpty = deliveryVal.length === 0;
 
       if (isCartEmpty) {
-        event.preventDefault();
         showCustomAlert("Resumo do pedido vazio", "Seu resumo está vazio! Por favor, escolha e adicione pelo menos um caderno antes de enviar.", null);
         return;
       }
       
       if (isNameEmpty) {
-        event.preventDefault();
         showCustomAlert("Nome obrigatório", "Por favor, preencha o campo de <strong>Nome</strong> para podermos identificar seu pedido.", document.getElementById("name"));
         return;
       }
 
-      if (isDeliveryEmpty) {
-        event.preventDefault();
-        showCustomAlert("Entrega obrigatória", "Por favor, preencha o campo de <strong>Entrega</strong> (bloco/apto ou combinar) para finalizar seu pedido.", document.getElementById("delivery"));
+      if (isCepEmpty) {
+        showCustomAlert("CEP obrigatório", "Por favor, preencha o campo de <strong>CEP</strong> e calcule o frete.", document.getElementById("cep"));
         return;
+      }
+
+      if (isShippingEmpty) {
+        showCustomAlert("Frete obrigatório", "Por favor, escolha uma opção de frete após informar o seu CEP.", document.getElementById("calcShipping"));
+        return;
+      }
+
+      if (isDeliveryEmpty) {
+        showCustomAlert("Entrega obrigatória", "Por favor, preencha o campo de <strong>Entrega</strong> com seu número e complemento.", document.getElementById("delivery"));
+        return;
+      }
+
+      // Preparação dos dados do pedido para persistência
+      const totalQty = getTotalQuantity();
+      const productTotal = calculateTotal(totalQty);
+      const grandTotal = productTotal + selectedShipping.price;
+      const itemLines = cart.map(item => `${item.qty}x ${item.coverName} (${item.interiorName})`).join(", ");
+
+      const pedido = {
+        nome: nameVal,
+        whatsapp: phoneVal,
+        cep: cepVal.replace(/\D/g, ""),
+        endereco: deliveryVal,
+        itens: itemLines,
+        qtd_total: totalQty,
+        valor_produtos: productTotal,
+        frete_metodo: selectedShipping.name,
+        valor_frete: selectedShipping.price,
+        total_geral: grandTotal,
+        observacoes: document.getElementById("notes").value.trim(),
+        pix_payload: generatePixCopiaCola(grandTotal)
+      };
+
+      if (!BACKEND_URL) {
+        showCustomAlert("Simulação de Envio", "O Backend URL não está configurado. Abrindo WhatsApp direto com as informações simuladas.", null);
+        const msg = getOrderMessage();
+        window.open(`https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+        return;
+      }
+
+      whatsappButton.disabled = true;
+      whatsappButton.textContent = "Enviando Pedido...";
+
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "salvar_pedido",
+            pedido: pedido
+          })
+        });
+
+        if (!response.ok) throw new Error("Erro na conexão com o servidor.");
+        const data = await response.json();
+
+        if (data.success) {
+          const msg = getOrderMessage(data.orderId);
+          window.open(`https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+        } else {
+          showCustomAlert("Erro ao salvar", "Ocorreu um erro ao salvar o pedido na planilha: " + data.error, null);
+        }
+      } catch (err) {
+        console.error("Erro ao salvar pedido:", err);
+        showCustomAlert("Erro de salvamento", "Erro ao registrar o pedido no banco de dados. Direcionando para o WhatsApp diretamente.", null);
+        const msg = getOrderMessage();
+        window.open(`https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+      } finally {
+        whatsappButton.disabled = false;
+        updateSummary();
       }
     });
 
