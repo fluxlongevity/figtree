@@ -956,6 +956,21 @@
       font-size: 13px;
       color: var(--muted);
     }
+
+    #reopenPixButton, #copyPixCodeBtn, #pixGoToWhatsappBtn, #pixCloseBtn {
+      transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    }
+    #reopenPixButton:hover {
+      background: #2ba396 !important;
+      box-shadow: 0 14px 30px rgba(43, 163, 150, .32) !important;
+    }
+    #reopenPixButton:active, #copyPixCodeBtn:active, #pixGoToWhatsappBtn:active, #pixCloseBtn:active {
+      transform: scale(0.98);
+    }
+    #copyPixCodeBtn:hover {
+      background: #2ba396 !important;
+      box-shadow: 0 8px 20px rgba(43, 163, 150, .35) !important;
+    }
   </style>
 </head>
 <body>
@@ -1123,7 +1138,19 @@
         <div class="summary-line" id="shippingSummaryLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid rgba(89, 54, 34, .12); color: var(--muted);"><span>Frete (<span id="shippingMethodName">-</span>)</span><strong id="shippingSummaryPrice">R$ 0</strong></div>
         <div class="total"><span>Total</span><strong id="summaryTotal">R$ 0</strong></div>
         <p class="discount-note" id="discountNote">A promoção 4 por R$ 45 é calculada pelo total de cadernos no pedido.</p>
-        <button class="whatsapp-button is-disabled" id="whatsappButton" type="button">Adicione itens ao pedido</button>
+        <div style="display: flex; gap: 10px; margin-top: 18px; width: 100%;">
+          <button class="whatsapp-button is-disabled" id="whatsappButton" type="button" style="margin-top: 0; flex: 1; min-width: 0;">Adicione itens ao pedido</button>
+          <button id="reopenPixButton" type="button" style="display: none; width: auto; min-height: 54px; border: 0; border-radius: 10px; align-items: center; justify-content: center; padding: 0 16px; background: #32BCAD; color: #fff; font-weight: 900; box-shadow: 0 14px 30px rgba(50, 188, 173, .22); cursor: pointer; gap: 6px; font-size: 14px; white-space: nowrap;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+              <rect x="14" y="14" width="3" height="3"></rect>
+              <rect x="18" y="18" width="3" height="3"></rect>
+            </svg>
+            Ver PIX
+          </button>
+        </div>
       </aside>
     </section>
   </main>
@@ -1216,6 +1243,39 @@
     </div>
   </div>
 
+  <!-- Modal do Pix Copia e Cola -->
+  <div class="preview-modal" id="pixModal" aria-hidden="true">
+    <div class="preview-dialog" style="width: min(460px, 94%);" role="dialog" aria-modal="true" aria-labelledby="pixTitle">
+      <div class="preview-header">
+        <h2 id="pixTitle" style="font-size: 24px; font-family: var(--serif);">Pagamento PIX</h2>
+        <button class="preview-close" type="button" id="pixClose" aria-label="Fechar janela">×</button>
+      </div>
+      <div class="preview-body" style="padding: 24px; display: flex; flex-direction: column; gap: 16px; align-items: stretch; background: #fff8ec; text-align: center;">
+        <p style="margin: 0; font-size: 15px; line-height: 1.45; color: var(--ink);">
+          Seu pedido foi gerado! Para concluir a compra, copie o código <strong>Pix Copia e Cola</strong> abaixo e efetue o pagamento no aplicativo do seu banco:
+        </p>
+        
+        <div style="position: relative; width: 100%;">
+          <textarea id="pixCodeText" readonly style="width: 100%; height: 80px; padding: 12px; border-radius: 8px; border: 1px solid rgba(82, 48, 30, 0.18); background: rgba(255, 252, 246, 0.9); font-family: monospace; font-size: 12px; color: var(--ink); resize: none; word-break: break-all; margin: 0; outline: none;" aria-label="Código Pix Copia e Cola"></textarea>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 6px;">
+          <button class="add-item" type="button" id="copyPixCodeBtn" style="box-shadow: none; min-height: 44px; padding: 0 20px; font-size: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; background: #32BCAD; color: #fff; border: 0; border-radius: 10px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            Copiar Código PIX
+          </button>
+          
+          <a class="whatsapp-button" id="pixGoToWhatsappBtn" href="#" target="_blank" style="margin-top: 0; min-height: 44px; font-size: 15px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; background: #1f7d43; text-decoration: none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="fill: currentColor; flex-shrink: 0;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+            Enviar Pedido pelo WhatsApp
+          </a>
+
+          <button class="remove-item" type="button" id="pixCloseBtn" style="width: auto; height: 44px; border-radius: 10px; padding: 0 20px; background: #f1dfce; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 4px;">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SELLER_WHATSAPP = "5521969467886";
     // URL do Web App do Google Apps Script (Deixe em branco ou insira a URL implantada)
@@ -1226,6 +1286,7 @@
     let lastCalculatedServices = [];
     let wasLastLocal = false;
     let isCepValid = false;
+    let lastOrderId = null;
 
     function crc16(data) {
       let crc = 0xFFFF;
@@ -1991,12 +2052,78 @@
       addressModalNum.value = addressModalNum.value.replace(/\D/g, "");
     });
 
+    // Configuração do Modal do Pix Copia e Cola
+    const pixModal = document.getElementById("pixModal");
+    const pixClose = document.getElementById("pixClose");
+    const pixCodeText = document.getElementById("pixCodeText");
+    const copyPixCodeBtn = document.getElementById("copyPixCodeBtn");
+    const pixGoToWhatsappBtn = document.getElementById("pixGoToWhatsappBtn");
+    const pixCloseBtn = document.getElementById("pixCloseBtn");
+    const reopenPixButton = document.getElementById("reopenPixButton");
+
+    function openPixModal(amount, whatsappUrl) {
+      const payload = generatePixCopiaCola(amount);
+      pixCodeText.value = payload;
+      
+      if (whatsappUrl) {
+        pixGoToWhatsappBtn.href = whatsappUrl;
+        pixGoToWhatsappBtn.style.display = "flex";
+      } else {
+        pixGoToWhatsappBtn.style.display = "none";
+      }
+      
+      pixModal.classList.add("is-open");
+      pixModal.setAttribute("aria-hidden", "false");
+      reopenPixButton.style.display = "inline-flex";
+    }
+
+    function closePixModal() {
+      pixModal.classList.remove("is-open");
+      pixModal.setAttribute("aria-hidden", "true");
+    }
+
+    pixClose.addEventListener("click", closePixModal);
+    pixCloseBtn.addEventListener("click", closePixModal);
+    pixModal.addEventListener("click", event => {
+      if (event.target === pixModal) closePixModal();
+    });
+
+    copyPixCodeBtn.addEventListener("click", () => {
+      pixCodeText.select();
+      pixCodeText.setSelectionRange(0, 99999);
+      
+      navigator.clipboard.writeText(pixCodeText.value).then(() => {
+        const originalText = copyPixCodeBtn.innerHTML;
+        copyPixCodeBtn.innerHTML = `
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          Código Copiado!
+        `;
+        copyPixCodeBtn.style.background = "#28a745";
+        setTimeout(() => {
+          copyPixCodeBtn.innerHTML = originalText;
+          copyPixCodeBtn.style.background = "#32BCAD";
+        }, 2000);
+      }).catch(err => {
+        console.error("Erro ao copiar código PIX:", err);
+      });
+    });
+
+    reopenPixButton.addEventListener("click", () => {
+      const totalQty = getTotalQuantity();
+      const productTotal = calculateTotal(totalQty);
+      const grandTotal = productTotal + (selectedShipping ? selectedShipping.price : 0);
+      const msg = getOrderMessage(lastOrderId);
+      const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+      openPixModal(grandTotal, whatsappUrl);
+    });
+
     document.addEventListener("keydown", event => {
       if (event.key === "Escape") {
         if (previewModal.classList.contains("is-open")) closePreview();
         if (confirmModal.classList.contains("is-open")) closeConfirm();
         if (alertModal.classList.contains("is-open")) closeAlert();
         if (addressModal.classList.contains("is-open")) closeAddressModal();
+        if (pixModal.classList.contains("is-open")) closePixModal();
       }
     });
 
@@ -2474,7 +2601,9 @@
       if (!BACKEND_URL) {
         showCustomAlert("Simulação de Envio", "O Backend URL não está configurado. Abrindo WhatsApp direto com as informações simuladas.", null);
         const msg = getOrderMessage();
-        window.open(`https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+        const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+        window.open(whatsappUrl, "_blank");
+        openPixModal(grandTotal, whatsappUrl);
         return;
       }
 
@@ -2494,8 +2623,11 @@
         const data = await response.json();
 
         if (data.success) {
+          lastOrderId = data.orderId;
           const msg = getOrderMessage(data.orderId);
-          window.open(`https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+          const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+          window.open(whatsappUrl, "_blank");
+          openPixModal(grandTotal, whatsappUrl);
         } else {
           showCustomAlert("Erro ao salvar", "Ocorreu um erro ao salvar o pedido na planilha: " + data.error, null);
         }
@@ -2503,7 +2635,9 @@
         console.error("Erro ao salvar pedido:", err);
         showCustomAlert("Erro de salvamento", "Erro ao registrar o pedido no banco de dados. Direcionando para o WhatsApp diretamente.", null);
         const msg = getOrderMessage();
-        window.open(`https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+        const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+        window.open(whatsappUrl, "_blank");
+        openPixModal(grandTotal, whatsappUrl);
       } finally {
         whatsappButton.disabled = false;
         updateSummary();
