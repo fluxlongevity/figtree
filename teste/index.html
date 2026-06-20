@@ -1565,7 +1565,10 @@
       const isCepEmpty = cepVal.length === 0;
       const isShippingEmpty = !selectedShipping;
       
-      const isDisabled = isCartEmpty || isNameEmpty || isDeliveryEmpty || isCepEmpty || isShippingEmpty;
+      // Valida se o campo de entrega não está incompleto (deve conter número/complemento além do autocompletado do CEP)
+      const isDeliveryIncomplete = isDeliveryEmpty || /,\s*(nº\s*)?$/i.test(deliveryVal);
+      
+      const isDisabled = isCartEmpty || isNameEmpty || isDeliveryIncomplete || isCepEmpty || isShippingEmpty;
 
       whatsappButton.classList.toggle("is-disabled", isDisabled);
       
@@ -1577,8 +1580,8 @@
         whatsappButton.textContent = "Preencha o CEP para enviar";
       } else if (isShippingEmpty) {
         whatsappButton.textContent = "Selecione o Frete para enviar";
-      } else if (isDeliveryEmpty) {
-        whatsappButton.textContent = "Preencha a Entrega para enviar";
+      } else if (isDeliveryIncomplete) {
+        whatsappButton.textContent = "Informe o Número/Complemento";
       } else {
         whatsappButton.textContent = "Enviar pedido pelo WhatsApp";
       }
@@ -2156,11 +2159,8 @@
       const deliveryVal = document.getElementById("delivery").value.trim();
       const cepVal = document.getElementById("cep").value.trim();
       
-      const isCartEmpty = cart.length === 0;
-      const isNameEmpty = nameVal.length === 0;
-      const isCepEmpty = cepVal.length === 0;
-      const isShippingEmpty = !selectedShipping;
       const isDeliveryEmpty = deliveryVal.length === 0;
+      const isDeliveryIncomplete = isDeliveryEmpty || /,\s*(nº\s*)?$/i.test(deliveryVal);
 
       if (isCartEmpty) {
         showCustomAlert("Resumo do pedido vazio", "Seu resumo está vazio! Por favor, escolha e adicione pelo menos um caderno antes de enviar.", null);
@@ -2182,8 +2182,8 @@
         return;
       }
 
-      if (isDeliveryEmpty) {
-        showCustomAlert("Entrega obrigatória", "Por favor, preencha o campo de <strong>Entrega</strong> com seu número e complemento.", document.getElementById("delivery"));
+      if (isDeliveryIncomplete) {
+        showCustomAlert("Entrega incompleta", "Por favor, complete o campo de <strong>Entrega</strong> informando o número e o complemento (se houver).", document.getElementById("delivery"));
         return;
       }
 
