@@ -1200,7 +1200,7 @@
         <div style="display: flex; gap: 12px; width: 100%;">
           <div class="field" style="flex: 1; margin: 0;">
             <label for="addressModalNum">Número *</label>
-            <input id="addressModalNum" type="text" placeholder="Ex: 123" required />
+            <input id="addressModalNum" inputmode="numeric" placeholder="Ex: 123" required />
           </div>
           <div class="field" style="flex: 1.5; margin: 0;">
             <label for="addressModalComp">Complemento</label>
@@ -1982,6 +1982,10 @@
           addressModalConfirm.click();
         }
       });
+    });
+
+    addressModalNum.addEventListener("input", () => {
+      addressModalNum.value = addressModalNum.value.replace(/\D/g, "");
     });
 
     document.addEventListener("keydown", event => {
