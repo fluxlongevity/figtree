@@ -1222,6 +1222,7 @@
     const BACKEND_URL = ""; 
 
     let selectedShipping = null;
+    let deliveryBairro = "";
 
     function crc16(data) {
       let crc = 0xFFFF;
@@ -1966,6 +1967,7 @@
       }
       finalAddress += ` - ${districtVal} - ${currentCepData.localidade}/${currentCepData.uf}`;
 
+      deliveryBairro = districtVal;
       document.getElementById("delivery").value = finalAddress;
       closeAddressModal();
       updateSummary();
@@ -2174,8 +2176,39 @@
       }
     });
 
+    function isLocalDeliveryNeighborhood(bairro) {
+      if (!bairro) return false;
+      const normalized = bairro.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return normalized === "grajau" || normalized === "andarai";
+    }
+
+    function checkIfLocalDelivery() {
+      if (isLocalDeliveryNeighborhood(deliveryBairro)) {
+        return true;
+      }
+      const deliveryVal = document.getElementById("delivery").value;
+      if (deliveryVal) {
+        const cleanVal = deliveryVal.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        if (cleanVal.includes("grajau") || cleanVal.includes("andarai")) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     function renderShippingOptions(services) {
       shippingOptionsList.innerHTML = "";
+      
+      // Se for entrega local (Grajaú ou Andaraí), adiciona a opção Grátis no início
+      if (checkIfLocalDelivery()) {
+        const hasFree = services.some(s => s.id === "LOCAL_GRATIS");
+        if (!hasFree) {
+          services = [
+            { id: "LOCAL_GRATIS", name: "Entrega Local (Grátis)", price: 0, discountPrice: 0, deliveryTime: 1 },
+            ...services
+          ];
+        }
+      }
       
       if (!services || services.length === 0) {
         shippingOptionsList.innerHTML = `<p style="margin: 0; color: var(--muted); font-size: 14px;">Nenhuma opção de envio disponível para esta quantidade/região.</p>`;
