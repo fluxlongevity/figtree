@@ -1314,8 +1314,22 @@
       return crc.toString(16).toUpperCase().padStart(4, "0");
     }
 
-    function generatePixCopiaCola(amount) {
-      const part1 = "00020126700014BR.GOV.BCB.PIX0136ba2d7d8e-3a98-4379-8a26-0f97f45375c90208Cadernos520400005303986";
+    function generateMerchantAccountInfo(orderId) {
+      const ddi = "0014BR.GOV.BCB.PIX";
+      const key = "0136ba2d7d8e-3a98-4379-8a26-0f97f45375c9";
+      let desc = "0208Cadernos";
+      if (orderId) {
+        const descText = `Pedido${orderId}`;
+        const descLen = String(descText.length).padStart(2, "0");
+        desc = `02${descLen}${descText}`;
+      }
+      const combined = ddi + key + desc;
+      const totalLen = String(combined.length).padStart(2, "0");
+      return `26${totalLen}${combined}`;
+    }
+
+    function generatePixCopiaCola(amount, orderId) {
+      const part1 = "000201" + generateMerchantAccountInfo(orderId) + "520400005303986";
       let amountField = "";
       if (amount !== undefined && amount !== null && amount > 0) {
         const amountStr = amount.toFixed(2);
@@ -2081,7 +2095,7 @@
     const reopenPixButton = document.getElementById("reopenPixButton");
 
     function openPixModal(amount) {
-      const payload = generatePixCopiaCola(amount);
+      const payload = generatePixCopiaCola(amount, lastOrderId);
       pixCodeText.value = payload;
       
       pixModal.classList.add("is-open");
