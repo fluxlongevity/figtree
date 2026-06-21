@@ -977,6 +977,17 @@
         transform: rotate(360deg);
       }
     }
+
+    .qty-btn {
+      transition: background-color 0.2s ease, transform 0.1s ease, border-color 0.2s ease;
+    }
+    .qty-btn:hover {
+      background: #f1dfce !important;
+      border-color: rgba(89, 54, 34, 0.4) !important;
+    }
+    .qty-btn:active {
+      transform: scale(0.92);
+    }
   </style>
 </head>
 <body>
@@ -1141,7 +1152,7 @@
           <p class="empty-cart">Escolha capa, miolo e quantidade. Depois clique em “Adicionar esta configuração”.</p>
         </div>
         <div class="summary-line"><span>Total de cadernos</span><strong id="summaryQty">0</strong></div>
-        <div class="summary-line" id="shippingSummaryLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid rgba(89, 54, 34, .12); color: var(--muted);"><span>Frete (<span id="shippingMethodName">-</span>)</span><strong id="shippingSummaryPrice">R$ 0</strong></div>
+        <div class="summary-line" id="shippingSummaryLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid rgba(89, 54, 34, .12); color: var(--muted);"><span>Frete: <span id="shippingMethodName">-</span></span><strong id="shippingSummaryPrice">R$ 0</strong></div>
         <div class="total"><span>Total</span><strong id="summaryTotal">R$ 0</strong></div>
         <p class="discount-note" id="discountNote">A promoção 4 por R$ 45 é calculada pelo total de cadernos no pedido.</p>
         <div style="display: flex; gap: 10px; margin-top: 18px; width: 100%;">
@@ -1629,8 +1640,13 @@
                 <img src="${item.coverThumb}" alt="${item.coverName}">
               </div>
               <div class="cart-item-details">
-                <strong>${item.qty}x ${item.coverName}</strong>
+                <strong>${item.coverName}</strong>
                 <span>Miolo: ${item.interiorName}</span>
+                <div class="cart-item-qty" style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+                  <button class="qty-btn minus" type="button" style="width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(89, 54, 34, 0.25); background: #fff; color: var(--ink); font-size: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; font-weight: 700; line-height: 1;" title="Diminuir quantidade">-</button>
+                  <span class="qty-val" style="font-size: 13px; font-weight: 800; min-width: 16px; text-align: center; color: var(--ink);">${item.qty}</span>
+                  <button class="qty-btn plus" type="button" style="width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(89, 54, 34, 0.25); background: #fff; color: var(--ink); font-size: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; font-weight: 700; line-height: 1;" title="Aumentar quantidade">+</button>
+                </div>
               </div>
             </div>
             <button class="remove-item" type="button" aria-label="Remover item ${index + 1}">×</button>
@@ -1652,6 +1668,29 @@
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();
               showZoom();
+            }
+          });
+
+          // Controle de Alteração de Quantidade no Carrinho
+          const qtyContainer = row.querySelector(".cart-item-qty");
+          qtyContainer.addEventListener("click", event => {
+            event.stopPropagation(); // Evita abrir o preview de zoom ao clicar na quantidade
+          });
+          qtyContainer.addEventListener("keydown", event => {
+            event.stopPropagation();
+          });
+
+          qtyContainer.querySelector(".minus").addEventListener("click", () => {
+            if (item.qty > 1) {
+              item.qty--;
+              updateSummary();
+            }
+          });
+
+          qtyContainer.querySelector(".plus").addEventListener("click", () => {
+            if (item.qty < 50) {
+              item.qty++;
+              updateSummary();
             }
           });
 
