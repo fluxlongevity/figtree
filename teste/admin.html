@@ -1,0 +1,1035 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Painel de Controle - Pedidos de Cadernos</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;600;700;800&display=swap");
+
+    :root {
+      --bg: #efe2cf;
+      --paper: #fff8ec;
+      --paper-strong: #fffdf7;
+      --kraft: #b68455;
+      --ink: #3a1d16;
+      --muted: #76533f;
+      --accent: #c87955;
+      --accent-dark: #53251b;
+      --sage: #b9c5a8;
+      --line: rgba(82, 48, 30, .18);
+      --shadow: 0 16px 36px rgba(70, 45, 29, .10);
+      --serif: "Cormorant Garamond", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      --sans: "Inter", Arial, Helvetica, sans-serif;
+      
+      /* Status colors */
+      --status-pendente: #e0a800;
+      --status-pendente-bg: #fff9e6;
+      --status-pago: #28a745;
+      --status-pago-bg: #e6f7ec;
+      --status-pronto: #17a2b8;
+      --status-pronto-bg: #e6f7fa;
+      --status-etiqueta: #6f42c1;
+      --status-etiqueta-bg: #f3ebff;
+      --status-outros: #6c757d;
+      --status-outros-bg: #f8f9fa;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      overflow-x: hidden;
+      font-family: var(--sans);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 8%, rgba(178, 197, 166, .26), transparent 23rem),
+        radial-gradient(circle at 92% 5%, rgba(235, 194, 125, .22), transparent 27rem),
+        linear-gradient(145deg, #fbf2e7 0%, var(--bg) 100%);
+    }
+
+    .container {
+      width: min(1200px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 44px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(28px, 4vw, 38px);
+      font-weight: 700;
+    }
+
+    .btn-refresh {
+      background: var(--accent-dark);
+      color: #fff8ec;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(83, 37, 27, .18);
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn-refresh:hover {
+      background: #3c1912;
+    }
+
+    .btn-refresh:active {
+      transform: scale(0.98);
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .kpi-card {
+      background: rgba(255, 248, 235, .84);
+      border: 1px solid rgba(89, 54, 34, .16);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(7px);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .kpi-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .02em;
+    }
+
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    /* Control Bar */
+    .control-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    /* Tab navigation */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .tab-btn {
+      background: rgba(255, 252, 246, .6);
+      border: 1px solid rgba(89, 54, 34, .12);
+      border-radius: 8px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--muted);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      background: #fff8ec;
+      color: var(--ink);
+    }
+
+    .tab-btn.active {
+      background: var(--accent-dark);
+      color: #fff8ec;
+      border-color: var(--accent-dark);
+    }
+
+    /* Search Input */
+    .search-container {
+      position: relative;
+      width: min(320px, 100%);
+    }
+
+    .search-input {
+      width: 100%;
+      border: 1px solid rgba(89, 54, 34, .20);
+      border-radius: 8px;
+      padding: 9px 12px;
+      background: var(--paper-strong);
+      outline: none;
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(189, 117, 79, .18);
+    }
+
+    /* Orders List */
+    .orders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .order-card {
+      background: rgba(255, 248, 235, .9);
+      border: 1px solid rgba(89, 54, 34, .16);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      transition: transform 0.2s ease;
+    }
+
+    @media (min-width: 768px) {
+      .order-card {
+        grid-template-columns: 1.2fr 1.5fr 1fr;
+      }
+    }
+
+    .order-col-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .order-header-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .order-id {
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+
+    .badge-pendente { color: var(--status-pendente); background: var(--status-pendente-bg); border: 1px solid rgba(224, 168, 0, 0.2); }
+    .badge-pago { color: var(--status-pago); background: var(--status-pago-bg); border: 1px solid rgba(40, 167, 69, 0.2); }
+    .badge-pronto { color: var(--status-pronto); background: var(--status-pronto-bg); border: 1px solid rgba(23, 162, 184, 0.2); }
+    .badge-etiqueta { color: var(--status-etiqueta); background: var(--status-etiqueta-bg); border: 1px solid rgba(111, 66, 193, 0.2); }
+    .badge-outros { color: var(--status-outros); background: var(--status-outros-bg); border: 1px solid rgba(108, 117, 125, 0.2); }
+
+    .order-date {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .customer-name {
+      font-weight: 700;
+      font-size: 16px;
+      margin: 4px 0 2px;
+    }
+
+    .contact-links {
+      display: flex;
+      gap: 10px;
+      font-size: 13.5px;
+      margin-top: 4px;
+    }
+
+    .contact-link {
+      color: var(--accent-dark);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 600;
+    }
+
+    .contact-link:hover {
+      text-decoration: underline;
+    }
+
+    .order-col-items {
+      border-left: 0;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      padding-left: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    @media (min-width: 768px) {
+      .order-col-items {
+        border-left: 1px solid var(--line);
+        border-top: 0;
+        padding-top: 0;
+        padding-left: 20px;
+      }
+    }
+
+    .items-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .02em;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .item-row {
+      font-size: 14.5px;
+      line-height: 1.4;
+    }
+
+    .order-notes {
+      font-size: 13px;
+      background: rgba(89, 54, 34, 0.04);
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin-top: 8px;
+      color: var(--muted);
+      border-left: 2px solid var(--kraft);
+    }
+
+    .order-col-actions {
+      border-left: 0;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      padding-left: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .order-col-actions {
+        border-left: 1px solid var(--line);
+        border-top: 0;
+        padding-top: 0;
+        padding-left: 20px;
+      }
+    }
+
+    .price-summary {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13.5px;
+      color: var(--muted);
+    }
+
+    .price-row.grand-total {
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--ink);
+      border-top: 1px dashed var(--line);
+      padding-top: 4px;
+      margin-top: 2px;
+    }
+
+    .actions-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .status-select {
+      width: 100%;
+      border: 1px solid rgba(89, 54, 34, .20);
+      border-radius: 8px;
+      padding: 8px;
+      background: var(--paper-strong);
+      color: var(--ink);
+      font-size: 13.5px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .status-select:focus {
+      border-color: var(--accent);
+    }
+
+    .btn-action {
+      width: 100%;
+      min-height: 38px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn-generate-label {
+      background: var(--accent);
+      color: #fff8ec;
+      box-shadow: 0 4px 10px rgba(200, 121, 85, .25);
+    }
+
+    .btn-generate-label:hover {
+      background: #b56441;
+    }
+
+    .btn-generate-label:active {
+      transform: scale(0.98);
+    }
+
+    .btn-label-ready {
+      background: var(--status-etiqueta-bg);
+      color: var(--status-etiqueta);
+      border: 1px dashed rgba(111, 66, 193, 0.3);
+    }
+
+    .btn-label-ready:hover {
+      background: #eddfff;
+    }
+
+    /* Modal Styles */
+    .preview-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(37, 21, 14, .62);
+      backdrop-filter: blur(5px);
+    }
+
+    .preview-modal.is-open {
+      display: flex;
+    }
+
+    .preview-dialog {
+      width: min(450px, 100%);
+      border: 1px solid rgba(255, 246, 232, .36);
+      border-radius: 14px;
+      background: #fff7ea;
+      box-shadow: 0 30px 80px rgba(30, 17, 10, .36);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(82, 48, 30, .15);
+    }
+
+    .preview-header h2 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .preview-close {
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--accent-dark);
+      color: #fff7ea;
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+    }
+
+    .preview-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .empty-message {
+      text-align: center;
+      padding: 44px;
+      background: rgba(255, 248, 235, 0.5);
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    /* Loading Spinner */
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 50px 0;
+      color: var(--muted);
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(89, 54, 34, 0.1);
+      border-left-color: var(--accent-dark);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Painel de Pedidos</h1>
+        <p style="margin: 4px 0 0; color: var(--muted); font-size: 14.5px;">Gerenciamento de produção e etiquetas SuperFrete</p>
+      </div>
+      <button class="btn-refresh" id="btnRefresh">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+        Atualizar Painel
+      </button>
+    </header>
+
+    <!-- KPI Grid -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-label">Total de Pedidos</span>
+        <span class="kpi-value" id="kpiTotal">0</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Pendentes</span>
+        <span class="kpi-value" id="kpiPendente" style="color: var(--status-pendente);">0</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Pagos / Produção</span>
+        <span class="kpi-value" id="kpiPago" style="color: var(--status-pago);">0</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Pronto para Envio</span>
+        <span class="kpi-value" id="kpiPronto" style="color: var(--status-pronto);">0</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Faturamento Total</span>
+        <span class="kpi-value" id="kpiFaturamento">R$ 0,00</span>
+      </div>
+    </section>
+
+    <!-- Control Bar -->
+    <section class="control-bar">
+      <nav class="tabs" id="statusTabs">
+        <button class="tab-btn active" data-status="todos">Todos</button>
+        <button class="tab-btn" data-status="Pendente">Pendentes</button>
+        <button class="tab-btn" data-status="Pago">Pagos</button>
+        <button class="tab-btn" data-status="Pronto para Envio">Pronto para Envio</button>
+        <button class="tab-btn" data-status="Etiqueta Gerada">Etiqueta Gerada</button>
+      </nav>
+      <div class="search-container">
+        <input class="search-input" id="searchInput" type="text" placeholder="Buscar por nome, ID ou CPF..." />
+      </div>
+    </section>
+
+    <!-- Loading Stage -->
+    <div id="loadingStage" class="loading-container">
+      <div class="spinner"></div>
+      <span>Carregando pedidos da planilha...</span>
+    </div>
+
+    <!-- Orders List Stage -->
+    <section class="orders-list" id="ordersList" style="display: none;"></section>
+  </div>
+
+  <!-- Modal de Confirmação para Geração de Etiqueta -->
+  <div class="preview-modal" id="confirmLabelModal" aria-hidden="true">
+    <div class="preview-dialog" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div class="preview-header">
+        <h2 id="confirmTitle">Emitir Etiqueta de Envio</h2>
+        <button class="preview-close" type="button" id="confirmLabelClose" aria-label="Fechar janela">×</button>
+      </div>
+      <div class="preview-body">
+        <p style="margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink);">
+          Deseja emitir a etiqueta oficial para o <strong>Pedido #<span id="confirmOrderId"></span></strong>?
+        </p>
+        
+        <div style="background: rgba(89, 54, 34, 0.05); padding: 12px; border-radius: 8px; font-size: 14px; color: var(--ink); border: 1px solid rgba(82, 48, 30, 0.1);">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span>Destinatário:</span>
+            <strong id="confirmCustomer"></strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span>CPF:</span>
+            <strong id="confirmCpf"></strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span>Método:</span>
+            <strong id="confirmMethod"></strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; border-top: 1px dashed var(--line); padding-top: 6px; font-weight: 700; color: var(--accent-dark);">
+            <span>Valor do Débito:</span>
+            <span id="confirmValue"></span>
+          </div>
+        </div>
+
+        <p style="margin: 0; font-size: 13px; line-height: 1.4; color: var(--muted);">
+          ⚠️ Ao confirmar, o valor do frete acima será debitado do seu saldo na carteira da SuperFrete e a etiqueta será emitida.
+        </p>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end; width: 100%; margin-top: 6px;">
+          <button class="btn-refresh" type="button" id="btnConfirmCancel" style="background: #f1dfce; color: var(--ink); box-shadow: none;">Cancelar</button>
+          <button class="btn-refresh" type="button" id="btnConfirmEmit" style="background: var(--accent);">Confirmar e Emitir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Alerta Customizado (Sucesso / Erro) -->
+  <div class="preview-modal" id="alertModal" style="z-index: 50;" aria-hidden="true">
+    <div class="preview-dialog" style="width: min(400px, 94%);" role="dialog" aria-modal="true" aria-labelledby="alertTitle">
+      <div class="preview-header">
+        <h2 id="alertTitle">Alerta</h2>
+        <button class="preview-close" type="button" id="alertClose" aria-label="Fechar alerta">×</button>
+      </div>
+      <div class="preview-body" style="padding: 24px; text-align: center; background: #fff8ec; flex-direction: column;">
+        <p id="alertMessage" style="margin: 0 0 22px; font-size: 16px; line-height: 1.5; color: var(--ink);"></p>
+        <div style="display: flex; justify-content: center; width: 100%;">
+          <button class="btn-refresh" type="button" id="alertOk" style="box-shadow: none; background: var(--accent-dark); min-width: 120px; justify-content: center;">Entendido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzeulnDbYshi_FQYaaQZnD6ZPcUyG4Epmrcxyfw3lxp3h_B_U5xgDuvLQEMVpW037s/exec";
+    
+    let allOrders = [];
+    let currentTab = "todos";
+    let activeConfirmOrder = null;
+
+    const currency = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+
+    const loadingStage = document.getElementById("loadingStage");
+    const ordersList = document.getElementById("ordersList");
+    const searchInput = document.getElementById("searchInput");
+
+    // KPI Elements
+    const kpiTotal = document.getElementById("kpiTotal");
+    const kpiPendente = document.getElementById("kpiPendente");
+    const kpiPago = document.getElementById("kpiPago");
+    const kpiPronto = document.getElementById("kpiPronto");
+    const kpiFaturamento = document.getElementById("kpiFaturamento");
+
+    // Modal Elements
+    const confirmLabelModal = document.getElementById("confirmLabelModal");
+    const confirmLabelClose = document.getElementById("confirmLabelClose");
+    const btnConfirmCancel = document.getElementById("btnConfirmCancel");
+    const btnConfirmEmit = document.getElementById("btnConfirmEmit");
+    const alertModal = document.getElementById("alertModal");
+    const alertClose = document.getElementById("alertClose");
+    const alertOk = document.getElementById("alertOk");
+    const alertTitle = document.getElementById("alertTitle");
+    const alertMessage = document.getElementById("alertMessage");
+
+    function showAlert(title, message) {
+      alertTitle.textContent = title;
+      alertMessage.innerHTML = message;
+      alertModal.classList.add("is-open");
+      alertModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeAlert() {
+      alertModal.classList.remove("is-open");
+      alertModal.setAttribute("aria-hidden", "true");
+    }
+
+    alertClose.addEventListener("click", closeAlert);
+    alertOk.addEventListener("click", closeAlert);
+    alertModal.addEventListener("click", e => {
+      if (e.target === alertModal) closeAlert();
+    });
+
+    async function fetchOrders() {
+      loadingStage.style.display = "flex";
+      ordersList.style.display = "none";
+      
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "get_all_orders" })
+        });
+        
+        if (!response.ok) throw new Error("Erro de rede ao buscar pedidos");
+        
+        const data = await response.json();
+        if (data.success) {
+          allOrders = data.orders;
+          // Ordena por ID decrecente (mais novos primeiro)
+          allOrders.sort((a, b) => parseInt(b.ID_Pedido) - parseInt(a.ID_Pedido));
+          updateKPIs();
+          renderOrders();
+        } else {
+          showAlert("Erro no Servidor", "Erro ao carregar dados da planilha: " + data.error);
+        }
+      } catch (err) {
+        console.error(err);
+        showAlert("Erro de Conexão", "Não foi possível conectar ao servidor para buscar os pedidos.");
+      } finally {
+        loadingStage.style.display = "none";
+        ordersList.style.display = "flex";
+      }
+    }
+
+    function updateKPIs() {
+      kpiTotal.textContent = allOrders.length;
+      kpiPendente.textContent = allOrders.filter(o => o.Status === "Pendente").length;
+      kpiPago.textContent = allOrders.filter(o => o.Status === "Pago").length;
+      kpiPronto.textContent = allOrders.filter(o => o.Status === "Pronto para Envio").length;
+      
+      const totalRevenue = allOrders.reduce((sum, o) => {
+        // Ignora cancelados ou erros graves se houver status específico
+        return sum + (parseFloat(o.Valor_Produtos) || 0);
+      }, 0);
+      
+      kpiFaturamento.textContent = currency.format(totalRevenue);
+    }
+
+    function renderOrders() {
+      ordersList.innerHTML = "";
+      
+      const searchVal = searchInput.value.toLowerCase().trim();
+      
+      const filtered = allOrders.filter(o => {
+        // Filtro por Aba
+        if (currentTab !== "todos" && o.Status !== currentTab) {
+          return false;
+        }
+        
+        // Filtro por busca de texto
+        if (searchVal) {
+          const idMatch = String(o.ID_Pedido).toLowerCase().includes(searchVal);
+          const nameMatch = String(o.Nome).toLowerCase().includes(searchVal);
+          const cpfMatch = String(o.CPF).replace(/\D/g, "").includes(searchVal.replace(/\D/g, ""));
+          const phoneMatch = String(o.WhatsApp).replace(/\D/g, "").includes(searchVal.replace(/\D/g, ""));
+          return idMatch || nameMatch || cpfMatch || phoneMatch;
+        }
+        
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        ordersList.innerHTML = `<div class="empty-message">Nenhum pedido encontrado para o filtro selecionado.</div>`;
+        return;
+      }
+
+      filtered.forEach(o => {
+        const card = document.createElement("article");
+        card.className = "order-card";
+        
+        const dateFormatted = new Date(o.Data).toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+
+        const statusLower = String(o.Status).toLowerCase();
+        let badgeClass = "badge-outros";
+        if (statusLower.includes("pendente")) badgeClass = "badge-pendente";
+        else if (statusLower.includes("pago")) badgeClass = "badge-pago";
+        else if (statusLower.includes("pronto")) badgeClass = "badge-pronto";
+        else if (statusLower.includes("etiqueta")) badgeClass = "badge-etiqueta";
+
+        // Botões de ação baseados no status e frete
+        const isFreeShipping = String(o.Frete_Metodo).toLowerCase().includes("grátis") || String(o.Frete_Metodo).toLowerCase().includes("local");
+        const hasLabel = o.Codigo_Rastreio && o.Etiqueta_PDF_URL;
+        
+        let actionBtnHtml = "";
+        
+        if (o.Status === "Etiqueta Gerada" || hasLabel) {
+          actionBtnHtml = `
+            <a href="${o.Etiqueta_PDF_URL}" target="_blank" class="btn-action btn-label-ready">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+              Imprimir Etiqueta (${o.Codigo_Rastreio})
+            </a>
+          `;
+        } else if (!isFreeShipping && (o.Status === "Pago" || o.Status === "Pronto para Envio")) {
+          actionBtnHtml = `
+            <button class="btn-action btn-generate-label" data-id="${o.ID_Pedido}">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v16M2 10h20M6 4v16M18 4v16"/></svg>
+              Gerar Etiqueta SuperFrete
+            </button>
+          `;
+        } else if (isFreeShipping) {
+          actionBtnHtml = `
+            <div style="text-align: center; color: var(--status-pago); font-size: 13.5px; font-weight: 700; padding: 8px; background: var(--status-pago-bg); border-radius: 8px; border: 1px dashed rgba(40, 167, 69, 0.25);">
+              📦 Entrega Local Grátis (Sem etiqueta)
+            </div>
+          `;
+        }
+
+        const phoneClean = String(o.WhatsApp).replace(/\D/g, "");
+        const waLink = phoneClean ? `https://wa.me/${phoneClean.startsWith("55") ? phoneClean : "55" + phoneClean}` : "#";
+
+        card.innerHTML = `
+          <!-- Coluna 1: Dados do Cliente -->
+          <div class="order-col-info">
+            <div class="order-header-row">
+              <span class="order-id">#${o.ID_Pedido}</span>
+              <span class="badge ${badgeClass}">${o.Status}</span>
+            </div>
+            <span class="order-date">${dateFormatted}</span>
+            <h3 class="customer-name">${o.Nome}</h3>
+            ${o.CPF ? `<span style="font-size: 13.5px; color: var(--muted);">CPF: ${o.CPF}</span>` : ""}
+            <div class="contact-links">
+              <a href="${waLink}" target="_blank" class="contact-link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #25D366;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                WhatsApp
+              </a>
+            </div>
+          </div>
+
+          <!-- Coluna 2: Detalhes do Pedido -->
+          <div class="order-col-items">
+            <span class="items-title">Itens do Pedido</span>
+            <div class="item-row">
+              ${String(o.Itens).split(", ").map(item => `• ${item}`).join("<br>")}
+            </div>
+            ${o.Observacoes ? `<div class="order-notes"><strong>Obs:</strong> ${o.Observacoes}</div>` : ""}
+            <div style="font-size: 13.5px; margin-top: 8px;">
+              <strong style="color: var(--muted);">Envio:</strong> ${o.Entrega_Endereco}
+            </div>
+          </div>
+
+          <!-- Coluna 3: Preço e Ações -->
+          <div class="order-col-actions">
+            <div class="price-summary">
+              <div class="price-row">
+                <span>Produtos:</span>
+                <span>${currency.format(parseFloat(o.Valor_Produtos) || 0)}</span>
+              </div>
+              <div class="price-row">
+                <span>Frete:</span>
+                <span>${isFreeShipping ? "Grátis" : currency.format(parseFloat(o.Valor_Frete) || 0)}</span>
+              </div>
+              <div class="price-row grand-total">
+                <span>Total:</span>
+                <span>${currency.format(parseFloat(o.Total_Geral) || 0)}</span>
+              </div>
+              <div style="font-size: 11.5px; color: var(--muted); text-align: right; margin-top: 2px;">
+                Método: ${o.Frete_Metodo}
+              </div>
+            </div>
+
+            <div class="actions-buttons">
+              <select class="status-select" data-id="${o.ID_Pedido}">
+                <option value="Pendente" ${o.Status === "Pendente" ? "selected" : ""}>Pendente</option>
+                <option value="Pago" ${o.Status === "Pago" ? "selected" : ""}>Pago</option>
+                <option value="Pronto para Envio" ${o.Status === "Pronto para Envio" ? "selected" : ""}>Pronto para Envio</option>
+                <option value="Etiqueta Gerada" ${o.Status === "Etiqueta Gerada" ? "selected" : ""}>Etiqueta Gerada</option>
+              </select>
+              ${actionBtnHtml}
+            </div>
+          </div>
+        `;
+
+        // Evento de alteração de status
+        const select = card.querySelector(".status-select");
+        const prevStatus = o.Status;
+        
+        select.addEventListener("change", async (event) => {
+          const newStatus = event.target.value;
+          
+          // Se for "Etiqueta Gerada", mas o pedido ainda não tem etiqueta física emitida (não tem rastreio), barramos a alteração manual para esse status sem emitir
+          if (newStatus === "Etiqueta Gerada" && !hasLabel) {
+            showAlert("Aviso", "Para definir o status como 'Etiqueta Gerada', utilize o botão 'Gerar Etiqueta SuperFrete' para realizar o débito e emissão oficial.");
+            select.value = prevStatus;
+            return;
+          }
+
+          // Realiza alteração
+          select.disabled = true;
+          try {
+            const response = await fetch(BACKEND_URL, {
+              method: "POST",
+              body: JSON.stringify({
+                action: "atualizar_status_pedido",
+                orderId: o.ID_Pedido,
+                status: newStatus
+              })
+            });
+            const data = await response.json();
+            if (data.success) {
+              o.Status = newStatus;
+              updateKPIs();
+              renderOrders();
+            } else {
+              showAlert("Erro ao Atualizar", "Não foi possível mudar o status: " + data.error);
+              select.value = prevStatus;
+            }
+          } catch (err) {
+            console.error(err);
+            showAlert("Erro de Rede", "Não foi possível salvar o novo status no servidor.");
+            select.value = prevStatus;
+          } finally {
+            select.disabled = false;
+          }
+        });
+
+        // Evento de gerar etiqueta
+        const btnGenerate = card.querySelector(".btn-generate-label");
+        if (btnGenerate) {
+          btnGenerate.addEventListener("click", () => {
+            openConfirmModal(o);
+          });
+        }
+
+        ordersList.appendChild(card);
+      });
+    }
+
+    function openConfirmModal(order) {
+      activeConfirmOrder = order;
+      
+      document.getElementById("confirmOrderId").textContent = order.ID_Pedido;
+      document.getElementById("confirmCustomer").textContent = order.Nome;
+      document.getElementById("confirmCpf").textContent = order.CPF || "Não informado";
+      document.getElementById("confirmMethod").textContent = order.Frete_Metodo;
+      document.getElementById("confirmValue").textContent = currency.format(parseFloat(order.Valor_Frete) || 0);
+      
+      confirmLabelModal.classList.add("is-open");
+      confirmLabelModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeConfirmModal() {
+      confirmLabelModal.classList.remove("is-open");
+      confirmLabelModal.setAttribute("aria-hidden", "true");
+      activeConfirmOrder = null;
+    }
+
+    confirmLabelClose.addEventListener("click", closeConfirmModal);
+    btnConfirmCancel.addEventListener("click", closeConfirmModal);
+    confirmLabelModal.addEventListener("click", e => {
+      if (e.target === confirmLabelModal) closeConfirmModal();
+    });
+
+    btnConfirmEmit.addEventListener("click", async () => {
+      if (!activeConfirmOrder) return;
+      
+      const orderId = activeConfirmOrder.ID_Pedido;
+      closeConfirmModal();
+      
+      // Tela de carregamento cheia
+      loadingStage.style.display = "flex";
+      ordersList.style.display = "none";
+      
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "emitir_etiqueta_pedido",
+            orderId: orderId
+          })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          showAlert(
+            "Etiqueta Emitida!", 
+            `A etiqueta para o <strong>Pedido #${orderId}</strong> foi gerada com sucesso!<br><br>` + 
+            `<strong>Código de Rastreio:</strong> ${data.trackingCode}<br>` + 
+            `<a href="${data.labelPdfUrl}" target="_blank" style="display: inline-block; margin-top: 10px; color: var(--accent-dark); font-weight: 700;">Clique aqui para imprimir a Etiqueta (PDF)</a>`
+          );
+          // Recarrega todos os pedidos
+          await fetchOrders();
+        } else {
+          showAlert("Erro na Emissão", "Não foi possível emitir a etiqueta: " + data.error);
+          await fetchOrders(); // recarrega para sincronizar
+        }
+      } catch (err) {
+        console.error(err);
+        showAlert("Erro de Conexão", "Não foi possível se comunicar com a API do Apps Script para a emissão da etiqueta.");
+        await fetchOrders();
+      }
+    });
+
+    // Filtros por Abas
+    const tabs = document.querySelectorAll(".tab-btn");
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        tabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        currentTab = tab.dataset.status;
+        renderOrders();
+      });
+    });
+
+    // Busca de texto
+    searchInput.addEventListener("input", renderOrders);
+
+    // Refresh button
+    document.getElementById("btnRefresh").addEventListener("click", fetchOrders);
+
+    // Escape Key Handler
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        if (confirmLabelModal.classList.contains("is-open")) closeConfirmModal();
+        if (alertModal.classList.contains("is-open")) closeAlert();
+      }
+    });
+
+    // Initial load
+    fetchOrders();
+  </script>
+</body>
+</html>
