@@ -2828,6 +2828,12 @@
         return;
       }
 
+      const nameParts = nameVal.trim().split(/\s+/).filter(part => part.length > 0);
+      if (nameParts.length < 2) {
+        showCustomAlert("Nome incompleto", "Por favor, insira o seu <strong>Nome Completo</strong> (Nome e Sobrenome) para a emissão da etiqueta de envio.", document.getElementById("name"));
+        return;
+      }
+
       if (isCepEmpty) {
         showCustomAlert("CEP obrigatório", "Por favor, preencha o campo de <strong>CEP</strong> e calcule o frete.", document.getElementById("cep"));
         return;
@@ -2845,6 +2851,12 @@
 
       if (isDeliveryIncomplete) {
         showCustomAlert("Entrega incompleta", "Por favor, complete o campo de <strong>Entrega</strong> informando o número e o complemento (se houver).", document.getElementById("delivery"));
+        return;
+      }
+
+      // Validação de formato para parsing seguro da SuperFrete
+      if (!deliveryVal.includes(",") || !deliveryVal.includes("-")) {
+        showCustomAlert("Formato de Endereço Inválido", "Por favor, estruture seu endereço separando o número por vírgula e o bairro/cidade por traço, seguindo o exemplo:<br><strong>Rua, Nº, complemento - Bairro - Cidade/UF</strong>", document.getElementById("delivery"));
         return;
       }
 
