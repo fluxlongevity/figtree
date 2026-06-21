@@ -971,6 +971,12 @@
       background: #2ba396 !important;
       box-shadow: 0 8px 20px rgba(43, 163, 150, .35) !important;
     }
+
+    @keyframes spin {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </head>
 <body>
@@ -2328,6 +2334,13 @@
 
       calcShippingBtn.disabled = true;
       calcShippingBtn.textContent = "Calculando...";
+      shippingOptionsField.style.display = "block";
+      shippingOptionsList.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 24px; background: rgba(89, 54, 34, 0.03); border-radius: 10px; border: 1px dashed rgba(89, 54, 34, 0.15); color: var(--muted); font-size: 14.5px; font-weight: 600;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite; flex-shrink: 0;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+          Buscando opções de frete...
+        </div>
+      `;
 
       try {
         const response = await fetch(BACKEND_URL, {
@@ -2346,6 +2359,8 @@
           renderShippingOptions(data.services);
         } else {
           showCustomAlert("Erro no cálculo", "Não foi possível calcular o frete: " + data.error, null);
+          shippingOptionsField.style.display = "none";
+          shippingOptionsList.innerHTML = "";
         }
       } catch (err) {
         console.error("Erro ao calcular frete:", err);
