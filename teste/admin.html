@@ -894,10 +894,12 @@
                 <option value="Etiqueta Gerada" ${o.Status === "Etiqueta Gerada" ? "selected" : ""}>Etiqueta Gerada</option>
               </select>
               ${actionBtnHtml}
+              ${statusLower === "pago" ? `
               <button class="btn-action btn-production-slip" data-id="${o.ID_Pedido}">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                 Folha de Produção
               </button>
+              ` : ''}
             </div>
           </div>
         `;
@@ -916,6 +918,21 @@
             return;
           }
 
+          let dataPagamento = null;
+          if (newStatus === "Pago") {
+            const hoje = new Date();
+            const dia = String(hoje.getDate()).padStart(2, '0');
+            const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+            const ano = hoje.getFullYear();
+            const dataSugerida = `${dia}/${mes}/${ano}`;
+            const input = prompt("Por favor, insira a data do pagamento:", dataSugerida);
+            if (input === null) {
+              select.value = prevStatus;
+              return;
+            }
+            dataPagamento = input.trim();
+          }
+
           // Realiza alteração
           select.disabled = true;
           try {
@@ -924,12 +941,16 @@
               body: JSON.stringify({
                 action: "atualizar_status_pedido",
                 orderId: o.ID_Pedido,
-                status: newStatus
+                status: newStatus,
+                data_pagamento: dataPagamento
               })
             });
             const data = await response.json();
             if (data.success) {
               o.Status = newStatus;
+              if (dataPagamento) {
+                o.Data_Pagamento = dataPagamento;
+              }
               updateKPIs();
               renderOrders();
             } else {
@@ -1031,6 +1052,9 @@
     });
 
     function gerarFolhaProducao(order) {
+      const isFreeShipping = String(order.Frete_Metodo).toLowerCase().includes("grátis") || String(order.Frete_Metodo).toLowerCase().includes("local");
+      const labelGenerated = !!(order.Codigo_Rastreio && order.Etiqueta_PDF_URL);
+
       const printWindow = window.open("", "_blank", "width=800,height=900");
       if (!printWindow) {
         showAlert("Bloqueador de Pop-ups", "Não foi possível abrir a folha de produção. Por favor, permita pop-ups para este site.");
@@ -1377,10 +1401,22 @@
                   <strong>Tipo de Entrega</strong>
                   <span>${order.Frete_Metodo || 'Não informado'}</span>
                 </div>
+                <div class="info-item">
+                  <strong>Data do Pagamento</strong>
+                  <span>${order.Data_Pagamento || 'Não informada'}</span>
+                </div>
                 <div class="info-item" style="grid-column: 1 / -1;">
                   <strong>Endereço de Entrega</strong>
                   <span>${order.Entrega_Endereco} (CEP: ${order.Entrega_CEP})</span>
                 </div>
+                ${!isFreeShipping ? `
+                <div class="info-item" style="grid-column: 1 / -1; margin-top: 5px;">
+                  <strong>Etiqueta de Envio (SuperFrete)</strong>
+                  <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 800; text-transform: uppercase; ${labelGenerated ? 'background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;' : 'background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;'}">
+                    ${labelGenerated ? `✅ GERADA - Rastreio: ${order.Codigo_Rastreio}` : '❌ NÃO GERADA'}
+                  </span>
+                </div>
+                ` : ''}
                 ${order.Observacoes ? `
                   <div class="notes-box">
                     <strong>Observações do Cliente</strong>
