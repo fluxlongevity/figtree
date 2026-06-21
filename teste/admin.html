@@ -548,10 +548,16 @@
         <h1>Painel de Pedidos</h1>
         <p style="margin: 4px 0 0; color: var(--muted); font-size: 14.5px;">Gerenciamento de produção e etiquetas SuperFrete</p>
       </div>
-      <button class="btn-refresh" id="btnRefresh">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-        Atualizar Painel
-      </button>
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <button class="btn-refresh" id="btnConciliar" title="Conciliar recibos de pagamento no Drive" style="background: #28a745; color: #ffffff; box-shadow: 0 4px 12px rgba(40, 167, 69, .22);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          Conciliar Recibos
+        </button>
+        <button class="btn-refresh" id="btnRefresh">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          Atualizar Painel
+        </button>
+      </div>
     </header>
 
     <!-- KPI Grid -->
@@ -656,6 +662,31 @@
         <p id="alertMessage" style="margin: 0 0 22px; font-size: 16px; line-height: 1.5; color: var(--ink);"></p>
         <div style="display: flex; justify-content: center; width: 100%;">
           <button class="btn-refresh" type="button" id="alertOk" style="box-shadow: none; background: var(--accent-dark); min-width: 120px; justify-content: center;">Entendido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Seleção da Data de Pagamento -->
+  <div class="preview-modal" id="paymentDateModal" aria-hidden="true">
+    <div class="preview-dialog" style="width: min(400px, 94%);" role="dialog" aria-modal="true" aria-labelledby="paymentDateTitle">
+      <div class="preview-header">
+        <h2 id="paymentDateTitle">Data do Pagamento</h2>
+        <button class="preview-close" type="button" id="paymentDateClose" aria-label="Fechar janela">×</button>
+      </div>
+      <div class="preview-body" style="padding: 20px; flex-direction: column; gap: 15px; background: #fff8ec;">
+        <p style="margin: 0; font-size: 14.5px; line-height: 1.5; color: var(--ink); text-align: left;">
+          Selecione a data em que o pagamento foi realizado:
+        </p>
+        
+        <div style="display: flex; flex-direction: column; gap: 6px; width: 100%; text-align: left;">
+          <label for="paymentDateInput" style="font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Data de Confirmação</label>
+          <input type="date" id="paymentDateInput" class="status-select" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(82, 48, 30, 0.2); font-family: inherit; font-size: 15px; background: #fff; color: var(--ink); box-sizing: border-box; cursor: pointer;">
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end; width: 100%; margin-top: 10px;">
+          <button class="btn-refresh" type="button" id="btnPaymentCancel" style="background: #f1dfce; color: var(--ink); box-shadow: none;">Cancelar</button>
+          <button class="btn-refresh" type="button" id="btnPaymentConfirm" style="background: var(--accent);">Confirmar</button>
         </div>
       </div>
     </div>
@@ -1487,6 +1518,49 @@
 
     // Refresh button
     document.getElementById("btnRefresh").addEventListener("click", fetchOrders);
+
+    // Conciliar button
+    document.getElementById("btnConciliar").addEventListener("click", async () => {
+      const btn = document.getElementById("btnConciliar");
+      btn.disabled = true;
+      btn.style.opacity = "0.7";
+      btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; animation: spin 1.5s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Processando...`;
+      
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "conciliar_recibos"
+          })
+        });
+        const data = await response.json();
+        if (data.success) {
+          let msg = "Conciliação finalizada!<br><br>Resultados:<br>";
+          if (data.resultados && data.resultados.length > 0) {
+            data.resultados.forEach(r => {
+              if (r.success) {
+                msg += `✅ <strong>${r.file}</strong>: Pedido #${r.orderId} marcado como Pago (${r.dataPagamento})<br>`;
+              } else {
+                msg += `❌ <strong>${r.file}</strong>: ${r.reason}<br>`;
+              }
+            });
+          } else {
+            msg += "Nenhum arquivo de recibo PDF novo encontrado na pasta raiz.";
+          }
+          showAlert("Resultado da Conciliação", msg);
+          fetchOrders(); // Recarrega a lista de pedidos na tela
+        } else {
+          showAlert("Erro na Conciliação", data.error);
+        }
+      } catch (err) {
+        console.error(err);
+        showAlert("Erro de Rede", "Não foi possível conectar ao servidor de conciliação.");
+      } finally {
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Conciliar Recibos`;
+      }
+    });
 
     // Escape Key Handler
     document.addEventListener("keydown", event => {
