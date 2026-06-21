@@ -1285,6 +1285,19 @@
     let wasLastLocal = false;
     let isCepValid = false;
     let lastOrderId = null;
+    let isOrderSaved = false;
+    let lastSavedOrderKey = "";
+
+    function getOrderKey() {
+      const nameVal = document.getElementById("name") ? document.getElementById("name").value.trim() : "";
+      const phoneVal = document.getElementById("phone") ? document.getElementById("phone").value.trim() : "";
+      const deliveryVal = document.getElementById("delivery") ? document.getElementById("delivery").value.trim() : "";
+      const cepVal = document.getElementById("cep") ? document.getElementById("cep").value.trim() : "";
+      const notesVal = document.getElementById("notes") ? document.getElementById("notes").value.trim() : "";
+      const shippingId = selectedShipping ? selectedShipping.id : null;
+      const cartItems = cart.map(item => `${item.coverName}-${item.interiorName}-${item.qty}`).join("|");
+      return `${nameVal};${phoneVal};${deliveryVal};${cepVal};${notesVal};${shippingId};${cartItems}`;
+    }
 
     function crc16(data) {
       let crc = 0xFFFF;
@@ -1632,6 +1645,15 @@
     }
 
     function updateSummary() {
+      if (isOrderSaved) {
+        const currentKey = getOrderKey();
+        if (currentKey !== lastSavedOrderKey) {
+          isOrderSaved = false;
+          const btn = document.getElementById("reopenPixButton");
+          if (btn) btn.style.display = "none";
+        }
+      }
+
       updateCurrentSelection();
       renderCart();
 
@@ -1692,7 +1714,7 @@
       } else if (isDeliveryIncomplete) {
         whatsappButton.textContent = "Informe o Número/Complemento";
       } else {
-        whatsappButton.textContent = "Enviar pedido pelo WhatsApp";
+        whatsappButton.textContent = isOrderSaved ? "Reenviar pedido pelo WhatsApp" : "Enviar pedido pelo WhatsApp";
       }
     }
 
@@ -2523,6 +2545,18 @@
     });
 
     whatsappButton.addEventListener("click", async () => {
+      // Se o pedido já foi salvo com sucesso, apenas reabre o WhatsApp e o modal sem salvar duplicado no Sheets
+      if (isOrderSaved) {
+        const totalQty = getTotalQuantity();
+        const productTotal = calculateTotal(totalQty);
+        const grandTotal = productTotal + (selectedShipping ? selectedShipping.price : 0);
+        const msg = getOrderMessage(lastOrderId);
+        const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+        window.open(whatsappUrl, "_blank");
+        openPixModal(grandTotal);
+        return;
+      }
+
       const nameVal = document.getElementById("name").value.trim();
       const phoneVal = document.getElementById("phone").value.trim();
       const deliveryVal = document.getElementById("delivery").value.trim();
@@ -2591,6 +2625,10 @@
         const msg = getOrderMessage();
         const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
         window.open(whatsappUrl, "_blank");
+        
+        isOrderSaved = true;
+        lastSavedOrderKey = getOrderKey();
+        
         openPixModal(grandTotal);
         return;
       }
@@ -2612,6 +2650,9 @@
 
         if (data.success) {
           lastOrderId = data.orderId;
+          isOrderSaved = true;
+          lastSavedOrderKey = getOrderKey();
+          
           const msg = getOrderMessage(data.orderId);
           const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
           window.open(whatsappUrl, "_blank");
@@ -2625,6 +2666,10 @@
         const msg = getOrderMessage();
         const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
         window.open(whatsappUrl, "_blank");
+        
+        isOrderSaved = true;
+        lastSavedOrderKey = getOrderKey();
+        
         openPixModal(grandTotal);
       } finally {
         whatsappButton.disabled = false;
