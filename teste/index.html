@@ -1684,6 +1684,7 @@
             if (item.qty > 1) {
               item.qty--;
               updateSummary();
+              autoRecalculateShipping();
             }
           });
 
@@ -1691,12 +1692,14 @@
             if (item.qty < 50) {
               item.qty++;
               updateSummary();
+              autoRecalculateShipping();
             }
           });
 
           row.querySelector(".remove-item").addEventListener("click", () => {
             cart.splice(index, 1);
             updateSummary();
+            autoRecalculateShipping();
           });
           cartList.appendChild(row);
         });
@@ -2252,6 +2255,7 @@
       }
       quantityInput.value = 1;
       updateSummary();
+      autoRecalculateShipping();
 
       // Abre o modal de confirmação customizado e bonito
       confirmModal.classList.add("is-open");
@@ -2345,28 +2349,40 @@
     const shippingOptionsField = document.getElementById("shippingOptionsField");
     const shippingOptionsList = document.getElementById("shippingOptionsList");
 
-    calcShippingBtn.addEventListener("click", async () => {
+    async function calculateShipping(silent = false) {
       const cepVal = cepInput.value.replace(/\D/g, "");
       const totalQty = getTotalQuantity();
 
       if (totalQty === 0) {
-        showCustomAlert("Carrinho vazio", "Adicione pelo menos um caderno ao pedido antes de calcular o frete.", null);
+        if (!silent) {
+          showCustomAlert("Carrinho vazio", "Adicione pelo menos um caderno ao pedido antes de calcular o frete.", null);
+        }
+        selectedShipping = null;
+        lastCalculatedServices = [];
+        shippingOptionsList.innerHTML = "";
+        shippingOptionsField.style.display = "none";
+        updateSummary();
         return;
       }
 
       if (cepVal.length !== 8) {
-        showCustomAlert("CEP inválido", "Por favor, informe um CEP válido com 8 dígitos.", cepInput);
+        if (!silent) {
+          showCustomAlert("CEP inválido", "Por favor, informe um CEP válido com 8 dígitos.", cepInput);
+        }
         return;
       }
 
       if (!isCepValid) {
-        showCustomAlert("CEP inválido", "O CEP informado não é válido ou não foi encontrado. Por favor, corrija-o antes de calcular o frete.", cepInput);
+        if (!silent) {
+          showCustomAlert("CEP inválido", "O CEP informado não é válido ou não foi encontrado. Por favor, corrija-o antes de calcular o frete.", cepInput);
+        }
         return;
       }
 
       if (!BACKEND_URL) {
-        // Fallback simulação caso o Web App ainda não esteja configurado
-        showCustomAlert("Simulação de Frete", "O Backend URL ainda não foi configurado. Carregando opções simuladas para teste de layout.", null);
+        if (!silent) {
+          showCustomAlert("Simulação de Frete", "O Backend URL ainda não foi configurado. Carregando opções simuladas para teste de layout.", null);
+        }
         renderSimulatedShippingOptions();
         return;
       }
@@ -2380,6 +2396,9 @@
           Buscando opções de frete...
         </div>
       `;
+
+      selectedShipping = null;
+      updateSummary();
 
       try {
         const response = await fetch(BACKEND_URL, {
@@ -2397,19 +2416,33 @@
         if (data.success) {
           renderShippingOptions(data.services);
         } else {
-          showCustomAlert("Erro no cálculo", "Não foi possível calcular o frete: " + data.error, null);
+          if (!silent) {
+            showCustomAlert("Erro no cálculo", "Não foi possível calcular o frete: " + data.error, null);
+          }
           shippingOptionsField.style.display = "none";
           shippingOptionsList.innerHTML = "";
+          updateSummary();
         }
       } catch (err) {
         console.error("Erro ao calcular frete:", err);
-        showCustomAlert("Erro de conexão", "Ocorreu um erro ao conectar ao servidor de frete. Carregando opções simuladas para testes.", null);
+        if (!silent) {
+          showCustomAlert("Erro de conexão", "Ocorreu um erro ao conectar ao servidor de frete. Carregando opções simuladas para testes.", null);
+        }
         renderSimulatedShippingOptions();
       } finally {
         calcShippingBtn.disabled = false;
         calcShippingBtn.textContent = "Calcular Frete";
       }
-    });
+    }
+
+    calcShippingBtn.addEventListener("click", () => calculateShipping(false));
+
+    function autoRecalculateShipping() {
+      const cepVal = cepInput.value.replace(/\D/g, "");
+      if (isCepValid && cepVal.length === 8 && lastCalculatedServices && lastCalculatedServices.length > 0) {
+        calculateShipping(true);
+      }
+    }
 
     function isLocalDeliveryNeighborhood(bairro) {
       if (!bairro) return false;
