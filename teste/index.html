@@ -1291,6 +1291,32 @@
     </div>
   </div>
 
+  <!-- Modal de Solicitação de CPF para Envio -->
+  <div class="preview-modal" id="cpfModal" aria-hidden="true">
+    <div class="preview-dialog" style="width: min(450px, 94%);" role="dialog" aria-modal="true" aria-labelledby="cpfTitle">
+      <div class="preview-header">
+        <h2 id="cpfTitle" style="font-size: 24px; font-family: var(--serif);">Dados para Envio</h2>
+        <button class="preview-close" type="button" id="cpfClose" aria-label="Fechar janela">×</button>
+      </div>
+      <div class="preview-body" style="padding: 24px; display: flex; flex-direction: column; gap: 16px; align-items: stretch; background: #fff8ec;">
+        <p style="margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink); text-align: left;">
+          Para enviar seu pedido via <strong>Correios / Transportadora (SuperFrete)</strong>, precisamos que informe o CPF do destinatário para a emissão da etiqueta de postagem.
+        </p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--muted); font-weight: 600; background: rgba(89, 54, 34, 0.05); padding: 10px 12px; border-radius: 8px; border: 1px dashed rgba(89, 54, 34, 0.15); text-align: left;">
+          🔒 <strong>Segurança dos dados:</strong> Seu CPF será usado única e exclusivamente para a geração da etiqueta oficial de envio e será armazenado de forma segura.
+        </p>
+        <div class="field" style="margin: 0;">
+          <label for="cpfInputModal">CPF do Destinatário *</label>
+          <input id="cpfInputModal" inputmode="numeric" placeholder="000.000.000-00" required />
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end; width: 100%; margin-top: 6px;">
+          <button class="remove-item" type="button" id="cpfModalCancel" style="width: auto; height: 44px; border-radius: 10px; padding: 0 20px; background: #f1dfce; font-size: 15px; font-weight: 800; cursor: pointer;">Cancelar</button>
+          <button class="add-item" type="button" id="cpfModalConfirm" style="box-shadow: none; min-height: 44px; padding: 0 20px; font-size: 15px; font-weight: 800; cursor: pointer;">Confirmar e Enviar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SELLER_WHATSAPP = "5521969467886";
     // URL do Web App do Google Apps Script (Deixe em branco ou insira a URL implantada)
@@ -1313,7 +1339,7 @@
       const notesVal = document.getElementById("notes") ? document.getElementById("notes").value.trim() : "";
       const shippingId = selectedShipping ? selectedShipping.id : null;
       const cartItems = cart.map(item => `${item.coverName}-${item.interiorName}-${item.qty}`).join("|");
-      return `${nameVal};${phoneVal};${deliveryVal};${cepVal};${notesVal};${shippingId};${cartItems}`;
+      return `${nameVal};${phoneVal};${deliveryVal};${cepVal};${notesVal};${shippingId};${cartItems};${state.cpf}`;
     }
 
     function crc16(data) {
@@ -1526,7 +1552,8 @@
       coverSrc: covers[0].src,
       coverThumb: covers[0].thumbSrc,
       interiorName: interiors[0].name,
-      interiorSrc: interiors[0].src
+      interiorSrc: interiors[0].src,
+      cpf: ""
     };
 
     const cart = [];
@@ -1601,11 +1628,18 @@
         ? `Novo pedido de caderninho de bolso 14 x 9 cm (Pedido #${orderId})`
         : `Novo pedido de caderninho de bolso 14 x 9 cm`;
 
-      return [
+      const lines = [
         header,
         "",
         `Nome: ${name}`,
-        `WhatsApp do cliente: ${phone}`,
+        `WhatsApp do cliente: ${phone}`
+      ];
+
+      if (state.cpf) {
+        lines.push(`CPF do cliente: ${formatCpf(state.cpf)}`);
+      }
+
+      lines.push(
         "",
         "Itens:",
         ...itemLines,
@@ -1620,7 +1654,9 @@
         "Pix Copia e Cola (para pagamento):",
         "",
         generatePixCopiaCola(grandTotal)
-      ].join("\n");
+      );
+
+      return lines.join("\n");
     }
 
     function renderCart() {
@@ -2190,6 +2226,112 @@
       openPixModal(grandTotal);
     });
 
+    // Configuração do Modal de Solicitação de CPF
+    const cpfModal = document.getElementById("cpfModal");
+    const cpfClose = document.getElementById("cpfClose");
+    const cpfInputModal = document.getElementById("cpfInputModal");
+    const cpfModalConfirm = document.getElementById("cpfModalConfirm");
+    const cpfModalCancel = document.getElementById("cpfModalCancel");
+    
+    function openCpfModal() {
+      cpfInputModal.value = state.cpf ? formatCpf(state.cpf) : "";
+      cpfModal.classList.add("is-open");
+      cpfModal.setAttribute("aria-hidden", "false");
+      setTimeout(() => cpfInputModal.focus(), 50);
+    }
+    
+    function closeCpfModal() {
+      cpfModal.classList.remove("is-open");
+      cpfModal.setAttribute("aria-hidden", "true");
+    }
+    
+    cpfClose.addEventListener("click", closeCpfModal);
+    cpfModalCancel.addEventListener("click", closeCpfModal);
+    cpfModal.addEventListener("click", event => {
+      if (event.target === cpfModal) closeCpfModal();
+    });
+    
+    function formatCpf(val) {
+      let digits = val.replace(/\D/g, "").substring(0, 11);
+      if (digits.length <= 3) return digits;
+      if (digits.length <= 6) return digits.substring(0, 3) + "." + digits.substring(3);
+      if (digits.length <= 9) return digits.substring(0, 3) + "." + digits.substring(3, 6) + "." + digits.substring(6);
+      return digits.substring(0, 3) + "." + digits.substring(3, 6) + "." + digits.substring(6, 9) + "-" + digits.substring(9);
+    }
+    
+    cpfInputModal.addEventListener("input", () => {
+      const selectionStart = cpfInputModal.selectionStart;
+      const originalValue = cpfInputModal.value;
+      const formatted = formatCpf(originalValue);
+      
+      if (formatted !== originalValue) {
+        cpfInputModal.value = formatted;
+        
+        // Ajustar cursor
+        const digitsBefore = originalValue.substring(0, selectionStart).replace(/\D/g, "").length;
+        let cursor = 0;
+        let digitsSeen = 0;
+        for (let i = 0; i < formatted.length; i++) {
+          if (digitsSeen < digitsBefore) {
+            cursor = i + 1;
+            if (/\d/.test(formatted[i])) digitsSeen++;
+          } else {
+            break;
+          }
+        }
+        cpfInputModal.setSelectionRange(cursor, cursor);
+      }
+    });
+
+    function validateCpf(cpf) {
+      const cleanCpf = cpf.replace(/\D/g, "");
+      if (cleanCpf.length !== 11) return false;
+      if (/^(\d)\1{10}$/.test(cleanCpf)) return false;
+      
+      let sum = 0;
+      let remainder;
+      
+      for (let i = 1; i <= 9; i++) {
+        sum = sum + parseInt(cleanCpf.substring(i - 1, i)) * (11 - i);
+      }
+      remainder = (sum * 10) % 11;
+      if ((remainder === 10) || (remainder === 11)) remainder = 0;
+      if (remainder !== parseInt(cleanCpf.substring(9, 10))) return false;
+      
+      sum = 0;
+      for (let i = 1; i <= 10; i++) {
+        sum = sum + parseInt(cleanCpf.substring(i - 1, i)) * (12 - i);
+      }
+      remainder = (sum * 10) % 11;
+      if ((remainder === 10) || (remainder === 11)) remainder = 0;
+      if (remainder !== parseInt(cleanCpf.substring(10, 11))) return false;
+      
+      return true;
+    }
+
+    cpfModalConfirm.addEventListener("click", async () => {
+      const cpfVal = cpfInputModal.value.trim();
+      if (!cpfVal) {
+        showCustomAlert("CPF obrigatório", "Por favor, preencha o CPF do destinatário para envio.", cpfInputModal);
+        return;
+      }
+      if (!validateCpf(cpfVal)) {
+        showCustomAlert("CPF inválido", "O CPF informado é inválido. Por favor, confira os números digitados.", cpfInputModal);
+        return;
+      }
+      
+      state.cpf = cpfVal.replace(/\D/g, "");
+      closeCpfModal();
+      await processOrderSubmission();
+    });
+
+    cpfInputModal.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        cpfModalConfirm.click();
+      }
+    });
+
     document.addEventListener("keydown", event => {
       if (event.key === "Escape") {
         if (previewModal.classList.contains("is-open")) closePreview();
@@ -2197,6 +2339,7 @@
         if (alertModal.classList.contains("is-open")) closeAlert();
         if (addressModal.classList.contains("is-open")) closeAddressModal();
         if (pixModal.classList.contains("is-open")) closePixModal();
+        if (cpfModal.classList.contains("is-open")) closeCpfModal();
       }
     });
 
@@ -2301,9 +2444,10 @@
         cepInput.setSelectionRange(cursor, cursor);
       }
 
-      // Se alterou o CEP, reseta o estado de validade e o frete
+      // Se alterou o CEP, reseta o estado de validade, o frete e o CPF
       isCepValid = false;
       selectedShipping = null;
+      state.cpf = "";
       lastCalculatedServices = [];
       shippingOptionsList.innerHTML = "";
       shippingOptionsField.style.display = "none";
@@ -2532,6 +2676,9 @@
             price: service.discountPrice || service.price,
             deliveryTime: service.deliveryTime
           };
+          if (selectedShipping.id === "LOCAL_GRATIS") {
+            state.cpf = "";
+          }
           updateSummary();
         });
 
@@ -2701,7 +2848,22 @@
         return;
       }
 
-      // Preparação dos dados do pedido para persistência
+      // CPF condicional: se o frete for cobrado (não local grátis) e não tiver CPF preenchido
+      const isCpfRequired = selectedShipping && selectedShipping.id !== "LOCAL_GRATIS";
+      if (isCpfRequired && !state.cpf) {
+        openCpfModal();
+        return;
+      }
+
+      await processOrderSubmission();
+    });
+
+    async function processOrderSubmission() {
+      const nameVal = document.getElementById("name").value.trim();
+      const phoneVal = document.getElementById("phone").value.trim();
+      const deliveryVal = document.getElementById("delivery").value.trim();
+      const cepVal = document.getElementById("cep").value.trim();
+      
       const totalQty = getTotalQuantity();
       const productTotal = calculateTotal(totalQty);
       const grandTotal = productTotal + selectedShipping.price;
@@ -2710,6 +2872,7 @@
       const pedido = {
         nome: nameVal,
         whatsapp: phoneVal,
+        cpf: state.cpf ? formatCpf(state.cpf) : "",
         cep: cepVal.replace(/\D/g, ""),
         endereco: deliveryVal,
         itens: itemLines,
@@ -2777,7 +2940,7 @@
         whatsappButton.disabled = false;
         updateSummary();
       }
-    });
+    }
 
     quantityInput.addEventListener("input", updateCurrentSelection);
 
