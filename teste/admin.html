@@ -27,10 +27,18 @@
       --status-pendente-bg: #fff9e6;
       --status-pago: #28a745;
       --status-pago-bg: #e6f7ec;
+      --status-producao: #b68455;
+      --status-producao-bg: #fcf6f0;
       --status-pronto: #17a2b8;
       --status-pronto-bg: #e6f7fa;
       --status-etiqueta: #6f42c1;
       --status-etiqueta-bg: #f3ebff;
+      --status-enviado: #007bff;
+      --status-enviado-bg: #e6f0ff;
+      --status-transito: #fd7e14;
+      --status-transito-bg: #fff0e6;
+      --status-recebido: #20c997;
+      --status-recebido-bg: #e6f9f5;
       --status-outros: #6c757d;
       --status-outros-bg: #f8f9fa;
     }
@@ -245,8 +253,12 @@
 
     .badge-pendente { color: var(--status-pendente); background: var(--status-pendente-bg); border: 1px solid rgba(224, 168, 0, 0.2); }
     .badge-pago { color: var(--status-pago); background: var(--status-pago-bg); border: 1px solid rgba(40, 167, 69, 0.2); }
+    .badge-producao { color: var(--status-producao); background: var(--status-producao-bg); border: 1px solid rgba(182, 132, 85, 0.2); }
     .badge-pronto { color: var(--status-pronto); background: var(--status-pronto-bg); border: 1px solid rgba(23, 162, 184, 0.2); }
     .badge-etiqueta { color: var(--status-etiqueta); background: var(--status-etiqueta-bg); border: 1px solid rgba(111, 66, 193, 0.2); }
+    .badge-enviado { color: var(--status-enviado); background: var(--status-enviado-bg); border: 1px solid rgba(0, 123, 255, 0.2); }
+    .badge-transito { color: var(--status-transito); background: var(--status-transito-bg); border: 1px solid rgba(253, 126, 20, 0.2); }
+    .badge-recebido { color: var(--status-recebido); background: var(--status-recebido-bg); border: 1px solid rgba(32, 201, 151, 0.2); }
     .badge-outros { color: var(--status-outros); background: var(--status-outros-bg); border: 1px solid rgba(108, 117, 125, 0.2); }
 
     .order-date {
@@ -588,10 +600,14 @@
     <section class="control-bar">
       <nav class="tabs" id="statusTabs">
         <button class="tab-btn active" data-status="todos">Todos</button>
-        <button class="tab-btn" data-status="Pendente">Pendentes</button>
-        <button class="tab-btn" data-status="Pago">Pagos</button>
+        <button class="tab-btn" data-status="Pendente de Pagamento">Pendente de Pagamento</button>
+        <button class="tab-btn" data-status="Pago">Pago</button>
+        <button class="tab-btn" data-status="Em Produção">Em Produção</button>
         <button class="tab-btn" data-status="Pronto para Envio">Pronto para Envio</button>
         <button class="tab-btn" data-status="Etiqueta Gerada">Etiqueta Gerada</button>
+        <button class="tab-btn" data-status="Enviado">Enviado</button>
+        <button class="tab-btn" data-status="Em Transito">Em Trânsito</button>
+        <button class="tab-btn" data-status="Recebido (Finalizado)">Recebido (Finalizado)</button>
       </nav>
       <div class="search-container">
         <input class="search-input" id="searchInput" type="text" placeholder="Buscar por nome, ID ou CPF..." />
@@ -693,7 +709,7 @@
   </div>
 
   <script>
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycby82Fo-6gX_zNVGu_oRwhUVq5FvArYS92WJ2mGlou71YenUUJhXA1XwGJbht23BaXjv/exec";
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbycjYy2UiWKMJAQcrFEs9IFJ42LTKtSJMgUufCYErjlX9U80m6V7M1pHvRb0gbH5TSF/exec";
     
     let allOrders = [];
     let currentTab = "todos";
@@ -707,19 +723,25 @@
     function formatarDataBR(dataVal) {
       if (!dataVal) return "";
       const str = String(dataVal).trim();
-      if (/^\d{2}\/\d{2}\/\d{4}$/.test(str)) {
+      if (/^\d{2}\/\d{2}\/\d{4}(?:\s+\d{2}:\d{2}(?::\d{2})?)?$/.test(str)) {
         return str;
       }
       try {
+        const matchIsoSimples = str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (matchIsoSimples) {
+          return `${matchIsoSimples[3]}/${matchIsoSimples[2]}/${matchIsoSimples[1]}`;
+        }
         const d = new Date(str);
         if (!isNaN(d.getTime())) {
-          const matchIso = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
-          if (matchIso) {
-            return `${matchIso[3]}/${matchIso[2]}/${matchIso[1]}`;
+          const dia = String(d.getDate()).padStart(2, '0');
+          const mes = String(d.getMonth() + 1).padStart(2, '0');
+          const ano = d.getFullYear();
+          const temHora = str.includes("T") || str.includes(" ");
+          if (temHora) {
+            const hora = String(d.getHours()).padStart(2, '0');
+            const min = String(d.getMinutes()).padStart(2, '0');
+            return `${dia}/${mes}/${ano} ${hora}:${min}`;
           }
-          const dia = String(d.getUTCDate()).padStart(2, '0');
-          const mes = String(d.getUTCMonth() + 1).padStart(2, '0');
-          const ano = d.getUTCFullYear();
           return `${dia}/${mes}/${ano}`;
         }
       } catch (e) {}
@@ -799,8 +821,8 @@
 
     function updateKPIs() {
       kpiTotal.textContent = allOrders.length;
-      kpiPendente.textContent = allOrders.filter(o => o.Status === "Pendente").length;
-      kpiPago.textContent = allOrders.filter(o => o.Status === "Pago").length;
+      kpiPendente.textContent = allOrders.filter(o => o.Status === "Pendente de Pagamento" || o.Status === "Pendente").length;
+      kpiPago.textContent = allOrders.filter(o => o.Status !== "Pendente de Pagamento" && o.Status !== "Pendente").length;
       kpiPronto.textContent = allOrders.filter(o => o.Status === "Pronto para Envio").length;
       
       const totalRevenue = allOrders.reduce((sum, o) => {
@@ -854,9 +876,21 @@
         const statusLower = String(o.Status).toLowerCase();
         let badgeClass = "badge-outros";
         if (statusLower.includes("pendente")) badgeClass = "badge-pendente";
-        else if (statusLower.includes("pago")) badgeClass = "badge-pago";
+        else if (statusLower === "pago") badgeClass = "badge-pago";
+        else if (statusLower.includes("produção") || statusLower.includes("producao")) badgeClass = "badge-producao";
         else if (statusLower.includes("pronto")) badgeClass = "badge-pronto";
         else if (statusLower.includes("etiqueta")) badgeClass = "badge-etiqueta";
+        else if (statusLower === "enviado") badgeClass = "badge-enviado";
+        else if (statusLower.includes("transito") || statusLower.includes("trânsito")) badgeClass = "badge-transito";
+        else if (statusLower.includes("recebido")) badgeClass = "badge-recebido";
+
+        // Badges acumulados
+        const statusSuperiorAPago = ["em produção", "em producao", "pronto para envio", "etiqueta gerada", "enviado", "em transito", "em trânsito", "recebido (finalizado)", "recebido"];
+        const eSuperior = statusSuperiorAPago.includes(statusLower);
+        let badgesHtml = `<span class="badge ${badgeClass}">${o.Status}</span>`;
+        if (statusLower !== "pago" && eSuperior) {
+          badgesHtml = `<span class="badge ${badgeClass}">${o.Status}</span> <span class="badge badge-pago">Pago</span>`;
+        }
 
         // Botões de ação baseados no status e frete
         const isFreeShipping = String(o.Frete_Metodo).toLowerCase().includes("grátis") || String(o.Frete_Metodo).toLowerCase().includes("local");
@@ -871,7 +905,7 @@
               Imprimir Etiqueta (${o.Codigo_Rastreio})
             </a>
           `;
-        } else if (!isFreeShipping && (o.Status === "Pago" || o.Status === "Pronto para Envio")) {
+        } else if (!isFreeShipping && (o.Status === "Pago" || o.Status === "Em Produção" || o.Status === "Pronto para Envio")) {
           actionBtnHtml = `
             <button class="btn-action btn-generate-label" data-id="${o.ID_Pedido}">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v16M2 10h20M6 4v16M18 4v16"/></svg>
@@ -886,24 +920,46 @@
           `;
         }
 
-        const phoneClean = String(o.WhatsApp).replace(/\D/g, "");
-        const waLink = phoneClean ? `https://wa.me/${phoneClean.startsWith("55") ? phoneClean : "55" + phoneClean}` : "#";
+        const phoneClean = String(o.WhatsApp || "").replace(/\D/g, "");
+        const hasWhatsapp = phoneClean.length >= 10;
+        let waLink = "";
+        if (hasWhatsapp) {
+          if (phoneClean.length === 10 || phoneClean.length === 11) {
+            waLink = `https://wa.me/55${phoneClean}`;
+          } else if (phoneClean.startsWith("55") && (phoneClean.length === 12 || phoneClean.length === 13)) {
+            waLink = `https://wa.me/${phoneClean}`;
+          } else {
+            waLink = `https://wa.me/${phoneClean}`;
+          }
+        }
 
         card.innerHTML = `
           <!-- Coluna 1: Dados do Cliente -->
           <div class="order-col-info">
             <div class="order-header-row">
               <span class="order-id">#${o.ID_Pedido}</span>
-              <span class="badge ${badgeClass}">${o.Status}</span>
+              ${badgesHtml}
             </div>
-            <span class="order-date">${dateFormatted}</span>
+            <div style="font-size: 13px; color: var(--muted); margin-bottom: 6px; display: flex; flex-direction: column; gap: 4px;">
+              <div><strong>Pedido em:</strong> ${dateFormatted}</div>
+              <div><strong>Pago em:</strong> ${formatarDataBR(o.Data_Pagamento) || "Não pago"}</div>
+              <div><strong>Rastreio:</strong> ${o.Codigo_Rastreio || "Sem rastreio"}</div>
+            </div>
             <h3 class="customer-name">${o.Nome}</h3>
             ${o.CPF ? `<span style="font-size: 13.5px; color: var(--muted);">CPF: ${o.CPF}</span>` : ""}
-            <div class="contact-links">
-              <a href="${waLink}" target="_blank" class="contact-link">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #25D366;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-                WhatsApp
-              </a>
+            <div class="contact-links" style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+              ${hasWhatsapp ? `
+                <a href="${waLink}" target="_blank" class="contact-link">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #25D366;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                  WhatsApp
+                </a>
+              ` : ""}
+              ${o.Pix_Payload ? `
+                <button class="btn-show-pix" data-id="${o.ID_Pedido}" style="background: none; border: 0; padding: 0; color: var(--accent); font-weight: 700; cursor: pointer; text-decoration: underline; font-size: 13.5px; display: flex; align-items: center; gap: 4px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  Mostrar Código PIX
+                </button>
+              ` : ""}
             </div>
           </div>
 
@@ -941,13 +997,17 @@
 
             <div class="actions-buttons">
               <select class="status-select" data-id="${o.ID_Pedido}">
-                <option value="Pendente" ${o.Status === "Pendente" ? "selected" : ""}>Pendente</option>
+                <option value="Pendente de Pagamento" ${o.Status === "Pendente de Pagamento" || o.Status === "Pendente" ? "selected" : ""}>Pendente de Pagamento</option>
                 <option value="Pago" ${o.Status === "Pago" ? "selected" : ""}>Pago</option>
+                <option value="Em Produção" ${o.Status === "Em Produção" ? "selected" : ""}>Em Produção</option>
                 <option value="Pronto para Envio" ${o.Status === "Pronto para Envio" ? "selected" : ""}>Pronto para Envio</option>
                 <option value="Etiqueta Gerada" ${o.Status === "Etiqueta Gerada" ? "selected" : ""}>Etiqueta Gerada</option>
+                <option value="Enviado" ${o.Status === "Enviado" ? "selected" : ""}>Enviado</option>
+                <option value="Em Transito" ${o.Status === "Em Transito" ? "selected" : ""}>Em Trânsito</option>
+                <option value="Recebido (Finalizado)" ${o.Status === "Recebido (Finalizado)" ? "selected" : ""}>Recebido (Finalizado)</option>
               </select>
               ${actionBtnHtml}
-              ${statusLower === "pago" ? `
+              ${(statusLower === "pago" || statusLower === "em produção" || statusLower === "em producao") ? `
               <button class="btn-action btn-production-slip" data-id="${o.ID_Pedido}">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                 Folha de Produção
@@ -1032,6 +1092,42 @@
         if (btnSlip) {
           btnSlip.addEventListener("click", () => {
             gerarFolhaProducao(o);
+          });
+        }
+
+        // Evento de mostrar código PIX
+        const btnShowPix = card.querySelector(".btn-show-pix");
+        if (btnShowPix) {
+          btnShowPix.addEventListener("click", () => {
+            const payload = o.Pix_Payload;
+            showAlert("Código PIX - Pedido #" + o.ID_Pedido, `
+              <p style="font-size: 14px; text-align: left; margin-bottom: 10px;">Use o botão abaixo para copiar o código "Pix Copia e Cola" do pedido:</p>
+              <textarea readonly id="pixCodeTextArea" style="width: 100%; height: 80px; font-family: monospace; font-size: 11px; padding: 8px; border-radius: 6px; border: 1px solid rgba(82, 48, 30, 0.2); background: #fafafa; resize: none; box-sizing: border-box; word-break: break-all;">${payload}</textarea>
+              <button class="btn-refresh" id="btnCopiarPixModal" style="margin: 12px auto 0; background: var(--accent-dark); color: white; display: flex; align-items: center; gap: 8px; box-shadow: none;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copiar PIX
+              </button>
+            `);
+            setTimeout(() => {
+              const btnCopiar = document.getElementById("btnCopiarPixModal");
+              const txtArea = document.getElementById("pixCodeTextArea");
+              if (btnCopiar && txtArea) {
+                btnCopiar.addEventListener("click", () => {
+                  txtArea.select();
+                  txtArea.setSelectionRange(0, 99999);
+                  navigator.clipboard.writeText(txtArea.value);
+                  btnCopiar.innerHTML = `✓ Copiado!`;
+                  btnCopiar.style.background = "#28a745";
+                  setTimeout(() => {
+                    const btnEl = document.getElementById("btnCopiarPixModal");
+                    if (btnEl) {
+                      btnEl.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copiar PIX`;
+                      btnEl.style.background = "var(--accent-dark)";
+                    }
+                  }, 2000);
+                });
+              }
+            }, 100);
           });
         }
 
