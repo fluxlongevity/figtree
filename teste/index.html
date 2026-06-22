@@ -1320,10 +1320,15 @@
   <script>
     const SELLER_WHATSAPP = "5521969467886";
     // URL do Web App do Google Apps Script (Deixe em branco ou insira a URL implantada)
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzeulnDbYshi_FQYaaQZnD6ZPcUyG4Epmrcxyfw3lxp3h_B_U5xgDuvLQEMVpW037s/exec"; 
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbycjYy2UiWKMJAQcrFEs9IFJ42LTKtSJMgUufCYErjlX9U80m6V7M1pHvRb0gbH5TSF/exec"; 
 
     let selectedShipping = null;
+    let deliveryRua = "";
+    let deliveryNumero = "";
+    let deliveryComplemento = "";
     let deliveryBairro = "";
+    let deliveryCidade = "";
+    let deliveryEstado = "";
     let lastCalculatedServices = [];
     let wasLastLocal = false;
     let isCepValid = false;
@@ -2152,7 +2157,13 @@
       }
       finalAddress += ` - ${districtVal} - ${currentCepData.localidade}/${currentCepData.uf}`;
 
+      deliveryRua = streetVal;
+      deliveryNumero = numVal;
+      deliveryComplemento = compVal;
       deliveryBairro = districtVal;
+      deliveryCidade = (currentCepData.localidade || "").trim();
+      deliveryEstado = (currentCepData.uf || "").trim();
+
       document.getElementById("delivery").value = finalAddress;
       closeAddressModal();
       updateSummary();
@@ -2881,12 +2892,48 @@
       const grandTotal = productTotal + selectedShipping.price;
       const itemLines = cart.map(item => `${item.qty}x ${item.coverName} (${item.interiorName})`).join(", ");
 
+      // Fallback robusto se as variáveis globais não estiverem preenchidas (ex.: preenchimento manual)
+      let rua = deliveryRua;
+      let numero = deliveryNumero;
+      let complemento = deliveryComplemento;
+      let bairro = deliveryBairro;
+      let cidade = deliveryCidade;
+      let estado = deliveryEstado;
+
+      if (!rua && deliveryVal) {
+        const parts = deliveryVal.split(/\s*-\s*/);
+        if (parts.length >= 3) {
+          bairro = parts[parts.length - 2].trim();
+          const cityUf = parts[parts.length - 1].split("/");
+          cidade = cityUf[0].trim();
+          estado = cityUf[1] ? cityUf[1].trim() : "";
+          
+          const logradouroNum = parts[0];
+          const commaIndex = logradouroNum.lastIndexOf(",");
+          if (commaIndex !== -1) {
+            rua = logradouroNum.substring(0, commaIndex).trim();
+            const numRest = logradouroNum.substring(commaIndex + 1).trim();
+            if (parts.length > 3) {
+              complemento = parts.slice(1, parts.length - 2).join(" - ").trim();
+              numero = numRest.replace(/(?:Nº|N°|N\.|No)/gi, "").trim();
+            } else {
+              numero = numRest.replace(/(?:Nº|N°|N\.|No)/gi, "").trim();
+            }
+          }
+        }
+      }
+
       const pedido = {
         nome: nameVal,
         whatsapp: phoneVal,
         cpf: state.cpf ? formatCpf(state.cpf) : "",
         cep: cepVal.replace(/\D/g, ""),
-        endereco: deliveryVal,
+        entrega_rua: rua || deliveryVal,
+        entrega_numero: numero || "S/N",
+        entrega_complemento: complemento || "",
+        entrega_bairro: bairro || "",
+        entrega_cidade: cidade || "",
+        entrega_estado: estado || "",
         itens: itemLines,
         qtd_total: totalQty,
         valor_produtos: productTotal,
