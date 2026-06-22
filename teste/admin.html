@@ -565,6 +565,10 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
           Conciliar Recibos
         </button>
+        <button class="btn-refresh" id="btnSincronizar" title="Sincronizar todos os rastreamentos da SuperFrete" style="background: #6f42c1; color: #ffffff; box-shadow: 0 4px 12px rgba(111, 66, 193, .22);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          Sincronizar Rastreios
+        </button>
         <button class="btn-refresh" id="btnRefresh">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
           Atualizar Painel
@@ -746,6 +750,19 @@
         }
       } catch (e) {}
       return str;
+    }
+
+    function traduzirStatusSuperfrete(status) {
+      if (!status) return "";
+      const s = String(status).toLowerCase();
+      const traducoes = {
+        "pending": "Pendente",
+        "released": "Etiqueta Pronta",
+        "posted": "Postado nos Correios",
+        "delivered": "Entregue ao Destinatário",
+        "canceled": "Cancelado"
+      };
+      return traducoes[s] || status;
     }
 
     const loadingStage = document.getElementById("loadingStage");
@@ -943,7 +960,18 @@
             <div style="font-size: 13px; color: var(--muted); margin-bottom: 6px; display: flex; flex-direction: column; gap: 4px;">
               <div><strong>Pedido em:</strong> ${dateFormatted}</div>
               <div><strong>Pago em:</strong> ${formatarDataBR(o.Data_Pagamento) || "Não pago"}</div>
-              <div><strong>Rastreio:</strong> ${o.Codigo_Rastreio || "Sem rastreio"}</div>
+              <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                <strong>Rastreio:</strong> ${o.Codigo_Rastreio || "Sem rastreio"}
+                ${(o.Superfrete_Package_ID || (o.Etiqueta_PDF_URL && o.Etiqueta_PDF_URL.includes("_etiqueta/pdf/"))) ? `
+                  <button class="btn-sync-single" data-id="${o.ID_Pedido}" title="Atualizar rastreamento" style="background: none; border: 0; padding: 2px; cursor: pointer; color: var(--accent); display: inline-flex; align-items: center; justify-content: center; transition: transform 0.2s; vertical-align: middle;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="icon-sync-single"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                  </button>
+                ` : ""}
+              </div>
+              ${o.Superfrete_Status ? `<div><strong>Status Logístico:</strong> <span style="text-transform: capitalize; color: var(--accent); font-weight: bold;">${traduzirStatusSuperfrete(o.Superfrete_Status)}</span></div>` : ""}
+              ${o.Superfrete_Prazo_Entrega ? `<div><strong>Prazo Estimado:</strong> ${o.Superfrete_Prazo_Entrega} dias</div>` : ""}
+              ${o.Data_Postagem ? `<div><strong>Postado em:</strong> ${formatarDataBR(o.Data_Postagem)}</div>` : ""}
+              ${o.Data_Entrega ? `<div><strong>Entregue em:</strong> ${formatarDataBR(o.Data_Entrega)}</div>` : ""}
             </div>
             <h3 class="customer-name">${o.Nome}</h3>
             ${o.CPF ? `<span style="font-size: 13.5px; color: var(--muted);">CPF: ${o.CPF}</span>` : ""}
@@ -1092,6 +1120,43 @@
         if (btnSlip) {
           btnSlip.addEventListener("click", () => {
             gerarFolhaProducao(o);
+          });
+        }
+
+        // Evento de sincronizar rastreamento individual
+        const btnSyncSingle = card.querySelector(".btn-sync-single");
+        if (btnSyncSingle) {
+          btnSyncSingle.addEventListener("click", async () => {
+            const icon = btnSyncSingle.querySelector(".icon-sync-single");
+            if (icon) icon.style.animation = "spin 1s linear infinite";
+            btnSyncSingle.disabled = true;
+            
+            try {
+              const response = await fetch(BACKEND_URL, {
+                method: "POST",
+                body: JSON.stringify({
+                  action: "atualizar_rastreamento_pedido",
+                  orderId: o.ID_Pedido
+                })
+              });
+              const data = await response.json();
+              if (data.success) {
+                showAlert("Rastreio Atualizado!", 
+                  `Pedido #${o.ID_Pedido} atualizado com sucesso!<br><br>` +
+                  `<strong>Status Logístico:</strong> ${traduzirStatusSuperfrete(data.superfreteStatus)}<br>` +
+                  `<strong>Código de Rastreio:</strong> ${data.tracking || "Não disponível"}`
+                );
+                await fetchOrders();
+              } else {
+                showAlert("Erro na Atualização", "Não foi possível atualizar o rastreamento: " + data.error);
+              }
+            } catch (err) {
+              console.error(err);
+              showAlert("Erro de Rede", "Não foi possível se comunicar com o servidor.");
+            } finally {
+              btnSyncSingle.disabled = false;
+              if (icon) icon.style.animation = "";
+            }
           });
         }
 
@@ -1655,6 +1720,49 @@
         btn.disabled = false;
         btn.style.opacity = "1";
         btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Conciliar Recibos`;
+      }
+    });
+
+    // Sincronizar Rastreios button
+    document.getElementById("btnSincronizar").addEventListener("click", async () => {
+      const btn = document.getElementById("btnSincronizar");
+      btn.disabled = true;
+      btn.style.opacity = "0.7";
+      btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; animation: spin 1.5s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Sincronizando...`;
+      
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "sincronizar_todos_rastreamentos"
+          })
+        });
+        const data = await response.json();
+        if (data.success) {
+          let msg = "Sincronização concluída com sucesso!<br><br>Resultados:<br>";
+          if (data.resultados && data.resultados.length > 0) {
+            data.resultados.forEach(r => {
+              if (r.success) {
+                msg += `✅ <strong>Pedido #${r.orderId}</strong>: Rastreio ${r.tracking} (${traduzirStatusSuperfrete(r.superfreteStatus)}) - Status do Painel: ${r.updatedPanelStatus}<br>`;
+              } else {
+                msg += `❌ <strong>Pedido #${r.orderId}</strong>: ${r.error}<br>`;
+              }
+            });
+          } else {
+            msg += "Nenhum pedido ativo com etiqueta emitida foi encontrado para sincronizar.";
+          }
+          showAlert("Resultado da Sincronização", msg);
+          await fetchOrders(); // Recarrega a lista de pedidos na tela
+        } else {
+          showAlert("Erro na Sincronização", data.error);
+        }
+      } catch (err) {
+        console.error(err);
+        showAlert("Erro de Rede", "Não foi possível se conectar ao servidor.");
+      } finally {
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg> Sincronizar Rastreios`;
       }
     });
 
