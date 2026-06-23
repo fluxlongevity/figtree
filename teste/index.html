@@ -1153,6 +1153,17 @@
           <p class="empty-cart">Escolha capa, miolo e quantidade. Depois clique em “Adicionar esta configuração”.</p>
         </div>
         <div class="summary-line"><span>Total de cadernos</span><strong id="summaryQty">0</strong></div>
+        
+        <!-- Economia de Kit no Resumo -->
+        <div class="summary-line" id="fullPriceLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; color: var(--muted); border-top: 1px solid rgba(89, 54, 34, .12);">
+          <span>Preço normal (sem promoções)</span>
+          <strong id="summaryFullPrice">R$ 0,00</strong>
+        </div>
+        <div class="summary-line" id="kitDiscountLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; color: #28a745; font-weight: 600;">
+          <span>Desconto do Kit (<span id="kitDiscountPercent">0%</span>)</span>
+          <strong id="summaryKitDiscount">-R$ 0,00</strong>
+        </div>
+        
         <div class="summary-line" id="shippingSummaryLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid rgba(89, 54, 34, .12); color: var(--muted);"><span>Frete: <span id="shippingMethodName">-</span></span><strong id="shippingSummaryPrice">R$ 0</strong></div>
         
         <!-- Linha do Desconto do Cupom no Resumo -->
@@ -1690,9 +1701,31 @@
     `;
 
     function calculateTotal(qty) {
-      const kits = Math.floor(qty / 4);
-      const remainder = qty % 4;
-      return kits * 45 + remainder * 15;
+      if (qty <= 0) return 0;
+      
+      const fixedPrices = {
+        1: 15,
+        2: 28,
+        3: 45,
+        4: 45,
+        5: 60,
+        6: 75,
+        7: 90,
+        8: 79,
+        9: 94,
+        10: 109,
+        11: 124,
+        12: 109
+      };
+      
+      if (qty <= 12) {
+        return fixedPrices[qty];
+      }
+      
+      const kits12 = Math.floor(qty / 12);
+      const remainder = qty % 12;
+      const remainderPrice = remainder > 0 ? fixedPrices[remainder] : 0;
+      return kits12 * 109 + remainderPrice;
     }
 
     function normalizeQuantity() {
@@ -1754,6 +1787,13 @@
         `Total de cadernos: ${totalQty}`,
         `Valor dos Cadernos: ${currency.format(productTotal)}`
       );
+
+      const precoCheio = totalQty * 15;
+      const descontoValor = precoCheio - productTotal;
+      if (descontoValor > 0) {
+        const descontoPercentual = Math.round((descontoValor / precoCheio) * 100);
+        lines.push(`🔥 Economia do Kit: -${currency.format(descontoValor)} (${descontoPercentual}% de desconto)`);
+      }
 
       if (activeCoupon) {
         lines.push(`🎟️ Cupom: ${activeCoupon.codigo} (-${currency.format(couponDiscountValue)})`);
@@ -1894,8 +1934,27 @@
 
       const totalQty = getTotalQuantity();
       const productTotal = calculateTotal(totalQty);
-      const kits = Math.floor(totalQty / 4);
-      const remaining = totalQty % 4;
+
+      const precoCheio = totalQty * 15;
+      const descontoValor = precoCheio - productTotal;
+      const descontoPercentual = precoCheio > 0 ? Math.round((descontoValor / precoCheio) * 100) : 0;
+
+      const fullPriceLine = document.getElementById("fullPriceLine");
+      const kitDiscountLine = document.getElementById("kitDiscountLine");
+      const summaryFullPrice = document.getElementById("summaryFullPrice");
+      const summaryKitDiscount = document.getElementById("summaryKitDiscount");
+      const kitDiscountPercent = document.getElementById("kitDiscountPercent");
+
+      if (descontoValor > 0) {
+        fullPriceLine.style.display = "flex";
+        kitDiscountLine.style.display = "flex";
+        summaryFullPrice.textContent = currency.format(precoCheio);
+        summaryKitDiscount.textContent = "-" + currency.format(descontoValor);
+        kitDiscountPercent.textContent = `${descontoPercentual}%`;
+      } else {
+        fullPriceLine.style.display = "none";
+        kitDiscountLine.style.display = "none";
+      }
 
       let grandTotal = productTotal;
       if (selectedShipping) {
@@ -2010,15 +2069,42 @@
       summaryQty.textContent = totalQty;
       summaryTotal.textContent = currency.format(grandTotal);
 
+      let noteText = "";
       if (totalQty === 0) {
-        discountNote.textContent = "A promoção 4 por R$ 45 é calculada pelo total de cadernos no pedido.";
-      } else if (kits > 0 && remaining > 0) {
-        discountNote.textContent = `${kits} kit(s) promocional(is) de 4 por R$ 45 + ${remaining} unidade(s) avulsa(s).`;
-      } else if (kits > 0) {
-        discountNote.textContent = `${kits} kit(s) promocional(is) de 4 por R$ 45 aplicado(s).`;
+        noteText = "Para aproveitar melhor a produção e reduzir desperdício, compre em quantidades pares e aproveite nossos kits promocionais!";
+      } else if (totalQty === 1) {
+        noteText = "Você selecionou 1 unidade avulsa. Adicione mais 1 e leve o Kit com 2 por R$ 28 (desconto de R$ 2)!";
+      } else if (totalQty === 2) {
+        noteText = "Promoção aplicada: Kit 2 (R$ 14,00 por caderninho). Adicione mais 2 e aproveite o Kit com 4 por R$ 45!";
+      } else if (totalQty === 3) {
+        noteText = "Dica: Adicione mais 1 caderno e leve o Kit com 4 pelo mesmo preço (R$ 45)! É um caderno a mais grátis.";
+      } else if (totalQty === 4) {
+        noteText = "Promoção aplicada: Kit 4 (R$ 11,25 por caderninho). Leve mais cadernos e economize ainda mais!";
+      } else if (totalQty >= 5 && totalQty <= 7) {
+        const falta = 8 - totalQty;
+        const txtFalta = falta === 1 ? "mais 1 caderno" : `mais ${falta} cadernos`;
+        if (totalQty === 7) {
+          noteText = `Dica: Adicione mais 1 caderno e leve o Kit com 8 pagando R$ 11,00 a MENOS (R$ 79 pelo Kit 8 vs R$ 90 por 7 cadernos)!`;
+        } else {
+          noteText = `Selecione ${txtFalta} para atingir o Kit com 8 por R$ 79 e economize muito no custo unitário (R$ 9,88 por caderninho)!`;
+        }
+      } else if (totalQty === 8) {
+        noteText = "Promoção aplicada: Kit 8 (R$ 9,88 por caderninho). Excelente escolha!";
+      } else if (totalQty >= 9 && totalQty <= 11) {
+        const falta = 12 - totalQty;
+        const txtFalta = falta === 1 ? "mais 1 caderno" : `mais ${falta} cadernos`;
+        if (totalQty === 11) {
+          noteText = `Dica: Adicione mais 1 caderno e leve o Kit com 12 pagando R$ 15,00 a MENOS (R$ 109 pelo Kit 12 vs R$ 124 por 11 cadernos)!`;
+        } else {
+          noteText = `Selecione ${txtFalta} para atingir o Kit com 12 por R$ 109 e tenha o melhor custo-benefício (R$ 9,08 por caderninho)!`;
+        }
+      } else if (totalQty === 12) {
+        noteText = "Promoção aplicada: Kit 12 (R$ 9,08 por caderninho). Perfeito para presentear ou revender!";
       } else {
-        discountNote.textContent = "A promoção 4 por R$ 45 entra automaticamente quando o pedido chegar a 4 cadernos.";
+        noteText = `Kits combinados aplicados para ${totalQty} cadernos! Para quantidades personalizadas ou atacado, clique no botão para nos consultar via WhatsApp.`;
       }
+      
+      discountNote.textContent = noteText;
 
       const nameVal = document.getElementById("name").value.trim();
       const deliveryVal = document.getElementById("delivery").value.trim();
