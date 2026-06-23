@@ -1020,7 +1020,7 @@
                 ` : ""}
               </div>
               ${o.Superfrete_Status ? `<div><strong>Status Logístico:</strong> <span style="text-transform: capitalize; color: var(--accent); font-weight: bold;">${traduzirStatusSuperfrete(o.Superfrete_Status)}</span></div>` : ""}
-              ${o.Superfrete_Prazo_Entrega ? `<div><strong>Prazo Estimado:</strong> ${o.Superfrete_Prazo_Entrega} dias</div>` : ""}
+              ${(o.Superfrete_Prazo_Entrega && String(o.Superfrete_Status).toLowerCase() !== "canceled" && String(o.Superfrete_Status).toLowerCase() !== "cancelled") ? `<div><strong>Prazo Estimado:</strong> ${o.Superfrete_Prazo_Entrega} dias</div>` : ""}
               ${o.Data_Postagem ? `<div><strong>Postado em:</strong> ${formatarDataBR(o.Data_Postagem)}</div>` : ""}
               ${o.Data_Entrega ? `<div><strong>Entregue em:</strong> ${formatarDataBR(o.Data_Entrega)}</div>` : ""}
             </div>
