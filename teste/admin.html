@@ -727,6 +727,38 @@
     </div>
   </div>
 
+  <!-- Modal de Confirmação para Cancelamento (Desistência) -->
+  <div class="preview-modal" id="confirmCancelModal" aria-hidden="true">
+    <div class="preview-dialog" style="width: min(450px, 94%);" role="dialog" aria-modal="true" aria-labelledby="cancelTitle">
+      <div class="preview-header">
+        <h2 id="cancelTitle">Confirmar Cancelamento</h2>
+        <button class="preview-close" type="button" id="confirmCancelClose" aria-label="Fechar janela">×</button>
+      </div>
+      <div class="preview-body" style="padding: 20px; flex-direction: column; gap: 15px; background: #fff8ec;">
+        <p style="margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink); text-align: left;">
+          Tem certeza de que deseja alterar o status do <strong>Pedido #<span id="cancelOrderId"></span></strong> para <strong style="color: var(--status-cancelado);">Cancelado (Desistência)</strong>?
+        </p>
+        
+        <div id="cancelLabelAlert" style="background: rgba(220, 53, 69, 0.05); padding: 12px; border-radius: 8px; font-size: 13px; color: #53251b; border: 1px solid rgba(220, 53, 69, 0.15); margin-top: 4px; text-align: left; display: none;">
+          <div style="font-weight: 700; color: var(--status-cancelado); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Cancelamento de Etiqueta
+          </div>
+          Este pedido possui uma etiqueta emitida (<span id="cancelTrackingCode"></span>). Se a etiqueta estiver no prazo de 10 dias e não tiver sido postada, <strong>ela será estornada e cancelada automaticamente</strong> na API da SuperFrete.
+        </div>
+
+        <p style="margin: 4px 0 0; font-size: 13.5px; line-height: 1.4; color: var(--muted); text-align: left;">
+          Esta ação limpará as colunas de frete e rastreio da planilha para este pedido. A alteração de status é definitiva.
+        </p>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end; width: 100%; margin-top: 10px;">
+          <button class="btn-refresh" type="button" id="btnCancelModalCancel" style="background: #f1dfce; color: var(--ink); box-shadow: none;">Voltar</button>
+          <button class="btn-refresh" type="button" id="btnCancelModalConfirm" style="background: var(--status-cancelado); color: white;">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbycjYy2UiWKMJAQcrFEs9IFJ42LTKtSJMgUufCYErjlX9U80m6V7M1pHvRb0gbH5TSF/exec";
     
@@ -835,6 +867,15 @@
     
     let statusChangeResolver = null;
     let statusChangeActive = false;
+
+    // Cancel Modal Elements
+    const confirmCancelModal = document.getElementById("confirmCancelModal");
+    const confirmCancelClose = document.getElementById("confirmCancelClose");
+    const btnCancelModalCancel = document.getElementById("btnCancelModalCancel");
+    const btnCancelModalConfirm = document.getElementById("btnCancelModalConfirm");
+    
+    let statusCancelChangeResolver = null;
+    let statusCancelChangeActive = false;
 
     function showAlert(title, message) {
       alertTitle.textContent = title;
@@ -1147,6 +1188,14 @@
           if (newStatus === "Pago") {
             dataPagamento = await obterDataPagamentoModal();
             if (dataPagamento === null) {
+              select.value = prevStatus;
+              return;
+            }
+          }
+
+          if (newStatus === "Cancelado (Desistência)") {
+            const confirmado = await obterConfirmacaoCancelamentoModal(o);
+            if (!confirmado) {
               select.value = prevStatus;
               return;
             }
@@ -1856,6 +1905,7 @@
         if (confirmLabelModal.classList.contains("is-open")) closeConfirmModal();
         if (alertModal.classList.contains("is-open")) closeAlert();
         if (paymentDateModal.classList.contains("is-open")) fecharPaymentDateModal(null);
+        if (confirmCancelModal.classList.contains("is-open")) fecharConfirmCancelModal(false);
       }
     });
 
@@ -1931,6 +1981,47 @@
         fecharPaymentDateModal(null);
       }
     });
+
+    function obterConfirmacaoCancelamentoModal(order) {
+      return new Promise((resolve) => {
+        document.getElementById("cancelOrderId").textContent = order.ID_Pedido;
+        
+        const labelAlert = document.getElementById("cancelLabelAlert");
+        const trackingSpan = document.getElementById("cancelTrackingCode");
+        
+        const hasLabel = !!(order.Codigo_Rastreio && order.Etiqueta_PDF_URL);
+        if (hasLabel) {
+          trackingSpan.textContent = order.Codigo_Rastreio;
+          labelAlert.style.display = "block";
+        } else {
+          labelAlert.style.display = "none";
+        }
+        
+        confirmCancelModal.classList.add("is-open");
+        confirmCancelModal.setAttribute("aria-hidden", "false");
+        
+        statusCancelChangeResolver = resolve;
+        statusCancelChangeActive = true;
+      });
+    }
+
+    function fecharConfirmCancelModal(confirmado) {
+      if (!statusCancelChangeActive) return;
+      confirmCancelModal.classList.remove("is-open");
+      confirmCancelModal.setAttribute("aria-hidden", "true");
+      statusCancelChangeActive = false;
+      if (statusCancelChangeResolver) {
+        statusCancelChangeResolver(confirmado);
+        statusCancelChangeResolver = null;
+      }
+    }
+
+    confirmCancelClose.addEventListener("click", () => fecharConfirmCancelModal(false));
+    btnCancelModalCancel.addEventListener("click", () => fecharConfirmCancelModal(false));
+    confirmCancelModal.addEventListener("click", e => {
+      if (e.target === confirmCancelModal) fecharConfirmCancelModal(false);
+    });
+    btnCancelModalConfirm.addEventListener("click", () => fecharConfirmCancelModal(true));
 
     // Initial load
     fetchOrders();
