@@ -1346,6 +1346,74 @@
     let lastSavedOrderKey = "";
     let lastCepResponseData = null;
 
+    function updateDisabledState() {
+      const elementsToDisable = [
+        "quantity", "minus", "plus", "addItem",
+        "name", "phone", "cep", "calcShipping", "notes"
+      ];
+      
+      elementsToDisable.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.disabled = isOrderSaved;
+          if (isOrderSaved) {
+            el.classList.add("is-disabled");
+            if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+              el.style.backgroundColor = "#e9ecef";
+              el.style.cursor = "not-allowed";
+              el.style.opacity = "0.7";
+            }
+          } else {
+            el.classList.remove("is-disabled");
+            if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+              el.style.backgroundColor = "";
+              el.style.cursor = "";
+              el.style.opacity = "";
+            }
+          }
+        }
+      });
+
+      // Seletor de Capas e Miolos
+      const coverOptions = document.querySelectorAll(".cover-option");
+      coverOptions.forEach(opt => {
+        if (isOrderSaved) {
+          opt.style.pointerEvents = "none";
+          opt.style.opacity = "0.6";
+        } else {
+          opt.style.pointerEvents = "";
+          opt.style.opacity = "";
+        }
+      });
+
+      const interiorOptions = document.querySelectorAll(".interior-option");
+      interiorOptions.forEach(opt => {
+        if (isOrderSaved) {
+          opt.style.pointerEvents = "none";
+          opt.style.opacity = "0.6";
+        } else {
+          opt.style.pointerEvents = "";
+          opt.style.opacity = "";
+        }
+      });
+
+      // Opções de frete
+      const shippingRadios = document.querySelectorAll('input[name="shipping_option"]');
+      shippingRadios.forEach(radio => {
+        radio.disabled = isOrderSaved;
+        const container = radio.closest("label") || radio.parentNode;
+        if (container) {
+          if (isOrderSaved) {
+            container.style.pointerEvents = "none";
+            container.style.opacity = "0.7";
+          } else {
+            container.style.pointerEvents = "";
+            container.style.opacity = "";
+          }
+        }
+      });
+    }
+
     function getOrderKey() {
       const nameVal = document.getElementById("name") ? document.getElementById("name").value.trim() : "";
       const phoneVal = document.getElementById("phone") ? document.getElementById("phone").value.trim() : "";
@@ -1725,6 +1793,25 @@
 
           // Controle de Alteração de Quantidade no Carrinho
           const qtyContainer = row.querySelector(".cart-item-qty");
+          const minusBtn = qtyContainer.querySelector(".minus");
+          const plusBtn = qtyContainer.querySelector(".plus");
+          const removeBtn = row.querySelector(".remove-item");
+
+          if (isOrderSaved) {
+            minusBtn.disabled = true;
+            plusBtn.disabled = true;
+            removeBtn.disabled = true;
+            minusBtn.style.opacity = "0.5";
+            minusBtn.style.cursor = "not-allowed";
+            minusBtn.style.pointerEvents = "none";
+            plusBtn.style.opacity = "0.5";
+            plusBtn.style.cursor = "not-allowed";
+            plusBtn.style.pointerEvents = "none";
+            removeBtn.style.opacity = "0.5";
+            removeBtn.style.cursor = "not-allowed";
+            removeBtn.style.pointerEvents = "none";
+          }
+
           qtyContainer.addEventListener("click", event => {
             event.stopPropagation(); // Evita abrir o preview de zoom ao clicar na quantidade
           });
@@ -1732,7 +1819,8 @@
             event.stopPropagation();
           });
 
-          qtyContainer.querySelector(".minus").addEventListener("click", () => {
+          minusBtn.addEventListener("click", () => {
+            if (isOrderSaved) return;
             if (item.qty > 1) {
               item.qty--;
               updateSummary();
@@ -1740,7 +1828,8 @@
             }
           });
 
-          qtyContainer.querySelector(".plus").addEventListener("click", () => {
+          plusBtn.addEventListener("click", () => {
+            if (isOrderSaved) return;
             if (item.qty < 50) {
               item.qty++;
               updateSummary();
@@ -1748,7 +1837,8 @@
             }
           });
 
-          row.querySelector(".remove-item").addEventListener("click", () => {
+          removeBtn.addEventListener("click", () => {
+            if (isOrderSaved) return;
             cart.splice(index, 1);
             updateSummary();
             autoRecalculateShipping();
@@ -1834,6 +1924,7 @@
       } else {
         whatsappButton.textContent = isOrderSaved ? "Reenviar pedido pelo WhatsApp" : "Enviar pedido pelo WhatsApp";
       }
+      updateDisabledState();
     }
 
     let zoomItems = [];
@@ -1995,11 +2086,13 @@
         };
 
         button.addEventListener("click", event => {
+          if (isOrderSaved) return;
           if (event.target.closest(".zoom-button")) return;
           selectCover(true);
         });
 
         button.addEventListener("keydown", event => {
+          if (isOrderSaved) return;
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
             selectCover(true);
@@ -2047,11 +2140,13 @@
         };
 
         button.addEventListener("click", event => {
+          if (isOrderSaved) return;
           if (event.target.closest(".zoom-button")) return;
           selectInterior(true);
         });
 
         button.addEventListener("keydown", event => {
+          if (isOrderSaved) return;
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
             selectInterior(true);
@@ -2497,6 +2592,7 @@
     // Reabrir o modal de endereço ao clicar no campo de Entrega (que é readonly)
     const deliveryInput = document.getElementById("delivery");
     deliveryInput.addEventListener("click", () => {
+      if (isOrderSaved) return;
       const cepVal = cepInput.value.replace(/\D/g, "");
       if (cepVal.length === 8 && isCepValid) {
         const fallbackData = {
