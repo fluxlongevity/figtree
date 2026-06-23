@@ -945,10 +945,12 @@
         if (o.Data_Emissao_Etiqueta && !o.Data_Postagem && String(o.Superfrete_Status).toLowerCase() !== "canceled" && String(o.Superfrete_Status).toLowerCase() !== "cancelled" && String(o.Superfrete_Status).toLowerCase() !== "delivered") {
           const dataEmissao = new Date(o.Data_Emissao_Etiqueta);
           if (!isNaN(dataEmissao.getTime())) {
-            const dataExpira = new Date(dataEmissao.getTime() + (10 * 24 * 60 * 60 * 1000));
-            const hoje = new Date();
-            const diffMs = dataExpira.getTime() - hoje.getTime();
-            const diasRestantes = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+            const dEmissaoZerada = new Date(dataEmissao.getFullYear(), dataEmissao.getMonth(), dataEmissao.getDate());
+            const dHojeZerada = new Date();
+            dHojeZerada.setHours(0, 0, 0, 0);
+            const diffMs = dHojeZerada.getTime() - dEmissaoZerada.getTime();
+            const diasPassados = Math.round(diffMs / (1000 * 60 * 60 * 24));
+            const diasRestantes = 10 - diasPassados;
             if (diasRestantes > 0) {
               expiraTexto = ` <span style="color: var(--accent); font-weight: bold;">(Expira em ${diasRestantes} ${diasRestantes === 1 ? 'dia' : 'dias'})</span>`;
             } else {
