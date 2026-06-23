@@ -1137,7 +1137,7 @@
           </div>
           <div class="field full">
             <label for="delivery">Entrega *</label>
-            <input id="delivery" placeholder="Rua, Nº, complemento - Bairro - Cidade/UF (obrigatório)" required />
+            <input id="delivery" placeholder="Rua, Nº, complemento - Bairro - Cidade/UF (obrigatório)" required readonly style="background-color: #f3e5d3; cursor: not-allowed;" />
           </div>
           <div class="field full">
             <label for="notes">Observações</label>
@@ -1335,6 +1335,7 @@
     let lastOrderId = null;
     let isOrderSaved = false;
     let lastSavedOrderKey = "";
+    let lastCepResponseData = null;
 
     function getOrderKey() {
       const nameVal = document.getElementById("name") ? document.getElementById("name").value.trim() : "";
@@ -2421,6 +2422,32 @@
       document.getElementById(id).addEventListener("input", updateSummary);
     });
 
+    // Reabrir o modal de endereço ao clicar no campo de Entrega (que é readonly)
+    const deliveryInput = document.getElementById("delivery");
+    deliveryInput.addEventListener("click", () => {
+      const cepVal = cepInput.value.replace(/\D/g, "");
+      if (cepVal.length === 8 && isCepValid) {
+        const fallbackData = {
+          logradouro: deliveryRua,
+          bairro: deliveryBairro,
+          localidade: deliveryCidade,
+          uf: deliveryEstado
+        };
+        openAddressModal(cepVal, lastCepResponseData || fallbackData);
+        if (deliveryNumero) addressModalNum.value = deliveryNumero;
+        if (deliveryComplemento) addressModalComp.value = deliveryComplemento;
+        if (lastCepResponseData && !lastCepResponseData.logradouro) {
+          addressModalStreet.value = deliveryRua;
+          addressModalDistrict.value = deliveryBairro;
+        } else if (!lastCepResponseData) {
+          addressModalStreet.value = deliveryRua;
+          addressModalDistrict.value = deliveryBairro;
+        }
+      } else {
+        showCustomAlert("CEP necessário", "Por favor, digite o seu CEP primeiro para preencher o endereço de entrega.", cepInput);
+      }
+    });
+
     // --- MÁSCARA E BUSCA AUTOMÁTICA DE CEP (VIACEP) ---
     function formatCep(val) {
       let digits = val.replace(/\D/g, "");
@@ -2460,6 +2487,7 @@
       selectedShipping = null;
       state.cpf = "";
       lastCalculatedServices = [];
+      lastCepResponseData = null;
       shippingOptionsList.innerHTML = "";
       shippingOptionsField.style.display = "none";
       updateSummary();
@@ -2489,6 +2517,7 @@
           return;
         }
 
+        lastCepResponseData = data;
         isCepValid = true;
         updateSummary();
         openAddressModal(cep, data);
