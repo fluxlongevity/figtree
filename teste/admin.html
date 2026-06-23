@@ -846,7 +846,7 @@
       if (!status) return "";
       const s = String(status).toLowerCase();
       const traducoes = {
-        "pending": hasPdf ? "Pendente" : 'Pendente "Sem Saldo"',
+        "pending": hasPdf ? "Pendente" : 'Pendente "Sem Saldo" (Expira em 10 dias)',
         "released": "Etiqueta Pronta",
         "posted": "Postado nos Correios",
         "delivered": "Entregue ao Destinatário",
@@ -1061,7 +1061,8 @@
         let expiraTexto = "";
         const statusSF = String(o.Superfrete_Status).toLowerCase().trim();
         const isPendentePostagem = (statusSF !== "posted" && statusSF !== "delivered" && statusSF !== "canceled" && statusSF !== "cancelled");
-        if (o.Data_Emissao_Etiqueta && isPendentePostagem && o.Status !== "Cancelado (Desistência)") {
+        const isSemSaldo = (statusSF === "pending" && !o.Etiqueta_PDF_URL);
+        if (o.Data_Emissao_Etiqueta && isPendentePostagem && o.Status !== "Cancelado (Desistência)" && !isSemSaldo) {
           const dataEmissao = new Date(o.Data_Emissao_Etiqueta);
           if (!isNaN(dataEmissao.getTime())) {
             const dEmissaoZerada = new Date(dataEmissao.getFullYear(), dataEmissao.getMonth(), dataEmissao.getDate());
@@ -1079,6 +1080,7 @@
         }
 
         const statusLower = String(o.Status).toLowerCase();
+        const foiEnviado = (statusLower === "enviado" || statusLower.includes("transito") || statusLower.includes("trânsito") || statusLower.includes("recebido") || statusSF === "posted" || statusSF === "delivered");
         let badgeClass = "badge-outros";
         if (statusLower.includes("pendente")) badgeClass = "badge-pendente";
         else if (statusLower === "pago") badgeClass = "badge-pago";
@@ -1157,8 +1159,8 @@
                   </button>
                 ` : ""}
               </div>
-              ${o.Superfrete_Status ? `<div><strong>Status Logístico:</strong> <span style="text-transform: capitalize; color: var(--accent); font-weight: bold;">${traduzirStatusSuperfrete(o.Superfrete_Status, !!o.Etiqueta_PDF_URL)}</span>${expiraTexto}</div>` : ""}
-              ${(o.Superfrete_Prazo_Entrega && String(o.Superfrete_Status).toLowerCase() !== "canceled" && String(o.Superfrete_Status).toLowerCase() !== "cancelled") ? `<div><strong>Prazo Estimado:</strong> ${o.Superfrete_Prazo_Entrega} dias</div>` : ""}
+              ${o.Superfrete_Status ? `<div><strong>Status Logístico:</strong> <span style="text-transform: capitalize; color: ${isSemSaldo ? '#dc3545' : 'var(--accent)'}; font-weight: bold;">${traduzirStatusSuperfrete(o.Superfrete_Status, !!o.Etiqueta_PDF_URL)}</span>${expiraTexto}</div>` : ""}
+              ${(o.Superfrete_Prazo_Entrega && foiEnviado && statusSF !== "canceled" && statusSF !== "cancelled") ? `<div><strong>Prazo Estimado:</strong> ${o.Superfrete_Prazo_Entrega} dias</div>` : ""}
               ${o.Data_Emissao_Etiqueta ? `<div><strong>Etiqueta Emitida em:</strong> ${formatarDataBR(o.Data_Emissao_Etiqueta)}</div>` : ""}
               ${o.Data_Postagem ? `<div><strong>Postado em:</strong> ${formatarDataBR(o.Data_Postagem)}</div>` : ""}
               ${o.Data_Entrega ? `<div><strong>Entregue em:</strong> ${formatarDataBR(o.Data_Entrega)}</div>` : ""}
