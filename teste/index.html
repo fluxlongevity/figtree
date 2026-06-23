@@ -1937,24 +1937,31 @@
           <span class="cover-name">${cover.name}</span>
         `;
 
-        const selectCover = () => {
+        const selectCover = (shouldScroll = false) => {
           document.querySelectorAll(".cover-option").forEach(item => item.classList.remove("is-selected"));
           button.classList.add("is-selected");
           state.coverName = cover.name;
           state.coverSrc = cover.src;
           state.coverThumb = cover.thumbSrc;
           updateSummary();
+
+          if (shouldScroll) {
+            const step2Panel = document.getElementById("interiorGrid") ? document.getElementById("interiorGrid").closest(".panel") : null;
+            if (step2Panel) {
+              step2Panel.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+          }
         };
 
         button.addEventListener("click", event => {
           if (event.target.closest(".zoom-button")) return;
-          selectCover();
+          selectCover(true);
         });
 
         button.addEventListener("keydown", event => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            selectCover();
+            selectCover(true);
           }
         });
 
@@ -1983,23 +1990,30 @@
           <span>${interior.detail}</span>
         `;
 
-        const selectInterior = () => {
+        const selectInterior = (shouldScroll = false) => {
           document.querySelectorAll(".interior-option").forEach(item => item.classList.remove("is-selected"));
           button.classList.add("is-selected");
           state.interiorName = interior.name;
           state.interiorSrc = interior.src;
           updateSummary();
+
+          if (shouldScroll) {
+            const step3Panel = document.getElementById("currentSelection") ? document.getElementById("currentSelection").closest(".panel") : null;
+            if (step3Panel) {
+              step3Panel.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+          }
         };
 
         button.addEventListener("click", event => {
           if (event.target.closest(".zoom-button")) return;
-          selectInterior();
+          selectInterior(true);
         });
 
         button.addEventListener("keydown", event => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            selectInterior();
+            selectInterior(true);
           }
         });
 
