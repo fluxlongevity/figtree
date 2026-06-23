@@ -1700,9 +1700,9 @@
           infoEl.setAttribute("title", "Clique para ver a imagem ampliada");
 
           const showZoom = () => {
-            const coverIndex = covers.findIndex(c => c.name === item.coverName);
-            if (coverIndex !== -1) {
-              openZoomCarousel("covers", coverIndex);
+            const cover = covers.find(c => c.name === item.coverName);
+            if (cover) {
+              openZoomSingleImage(cover.src, cover.name);
             }
           };
 
@@ -1917,6 +1917,24 @@
           carousel.scrollLeft = (index + 1) * width;
         }
       });
+    }
+
+    function openZoomSingleImage(src, title) {
+      previewTitle.textContent = title;
+      
+      let html = `
+        <div class="preview-body-container" style="padding: 24px; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
+          <div class="preview-cover-large">
+            <img class="preview-cover-base" src="${src}" alt="${title}">
+          </div>
+        </div>
+      `;
+      
+      previewBody.innerHTML = html;
+      
+      previewModal.classList.add("is-open");
+      previewModal.setAttribute("aria-hidden", "false");
+      previewClose.focus();
     }
 
     function closePreview() {
