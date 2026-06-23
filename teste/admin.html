@@ -1178,7 +1178,7 @@
                   Enviar Rastreio
                 </a>
               ` : ""}
-              ${o.Pix_Payload ? `
+              ${(o.Pix_Payload && o.Status === "Pendente de Pagamento") ? `
                 <button class="btn-show-pix" data-id="${o.ID_Pedido}" style="background: none; border: 0; padding: 0; color: var(--accent); font-weight: 700; cursor: pointer; text-decoration: underline; font-size: 13.5px; display: flex; align-items: center; gap: 4px;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                   Mostrar Código PIX
@@ -1868,6 +1868,79 @@
       printWindow.document.close();
     }
 
+    function obterDataPagamentoModal() {
+      return new Promise((resolve) => {
+        const hoje = new Date();
+        const dia = String(hoje.getDate()).padStart(2, '0');
+        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+        const ano = hoje.getFullYear();
+        paymentDateInput.value = `${ano}-${mes}-${dia}`;
+        paymentDateDisplay.value = `${dia}/${mes}/${ano}`;
+        
+        paymentDateModal.classList.add("is-open");
+        paymentDateModal.setAttribute("aria-hidden", "false");
+        
+        statusChangeResolver = resolve;
+        statusChangeActive = true;
+      });
+    }
+
+    function fecharPaymentDateModal(valor) {
+      if (!statusChangeActive) return;
+      paymentDateModal.classList.remove("is-open");
+      paymentDateModal.setAttribute("aria-hidden", "true");
+      statusChangeActive = false;
+      if (statusChangeResolver) {
+        statusChangeResolver(valor);
+        statusChangeResolver = null;
+      }
+    }
+
+    paymentDateClose.addEventListener("click", () => fecharPaymentDateModal(null));
+    btnPaymentCancel.addEventListener("click", () => fecharPaymentDateModal(null));
+    paymentDateModal.addEventListener("click", e => {
+      if (e.target === paymentDateModal) fecharPaymentDateModal(null);
+    });
+
+    btnCalendarPicker.addEventListener("click", () => {
+      try {
+        paymentDateInput.showPicker();
+      } catch (err) {
+        paymentDateInput.click();
+      }
+    });
+
+    paymentDateDisplay.addEventListener("click", () => {
+      try {
+        paymentDateInput.showPicker();
+      } catch (err) {
+        paymentDateInput.click();
+      }
+    });
+
+    paymentDateInput.addEventListener("change", () => {
+      const val = paymentDateInput.value;
+      if (val) {
+        const parts = val.split("-");
+        paymentDateDisplay.value = `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+    });
+
+    btnPaymentConfirm.addEventListener("click", () => {
+      const dataVal = paymentDateInput.value;
+      if (!dataVal) {
+        fecharPaymentDateModal(null);
+        return;
+      }
+      const partes = dataVal.split("-");
+      if (partes.length === 3) {
+        const dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]} 00:00`;
+        fecharPaymentDateModal(dataFormatada);
+      } else {
+        fecharPaymentDateModal(null);
+      }
+    });
+
     // Filtros por Abas
     const tabs = document.querySelectorAll(".tab-btn");
     tabs.forEach(tab => {
@@ -1978,79 +2051,6 @@
         if (alertModal.classList.contains("is-open")) closeAlert();
         if (paymentDateModal.classList.contains("is-open")) fecharPaymentDateModal(null);
         if (confirmCancelModal.classList.contains("is-open")) fecharConfirmCancelModal(false);
-      }
-    });
-
-    function obterDataPagamentoModal() {
-      return new Promise((resolve) => {
-        const hoje = new Date();
-        const dia = String(hoje.getDate()).padStart(2, '0');
-        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-        const ano = hoje.getFullYear();
-        paymentDateInput.value = `${ano}-${mes}-${dia}`;
-        paymentDateDisplay.value = `${dia}/${mes}/${ano}`;
-        
-        paymentDateModal.classList.add("is-open");
-        paymentDateModal.setAttribute("aria-hidden", "false");
-        
-        statusChangeResolver = resolve;
-        statusChangeActive = true;
-      });
-    }
-
-    function fecharPaymentDateModal(valor) {
-      if (!statusChangeActive) return;
-      paymentDateModal.classList.remove("is-open");
-      paymentDateModal.setAttribute("aria-hidden", "true");
-      statusChangeActive = false;
-      if (statusChangeResolver) {
-        statusChangeResolver(valor);
-        statusChangeResolver = null;
-      }
-    }
-
-    paymentDateClose.addEventListener("click", () => fecharPaymentDateModal(null));
-    btnPaymentCancel.addEventListener("click", () => fecharPaymentDateModal(null));
-    paymentDateModal.addEventListener("click", e => {
-      if (e.target === paymentDateModal) fecharPaymentDateModal(null);
-    });
-
-    btnCalendarPicker.addEventListener("click", () => {
-      try {
-        paymentDateInput.showPicker();
-      } catch (err) {
-        paymentDateInput.click();
-      }
-    });
-
-    paymentDateDisplay.addEventListener("click", () => {
-      try {
-        paymentDateInput.showPicker();
-      } catch (err) {
-        paymentDateInput.click();
-      }
-    });
-
-    paymentDateInput.addEventListener("change", () => {
-      const val = paymentDateInput.value;
-      if (val) {
-        const parts = val.split("-");
-        paymentDateDisplay.value = `${parts[2]}/${parts[1]}/${parts[0]}`;
-      }
-    });
-
-    btnPaymentConfirm.addEventListener("click", () => {
-      const dataVal = paymentDateInput.value;
-      if (!dataVal) {
-        fecharPaymentDateModal(null);
-        return;
-      }
-      const partes = dataVal.split("-");
-      if (partes.length === 3) {
-        const dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]} 00:00`;
-        fecharPaymentDateModal(dataFormatada);
-      } else {
-        fecharPaymentDateModal(null);
       }
     });
 
