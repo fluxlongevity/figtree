@@ -609,9 +609,9 @@
         <button class="tab-btn active" data-status="todos">Todos</button>
         <button class="tab-btn" data-status="Pendente de Pagamento">Pendente de Pagamento</button>
         <button class="tab-btn" data-status="Pago">Pago</button>
-        <button class="tab-btn" data-status="Etiqueta Gerada">Etiqueta Gerada</button>
         <button class="tab-btn" data-status="Em Produção">Em Produção</button>
         <button class="tab-btn" data-status="Pronto para Envio">Pronto para Envio</button>
+        <button class="tab-btn" data-status="Etiqueta Gerada">Etiqueta Gerada</button>
         <button class="tab-btn" data-status="Enviado">Enviado</button>
         <button class="tab-btn" data-status="Em Transito">Em Trânsito</button>
         <button class="tab-btn" data-status="Recebido (Finalizado)">Recebido (Finalizado)</button>
@@ -1151,9 +1151,9 @@
               <select class="status-select" data-id="${o.ID_Pedido}">
                 <option value="Pendente de Pagamento" ${o.Status === "Pendente de Pagamento" || o.Status === "Pendente" ? "selected" : ""}>Pendente de Pagamento</option>
                 <option value="Pago" ${o.Status === "Pago" ? "selected" : ""}>Pago</option>
-                <option value="Etiqueta Gerada" ${o.Status === "Etiqueta Gerada" ? "selected" : ""}>Etiqueta Gerada</option>
                 <option value="Em Produção" ${o.Status === "Em Produção" ? "selected" : ""}>Em Produção</option>
                 <option value="Pronto para Envio" ${o.Status === "Pronto para Envio" ? "selected" : ""}>Pronto para Envio</option>
+                <option value="Etiqueta Gerada" ${o.Status === "Etiqueta Gerada" ? "selected" : ""}>Etiqueta Gerada</option>
                 <option value="Enviado" ${o.Status === "Enviado" ? "selected" : ""}>Enviado</option>
                 <option value="Em Transito" ${o.Status === "Em Transito" ? "selected" : ""}>Em Trânsito</option>
                 <option value="Recebido (Finalizado)" ${o.Status === "Recebido (Finalizado)" ? "selected" : ""}>Recebido (Finalizado)</option>
