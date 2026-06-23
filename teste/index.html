@@ -989,6 +989,7 @@
       transform: scale(0.92);
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
   <main class="page">
@@ -1274,6 +1275,14 @@
         <p style="margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--muted); font-weight: 600; background: rgba(89, 54, 34, 0.05); padding: 10px 12px; border-radius: 8px; border: 1px dashed rgba(89, 54, 34, 0.2);">
           ⚠️ <strong>Importante:</strong> Após realizar o pagamento, envie o comprovante pelo WhatsApp para confirmar o seu pedido!
         </p>
+        
+        <!-- Container do QR Code -->
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 4px 0;">
+          <span style="font-size: 13.5px; font-weight: 700; color: var(--ink);">Ou aponte a câmera para pagar com o QR Code:</span>
+          <div id="qrcodeContainer" style="padding: 12px; background: #ffffff; border-radius: 12px; border: 1px solid rgba(82, 48, 30, 0.12); display: inline-flex; justify-content: center; align-items: center; box-shadow: 0 8px 24px rgba(78, 48, 30, 0.08);">
+            <div id="qrcode"></div>
+          </div>
+        </div>
         
         <div style="position: relative; width: 100%;">
           <textarea id="pixCodeText" readonly style="width: 100%; height: 80px; padding: 12px; border-radius: 8px; border: 1px solid rgba(82, 48, 30, 0.18); background: rgba(255, 252, 246, 0.9); font-family: monospace; font-size: 12px; color: var(--ink); resize: none; word-break: break-all; margin: 0; outline: none;" aria-label="Código Pix Copia e Cola"></textarea>
@@ -2240,6 +2249,23 @@
     function openPixModal(amount) {
       const payload = generatePixCopiaCola(amount, lastOrderId);
       pixCodeText.value = payload;
+      
+      // Gera o QR Code dinamicamente se a biblioteca estiver disponível
+      if (typeof QRCode !== "undefined") {
+        document.getElementById("qrcode").innerHTML = "";
+        try {
+          new QRCode(document.getElementById("qrcode"), {
+            text: payload,
+            width: 160,
+            height: 160,
+            colorDark: "#3a1d16", // Cor escura do tema
+            colorLight: "#ffffff", // Cor clara do tema (fundo branco puro)
+            correctLevel: QRCode.CorrectLevel.M
+          });
+        } catch (e) {
+          console.error("Erro ao gerar QR Code:", e);
+        }
+      }
       
       pixModal.classList.add("is-open");
       pixModal.setAttribute("aria-hidden", "false");
