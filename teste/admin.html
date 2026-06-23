@@ -941,6 +941,22 @@
           }
         }
 
+        let expiraTexto = "";
+        if (o.Data_Emissao_Etiqueta && !o.Data_Postagem && String(o.Superfrete_Status).toLowerCase() !== "canceled" && String(o.Superfrete_Status).toLowerCase() !== "cancelled" && String(o.Superfrete_Status).toLowerCase() !== "delivered") {
+          const dataEmissao = new Date(o.Data_Emissao_Etiqueta);
+          if (!isNaN(dataEmissao.getTime())) {
+            const dataExpira = new Date(dataEmissao.getTime() + (7 * 24 * 60 * 60 * 1000));
+            const hoje = new Date();
+            const diffMs = dataExpira.getTime() - hoje.getTime();
+            const diasRestantes = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+            if (diasRestantes > 0) {
+              expiraTexto = ` <span style="color: var(--accent); font-weight: bold;">(Expira em ${diasRestantes} ${diasRestantes === 1 ? 'dia' : 'dias'})</span>`;
+            } else {
+              expiraTexto = ` <span style="color: #dc3545; font-weight: bold;">(Expirada)</span>`;
+            }
+          }
+        }
+
         const statusLower = String(o.Status).toLowerCase();
         let badgeClass = "badge-outros";
         if (statusLower.includes("pendente")) badgeClass = "badge-pendente";
@@ -1021,7 +1037,7 @@
               </div>
               ${o.Superfrete_Status ? `<div><strong>Status Logístico:</strong> <span style="text-transform: capitalize; color: var(--accent); font-weight: bold;">${traduzirStatusSuperfrete(o.Superfrete_Status)}</span></div>` : ""}
               ${(o.Superfrete_Prazo_Entrega && String(o.Superfrete_Status).toLowerCase() !== "canceled" && String(o.Superfrete_Status).toLowerCase() !== "cancelled") ? `<div><strong>Prazo Estimado:</strong> ${o.Superfrete_Prazo_Entrega} dias</div>` : ""}
-              ${o.Data_Emissao_Etiqueta ? `<div><strong>Etiqueta Emitida em:</strong> ${formatarDataBR(o.Data_Emissao_Etiqueta)}</div>` : ""}
+              ${o.Data_Emissao_Etiqueta ? `<div><strong>Etiqueta Emitida em:</strong> ${formatarDataBR(o.Data_Emissao_Etiqueta)}${expiraTexto}</div>` : ""}
               ${o.Data_Postagem ? `<div><strong>Postado em:</strong> ${formatarDataBR(o.Data_Postagem)}</div>` : ""}
               ${o.Data_Entrega ? `<div><strong>Entregue em:</strong> ${formatarDataBR(o.Data_Entrega)}</div>` : ""}
             </div>
