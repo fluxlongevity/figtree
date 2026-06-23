@@ -1,0 +1,1196 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gestão de Custos e Caixas - FigTree</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;600;700;800&display=swap");
+
+    :root {
+      --bg: #efe2cf;
+      --paper: #fff8ec;
+      --paper-strong: #fffdf7;
+      --kraft: #b68455;
+      --ink: #3a1d16;
+      --muted: #76533f;
+      --accent: #c87955;
+      --accent-dark: #53251b;
+      --sage: #b9c5a8;
+      --line: rgba(82, 48, 30, .18);
+      --shadow: 0 16px 36px rgba(70, 45, 29, .10);
+      --serif: "Cormorant Garamond", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      --sans: "Inter", Arial, Helvetica, sans-serif;
+      --status-cancelado: #dc3545;
+      --status-pago: #28a745;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      overflow-x: hidden;
+      font-family: var(--sans);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 8%, rgba(178, 197, 166, .26), transparent 23rem),
+        radial-gradient(circle at 92% 5%, rgba(235, 194, 125, .22), transparent 27rem),
+        linear-gradient(145deg, #fbf2e7 0%, var(--bg) 100%);
+    }
+
+    .container {
+      width: min(1200px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 44px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(28px, 4vw, 38px);
+      font-weight: 700;
+    }
+
+    .btn-header {
+      background: var(--accent-dark);
+      color: #fff8ec;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(83, 37, 27, .18);
+      text-decoration: none;
+      font-size: 14px;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn-header:hover {
+      background: #3c1912;
+    }
+
+    .btn-header:active {
+      transform: scale(0.98);
+    }
+
+    /* Tab navigation */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: rgba(255, 252, 246, .6);
+      border: 1px solid rgba(89, 54, 34, .12);
+      border-radius: 8px;
+      padding: 10px 18px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--muted);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      background: #fff8ec;
+      color: var(--ink);
+    }
+
+    .tab-btn.active {
+      background: var(--accent-dark);
+      color: #fff8ec;
+      border-color: var(--accent-dark);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    @media (min-width: 900px) {
+      .layout-grid {
+        grid-template-columns: 1.6fr 1fr;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: rgba(255, 248, 235, .84);
+      border: 1px solid rgba(89, 54, 34, .16);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(7px);
+      margin-bottom: 24px;
+    }
+
+    .card-title {
+      font-family: var(--serif);
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 20px;
+      border-bottom: 1px dashed var(--line);
+      padding-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .kpi-production-cost {
+      background: var(--paper-strong);
+      border: 1.5px solid var(--kraft);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .kpi-production-cost .label {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .02em;
+    }
+
+    .kpi-production-cost .value {
+      font-family: var(--serif);
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--accent-dark);
+    }
+
+    /* Table styles */
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      font-weight: 700;
+      color: var(--muted);
+      border-bottom: 2px solid var(--line);
+      padding: 12px 10px;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: .02em;
+    }
+
+    td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 13.5px;
+      vertical-align: middle;
+    }
+
+    tr:hover td {
+      background: rgba(255, 252, 246, 0.5);
+    }
+
+    /* Forms */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      font-weight: 700;
+      font-size: 12.5px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .02em;
+    }
+
+    .form-group input, .form-group select {
+      border: 1px solid rgba(89, 54, 34, .25);
+      border-radius: 8px;
+      padding: 9px 12px;
+      background: var(--paper-strong);
+      color: var(--ink);
+      font-size: 14px;
+      outline: none;
+      width: 100%;
+      font-family: var(--sans);
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(200, 121, 85, .18);
+    }
+
+    .form-group input:disabled {
+      background: rgba(89, 54, 34, 0.08);
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+
+    .btn-submit {
+      background: var(--accent);
+      color: #fff8ec;
+      border: 0;
+      border-radius: 8px;
+      padding: 12px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(200, 121, 85, .25);
+      transition: background 0.2s ease, transform 0.1s ease;
+      width: 100%;
+    }
+
+    .btn-submit:hover {
+      background: #b5633e;
+    }
+
+    .btn-submit:active {
+      transform: scale(0.98);
+    }
+
+    .btn-action-icon {
+      border: 0;
+      background: none;
+      padding: 6px;
+      cursor: pointer;
+      color: var(--muted);
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-action-icon:hover {
+      background: rgba(89, 54, 34, 0.08);
+      color: var(--ink);
+    }
+
+    .btn-action-icon.btn-delete:hover {
+      background: #fdf2f2;
+      color: var(--status-cancelado);
+    }
+
+    /* Loader */
+    .loading-stage {
+      position: fixed;
+      inset: 0;
+      background: rgba(37, 21, 14, .62);
+      backdrop-filter: blur(5px);
+      z-index: 999;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      color: #fff7ea;
+    }
+
+    .loading-stage.is-open {
+      display: flex;
+    }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid rgba(255, 247, 234, 0.2);
+      border-left-color: var(--paper-strong);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 1000;
+    }
+
+    .toast {
+      background: var(--paper-strong);
+      border-left: 5px solid var(--accent);
+      padding: 14px 20px;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      font-size: 13.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(30px);
+      opacity: 0;
+      animation: slideIn 0.3s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      min-width: 250px;
+    }
+
+    @keyframes slideIn {
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .toast.toast-error {
+      border-left-color: var(--status-cancelado);
+    }
+
+    .toast.toast-success {
+      border-left-color: var(--status-pago);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="header-left">
+        <h1>📊 Gestão de Custos e Embalagens</h1>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <a href="admin.html" class="btn-header" style="background: var(--accent-dark);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          Painel de Pedidos
+        </a>
+        <a href="promocoes.html" class="btn-header" style="background: var(--muted);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+          Gerenciar Promoções
+        </a>
+        <a href="cupons.html" class="btn-header" style="background: var(--accent);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h10"/></svg>
+          Gerenciar Cupons
+        </a>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab-btn active" data-target="tabInsumos">Insumos & Compras</button>
+      <button class="tab-btn" data-target="tabFicha">Ficha Técnica do Caderno</button>
+      <button class="tab-btn" data-target="tabCaixas">Grade de Caixas</button>
+    </nav>
+
+    <!-- TAB 1: INSUMOS & COMPRAS -->
+    <main id="tabInsumos" class="tab-content active">
+      <div class="layout-grid">
+        <!-- Insumos Cadastrados -->
+        <section class="card">
+          <h2 class="card-title">Insumos Cadastrados</h2>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID Insumo</th>
+                  <th>Nome do Insumo</th>
+                  <th>Unidade</th>
+                  <th>Custo Médio</th>
+                  <th>Estoque</th>
+                  <th style="width: 60px; text-align: center;">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="insumosTableBody">
+                <tr>
+                  <td colspan="6" style="text-align: center; color: var(--muted); padding: 20px;">Carregando insumos...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="card-title" style="margin-top: 30px; font-size: 20px;" id="insumoFormTitle">Novo Insumo</h3>
+          <form id="insumoForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; align-items: end;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="insumoId">ID do Insumo (Chave)</label>
+              <input type="text" id="insumoId" required placeholder="papel_a4_marfim" pattern="[a-z0-9_]+" title="Use apenas letras minúsculas, números e sublinhados (_).">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="insumoNome">Nome</label>
+              <input type="text" id="insumoNome" required placeholder="Papel A4 Marfim 75g">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="insumoUnidade">Unidade de Medida</label>
+              <select id="insumoUnidade" required>
+                <option value="Folha">Folha</option>
+                <option value="Unidade">Unidade</option>
+                <option value="Grama">Grama</option>
+                <option value="Mililitro">Mililitro</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="insumoCustoBase">Custo Unitário Base (R$)</label>
+              <input type="number" id="insumoCustoBase" required step="0.00001" min="0" placeholder="0.08640">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="insumoEstoque">Estoque Inicial</label>
+              <input type="number" id="insumoEstoque" required step="0.1" min="0" placeholder="0">
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button type="submit" class="btn-submit" id="btnSubmitInsumo" style="padding: 10px;">Salvar</button>
+              <button type="button" class="btn-submit" id="btnCancelInsumo" style="background: var(--muted); display: none; padding: 10px;">X</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Lançar Nova Compra -->
+        <aside class="card">
+          <h2 class="card-title">Lançar Compra de Material</h2>
+          <form id="compraForm">
+            <div class="form-group">
+              <label for="compraInsumo">Insumo Comprado</label>
+              <select id="compraInsumo" required>
+                <option value="">Selecione um insumo...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="compraQuantidade">Quantidade Adquirida</label>
+              <input type="number" id="compraQuantidade" required step="0.01" min="0.01" placeholder="500">
+            </div>
+            <div class="form-group">
+              <label for="compraValorTotal">Valor Total Pago (R$)</label>
+              <input type="number" id="compraValorTotal" required step="0.01" min="0.01" placeholder="43.20">
+            </div>
+            <div class="form-group">
+              <label for="compraData">Data da Compra</label>
+              <input type="date" id="compraData" required>
+            </div>
+            <div class="form-group">
+              <label for="compraFornecedor">Fornecedor</label>
+              <input type="text" id="compraFornecedor" placeholder="Ex: Kalunga">
+            </div>
+            <button type="submit" class="btn-submit" style="margin-top: 10px;">Registrar Compra e Atualizar Custo</button>
+          </form>
+        </aside>
+      </div>
+
+      <!-- Histórico de Compras -->
+      <section class="card">
+        <h2 class="card-title">Histórico de Aquisição de Materiais</h2>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Insumo</th>
+                <th>Quantidade</th>
+                <th>Valor Total</th>
+                <th>Custo Unitário Calculado</th>
+                <th>Fornecedor</th>
+              </tr>
+            </thead>
+            <tbody id="comprasTableBody">
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--muted); padding: 20px;">Carregando histórico...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- TAB 2: FICHA TÉCNICA -->
+    <main id="tabFicha" class="tab-content">
+      <div class="kpi-production-cost">
+        <span class="label">Custo Unitário de Produção por Caderno</span>
+        <span class="value" id="kpiCustoProducao">R$ 0,00</span>
+      </div>
+
+      <div class="layout-grid">
+        <!-- Receita Ativa -->
+        <section class="card">
+          <h2 class="card-title">Ingredientes da Receita (1 Caderninho)</h2>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Insumo</th>
+                  <th>Qtd Consumida</th>
+                  <th>Unidade</th>
+                  <th>Custo Unitário Médio</th>
+                  <th>Custo do Item no Caderno</th>
+                  <th style="width: 60px; text-align: center;">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="fichaTableBody">
+                <tr>
+                  <td colspan="6" style="text-align: center; color: var(--muted); padding: 20px;">Carregando receita...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Adicionar à Ficha -->
+        <aside class="card">
+          <h2 class="card-title">Vincular Material à Receita</h2>
+          <form id="fichaForm">
+            <div class="form-group">
+              <label for="fichaInsumo">Insumo Utilizado</label>
+              <select id="fichaInsumo" required>
+                <option value="">Selecione um insumo...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="fichaQtdConsumida">Quantidade Consumida por Caderno</label>
+              <input type="number" id="fichaQtdConsumida" required step="0.0001" min="0.0001" placeholder="Ex: 7.5 para folhas, 2 para grampos">
+              <span style="font-size: 11px; color: var(--muted); margin-top: 2px;">
+                Especifique a quantidade exata de consumo para fabricar 1 unidade de caderno.
+              </span>
+            </div>
+            <button type="submit" class="btn-submit" style="margin-top: 10px;">Adicionar/Editar na Ficha</button>
+          </form>
+        </aside>
+      </div>
+    </main>
+
+    <!-- TAB 3: GRADE DE CAIXAS -->
+    <main id="tabCaixas" class="tab-content">
+      <div class="layout-grid">
+        <!-- Tabela de Caixas -->
+        <section class="card">
+          <h2 class="card-title">Grade de Caixas Logísticas Cadastradas</h2>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID Caixa</th>
+                  <th>Lim. Cadernos</th>
+                  <th>Dimensões (CxLxA cm)</th>
+                  <th>Peso Vazio</th>
+                  <th>Insumo de Custo</th>
+                  <th>Custo da Caixa</th>
+                  <th style="width: 100px; text-align: center;">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="caixasTableBody">
+                <tr>
+                  <td colspan="7" style="text-align: center; color: var(--muted); padding: 20px;">Carregando caixas...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Formulário de Caixa -->
+        <aside class="card">
+          <h2 class="card-title" id="caixaFormTitle">Configurar Embalagem</h2>
+          <form id="caixaForm">
+            <div class="form-group">
+              <label for="caixaId">ID da Caixa (Chave)</label>
+              <input type="text" id="caixaId" required placeholder="caixa_p" pattern="[a-z0-9_]+" title="Use apenas letras minúsculas, números e sublinhados (_).">
+            </div>
+            <div class="form-group">
+              <label for="caixaInsumo">Insumo Associado para Custo</label>
+              <select id="caixaInsumo" required>
+                <option value="">Selecione o insumo de custo...</option>
+              </select>
+              <span style="font-size: 11px; color: var(--muted); margin-top: 2px;">
+                Permite carregar o custo atualizado da caixa com base nas compras desse insumo.
+              </span>
+            </div>
+            <div class="form-group">
+              <label for="caixaCapacidade">Capacidade Máxima (Cadernos)</label>
+              <input type="number" id="caixaCapacidade" required min="1" step="1" placeholder="5">
+            </div>
+            <div class="form-group">
+              <label for="caixaComprimento">Comprimento (cm)</label>
+              <input type="number" id="caixaComprimento" required min="1" step="0.5" placeholder="16">
+            </div>
+            <div class="form-group">
+              <label for="caixaLargura">Largura (cm)</label>
+              <input type="number" id="caixaLargura" required min="1" step="0.5" placeholder="11">
+            </div>
+            <div class="form-group">
+              <label for="caixaAltura">Altura (cm)</label>
+              <input type="number" id="caixaAltura" required min="1" step="0.5" placeholder="3">
+            </div>
+            <div class="form-group">
+              <label for="caixaPeso">Peso da Caixa Vazia (kg)</label>
+              <input type="number" id="caixaPeso" required min="0.001" step="0.001" placeholder="0.050">
+              <span style="font-size: 11px; color: var(--muted); margin-top: 2px;">
+                Ex: 0.050 para 50 gramas.
+              </span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button type="submit" class="btn-submit" id="btnSubmitCaixa" style="flex: 1; margin-top: 10px;">Salvar Embalagem</button>
+              <button type="button" class="btn-submit" id="btnCancelCaixa" style="background: var(--muted); display: none; flex: 1; margin-top: 10px;">Cancelar</button>
+            </div>
+          </form>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <!-- Loading Modal -->
+  <div class="loading-stage" id="loadingStage">
+    <div class="spinner"></div>
+    <div id="loadingMessage">Carregando dados de custos...</div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbycjYy2UiWKMJAQcrFEs9IFJ42LTKtSJMgUufCYErjlX9U80m6V7M1pHvRb0gbH5TSF/exec";
+
+    // Global state
+    let stateInsumos = [];
+    let stateCompras = [];
+    let stateFicha = [];
+    let stateGrade = [];
+
+    // Edit states
+    let editingInsumoId = null;
+    let editingCaixaId = null;
+
+    // DOM Elements
+    const loadingStage = document.getElementById("loadingStage");
+    const loadingMessage = document.getElementById("loadingMessage");
+    const toastContainer = document.getElementById("toastContainer");
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Tab Switching
+      const tabBtns = document.querySelectorAll(".tab-btn");
+      const tabContents = document.querySelectorAll(".tab-content");
+
+      tabBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          tabBtns.forEach(b => b.classList.remove("active"));
+          tabContents.forEach(c => c.classList.remove("active"));
+
+          btn.classList.add("active");
+          const target = btn.dataset.target;
+          document.getElementById(target).classList.add("active");
+        });
+      });
+
+      // Set default date for compra form to today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById("compraData").value = today;
+
+      // Event Listeners for Forms
+      document.getElementById("insumoForm").addEventListener("submit", handleInsumoSubmit);
+      document.getElementById("compraForm").addEventListener("submit", handleCompraSubmit);
+      document.getElementById("fichaForm").addEventListener("submit", handleFichaSubmit);
+      document.getElementById("caixaForm").addEventListener("submit", handleCaixaSubmit);
+
+      // Cancel buttons
+      document.getElementById("btnCancelInsumo").addEventListener("click", resetInsumoForm);
+      document.getElementById("btnCancelCaixa").addEventListener("click", resetCaixaForm);
+
+      // Initial Load
+      fetchCustosData();
+    });
+
+    function showLoading(msg) {
+      loadingMessage.textContent = msg;
+      loadingStage.classList.add("is-open");
+    }
+
+    function hideLoading() {
+      loadingStage.classList.remove("is-open");
+    }
+
+    function showToast(message, isError = false) {
+      const toast = document.createElement("div");
+      toast.className = `toast ${isError ? 'toast-error' : 'toast-success'}`;
+      toast.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;">
+          ${isError 
+            ? '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>' 
+            : '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>'}
+        </svg>
+        <span>${message}</span>
+      `;
+      toastContainer.appendChild(toast);
+      setTimeout(() => {
+        toast.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(-20px)";
+        setTimeout(() => toast.remove(), 500);
+      }, 3500);
+    }
+
+    async function fetchCustosData() {
+      showLoading("Carregando dados de custos...");
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "get_custos_data" })
+        });
+        
+        if (!response.ok) throw new Error("Erro de rede ao buscar dados de custos.");
+        const data = await response.json();
+        
+        if (data.success) {
+          stateInsumos = data.insumos || [];
+          stateCompras = data.compras || [];
+          stateFicha = data.ficha || [];
+          stateGrade = data.grade || [];
+
+          renderAll();
+        } else {
+          showToast("Erro do servidor: " + data.error, true);
+        }
+      } catch (err) {
+        console.error(err);
+        showToast("Não foi possível conectar ao servidor.", true);
+      } finally {
+        hideLoading();
+      }
+    }
+
+    function renderAll() {
+      renderInsumosTable();
+      renderComprasTable();
+      renderFichaTable();
+      renderCaixasTable();
+      populateDropdowns();
+    }
+
+    const currencyFormatter = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+    const decimalFormatter = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 5 });
+
+    function renderInsumosTable() {
+      const tbody = document.getElementById("insumosTableBody");
+      tbody.innerHTML = "";
+
+      if (stateInsumos.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--muted); padding: 20px;">Nenhum insumo cadastrado.</td></tr>`;
+        return;
+      }
+
+      stateInsumos.forEach(ins => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><code>${ins.ID_Insumo}</code></td>
+          <td><strong>${ins.Nome}</strong></td>
+          <td>${ins.Unidade_Medida}</td>
+          <td>${currencyFormatter.format(ins.Custo_Unitario_Atual)}</td>
+          <td>${ins.Estoque_Atual}</td>
+          <td style="text-align: center;">
+            <button class="btn-action-icon" onclick="editInsumo('${ins.ID_Insumo}')" title="Editar Insumo">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"></path></svg>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderComprasTable() {
+      const tbody = document.getElementById("comprasTableBody");
+      tbody.innerHTML = "";
+
+      if (stateCompras.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--muted); padding: 20px;">Nenhuma compra registrada.</td></tr>`;
+        return;
+      }
+
+      // Sort purchases by date descending
+      const sortedCompras = [...stateCompras].sort((a, b) => new Date(b.Data_Compra) - new Date(a.Data_Compra));
+
+      sortedCompras.forEach(comp => {
+        const insumoObj = stateInsumos.find(i => i.ID_Insumo === comp.ID_Insumo);
+        const insumoNome = insumoObj ? insumoObj.Nome : comp.ID_Insumo;
+        const dataFmt = new Date(comp.Data_Compra + 'T00:00:00').toLocaleDateString('pt-BR');
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${dataFmt}</td>
+          <td><strong>${insumoNome}</strong></td>
+          <td>${comp.Quantidade}</td>
+          <td>${currencyFormatter.format(comp.Valor_Total)}</td>
+          <td>${currencyFormatter.format(comp.Custo_Unitario)}</td>
+          <td>${comp.Fornecedor || "-"}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderFichaTable() {
+      const tbody = document.getElementById("fichaTableBody");
+      tbody.innerHTML = "";
+
+      if (stateFicha.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--muted); padding: 20px;">Ficha técnica vazia.</td></tr>`;
+        document.getElementById("kpiCustoProducao").textContent = "R$ 0,00";
+        return;
+      }
+
+      let custoTotalProducao = 0;
+
+      stateFicha.forEach(item => {
+        const insumoObj = stateInsumos.find(i => i.ID_Insumo === item.ID_Insumo);
+        const insumoNome = insumoObj ? insumoObj.Nome : item.ID_Insumo;
+        const unidade = insumoObj ? insumoObj.Unidade_Medida : "";
+        const custoUnit = insumoObj ? insumoObj.Custo_Unitario_Atual : 0;
+        const custoTotalItem = item.Quantidade_Consumida * custoUnit;
+        
+        custoTotalProducao += custoTotalItem;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${insumoNome}</strong></td>
+          <td>${decimalFormatter.format(item.Quantidade_Consumida)}</td>
+          <td>${unidade}</td>
+          <td>${currencyFormatter.format(custoUnit)}</td>
+          <td><span style="font-weight: 700; color: var(--accent-dark);">${currencyFormatter.format(custoTotalItem)}</span></td>
+          <td style="text-align: center;">
+            <button class="btn-action-icon btn-delete" onclick="deleteFichaItem('${item.ID_Insumo}')" title="Excluir da Receita">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById("kpiCustoProducao").textContent = currencyFormatter.format(custoTotalProducao);
+    }
+
+    function renderCaixasTable() {
+      const tbody = document.getElementById("caixasTableBody");
+      tbody.innerHTML = "";
+
+      if (stateGrade.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--muted); padding: 20px;">Nenhuma caixa cadastrada na grade.</td></tr>`;
+        return;
+      }
+
+      stateGrade.forEach(cx => {
+        const insumoObj = stateInsumos.find(i => i.ID_Insumo === cx.ID_Insumo);
+        const insumoNome = insumoObj ? insumoObj.Nome : cx.ID_Insumo;
+        const custoCaixa = insumoObj ? insumoObj.Custo_Unitario_Atual : 0;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><code>${cx.ID_Caixa}</code></td>
+          <td><strong>Até ${cx.Capacidade_Max_Cadernos} cad.</strong></td>
+          <td>${cx.Comprimento_CM} x ${cx.Largura_CM} x ${cx.Altura_CM} cm</td>
+          <td>${Math.round(cx.Peso_Vazio_KG * 1000)} g (${cx.Peso_Vazio_KG} kg)</td>
+          <td>${insumoNome}</td>
+          <td><span style="font-weight: 700; color: var(--status-pago);">${currencyFormatter.format(custoCaixa)}</span></td>
+          <td style="text-align: center;">
+            <button class="btn-action-icon" onclick="editCaixa('${cx.ID_Caixa}')" title="Editar Caixa">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"></path></svg>
+            </button>
+            <button class="btn-action-icon btn-delete" onclick="deleteCaixa('${cx.ID_Caixa}')" title="Excluir Caixa">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function populateDropdowns() {
+      // Insumo selectors
+      const compraInsumo = document.getElementById("compraInsumo");
+      const fichaInsumo = document.getElementById("fichaInsumo");
+      const caixaInsumo = document.getElementById("caixaInsumo");
+
+      const savedCompraVal = compraInsumo.value;
+      const savedFichaVal = fichaInsumo.value;
+      const savedCaixaVal = caixaInsumo.value;
+
+      const optionsHtml = `<option value="">Selecione um insumo...</option>` + 
+        stateInsumos.map(i => `<option value="${i.ID_Insumo}">${i.Nome} (${i.ID_Insumo})</option>`).join("");
+
+      compraInsumo.innerHTML = optionsHtml;
+      fichaInsumo.innerHTML = optionsHtml;
+      caixaInsumo.innerHTML = optionsHtml;
+
+      compraInsumo.value = savedCompraVal;
+      fichaInsumo.value = savedFichaVal;
+      caixaInsumo.value = savedCaixaVal;
+    }
+
+    // Forms Handlers
+    async function handleInsumoSubmit(e) {
+      e.preventDefault();
+      const insumo = {
+        id_insumo: document.getElementById("insumoId").value.trim(),
+        nome: document.getElementById("insumoNome").value.trim(),
+        unidade_medida: document.getElementById("insumoUnidade").value,
+        custo_unitario_atual: parseFloat(document.getElementById("insumoCustoBase").value) || 0,
+        estoque_atual: parseFloat(document.getElementById("insumoEstoque").value) || 0
+      };
+
+      showLoading("Salvando insumo...");
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "salvar_insumo", insumo })
+        });
+        const data = await response.json();
+        if (data.success) {
+          showToast("Insumo salvo com sucesso!");
+          resetInsumoForm();
+          await fetchCustosData();
+        } else {
+          showToast("Erro ao salvar insumo: " + data.error, true);
+        }
+      } catch (err) {
+        showToast("Erro de rede ao salvar insumo.", true);
+      } finally {
+        hideLoading();
+      }
+    }
+
+    async function handleCompraSubmit(e) {
+      e.preventDefault();
+      const compra = {
+        id_insumo: document.getElementById("compraInsumo").value,
+        quantidade: parseFloat(document.getElementById("compraQuantidade").value),
+        valor_total: parseFloat(document.getElementById("compraValorTotal").value),
+        data_compra: document.getElementById("compraData").value,
+        fornecedor: document.getElementById("compraFornecedor").value.trim()
+      };
+
+      showLoading("Lançando compra de material...");
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "salvar_compra_insumo", compra })
+        });
+        const data = await response.json();
+        if (data.success) {
+          showToast("Compra lançada e custo médio recalculado!");
+          document.getElementById("compraForm").reset();
+          document.getElementById("compraData").value = new Date().toISOString().split('T')[0];
+          await fetchCustosData();
+        } else {
+          showToast("Erro ao lançar compra: " + data.error, true);
+        }
+      } catch (err) {
+        showToast("Erro de rede ao lançar compra.", true);
+      } finally {
+        hideLoading();
+      }
+    }
+
+    async function handleFichaSubmit(e) {
+      e.preventDefault();
+      const ficha = {
+        id_produto: "caderno_14x9",
+        id_insumo: document.getElementById("fichaInsumo").value,
+        quantidade_consumida: parseFloat(document.getElementById("fichaQtdConsumida").value)
+      };
+
+      showLoading("Atualizando ficha técnica...");
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "salvar_ficha_tecnica", ficha })
+        });
+        const data = await response.json();
+        if (data.success) {
+          showToast("Item atualizado na receita!");
+          document.getElementById("fichaForm").reset();
+          await fetchCustosData();
+        } else {
+          showToast("Erro ao atualizar receita: " + data.error, true);
+        }
+      } catch (err) {
+        showToast("Erro de rede ao atualizar receita.", true);
+      } finally {
+        hideLoading();
+      }
+    }
+
+    async function handleCaixaSubmit(e) {
+      e.preventDefault();
+      const caixa = {
+        id_caixa: document.getElementById("caixaId").value.trim(),
+        id_insumo: document.getElementById("caixaInsumo").value,
+        capacidade_max_cadernos: parseInt(document.getElementById("caixaCapacidade").value),
+        comprimento_cm: parseFloat(document.getElementById("caixaComprimento").value),
+        largura_cm: parseFloat(document.getElementById("caixaLargura").value),
+        altura_cm: parseFloat(document.getElementById("caixaAltura").value),
+        peso_vazio_kg: parseFloat(document.getElementById("caixaPeso").value)
+      };
+
+      showLoading("Salvando caixa na grade...");
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "salvar_caixa", caixa })
+        });
+        const data = await response.json();
+        if (data.success) {
+          showToast("Configuração da caixa salva!");
+          resetCaixaForm();
+          await fetchCustosData();
+        } else {
+          showToast("Erro ao salvar caixa: " + data.error, true);
+        }
+      } catch (err) {
+        showToast("Erro de rede ao salvar caixa.", true);
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // Actions
+    window.editInsumo = function(id) {
+      const ins = stateInsumos.find(i => i.ID_Insumo === id);
+      if (!ins) return;
+
+      editingInsumoId = id;
+      document.getElementById("insumoFormTitle").textContent = "Editar Insumo";
+      document.getElementById("insumoId").value = ins.ID_Insumo;
+      document.getElementById("insumoId").disabled = true;
+      document.getElementById("insumoNome").value = ins.Nome;
+      document.getElementById("insumoUnidade").value = ins.Unidade_Medida;
+      document.getElementById("insumoCustoBase").value = ins.Custo_Unitario_Atual;
+      document.getElementById("insumoEstoque").value = ins.Estoque_Atual;
+
+      document.getElementById("btnCancelInsumo").style.display = "inline-block";
+      document.getElementById("insumoForm").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function resetInsumoForm() {
+      editingInsumoId = null;
+      document.getElementById("insumoFormTitle").textContent = "Novo Insumo";
+      document.getElementById("insumoId").disabled = false;
+      document.getElementById("insumoForm").reset();
+      document.getElementById("btnCancelInsumo").style.display = "none";
+    }
+
+    window.deleteFichaItem = async function(insumoId) {
+      if (!confirm("Remover este item da receita do caderno?")) return;
+
+      showLoading("Removendo da ficha técnica...");
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "excluir_item_ficha",
+            id_produto: "caderno_14x9",
+            id_insumo: insumoId
+          })
+        });
+        const data = await response.json();
+        if (data.success) {
+          showToast("Item removido da receita.");
+          await fetchCustosData();
+        } else {
+          showToast("Erro ao remover: " + data.error, true);
+        }
+      } catch (err) {
+        showToast("Erro de rede ao remover item.", true);
+      } finally {
+        hideLoading();
+      }
+    }
+
+    window.editCaixa = function(id) {
+      const cx = stateGrade.find(c => c.ID_Caixa === id);
+      if (!cx) return;
+
+      editingCaixaId = id;
+      document.getElementById("caixaFormTitle").textContent = "Editar Caixa";
+      document.getElementById("caixaId").value = cx.ID_Caixa;
+      document.getElementById("caixaId").disabled = true;
+      document.getElementById("caixaInsumo").value = cx.ID_Insumo;
+      document.getElementById("caixaCapacidade").value = cx.Capacidade_Max_Cadernos;
+      document.getElementById("caixaComprimento").value = cx.Comprimento_CM;
+      document.getElementById("caixaLargura").value = cx.Largura_CM;
+      document.getElementById("caixaAltura").value = cx.Altura_CM;
+      document.getElementById("caixaPeso").value = cx.Peso_Vazio_KG;
+
+      document.getElementById("btnCancelCaixa").style.display = "inline-block";
+      document.getElementById("caixaForm").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function resetCaixaForm() {
+      editingCaixaId = null;
+      document.getElementById("caixaFormTitle").textContent = "Configurar Embalagem";
+      document.getElementById("caixaId").disabled = false;
+      document.getElementById("caixaForm").reset();
+      document.getElementById("btnCancelCaixa").style.display = "none";
+    }
+
+    window.deleteCaixa = async function(id) {
+      if (!confirm("Excluir permanentemente esta caixa da grade logológica?")) return;
+
+      showLoading("Excluindo caixa da grade...");
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "excluir_caixa",
+            id_caixa: id
+          })
+        });
+        const data = await response.json();
+        if (data.success) {
+          showToast("Caixa excluída.");
+          await fetchCustosData();
+        } else {
+          showToast("Erro ao excluir: " + data.error, true);
+        }
+      } catch (err) {
+        showToast("Erro de rede ao excluir caixa.", true);
+      } finally {
+        hideLoading();
+      }
+    }
+  </script>
+</body>
+</html>

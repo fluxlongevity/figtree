@@ -563,7 +563,7 @@
         <h1>Painel de Pedidos</h1>
         <p style="margin: 4px 0 0; color: var(--muted); font-size: 14.5px;">Gerenciamento de produção e etiquetas SuperFrete</p>
       </div>
-      <div style="display: flex; gap: 12px; align-items: center;">
+      <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
         <a href="promocoes.html" class="btn-refresh" id="btnPromocoes" title="Gerenciar promoções por item" style="background: var(--muted); color: #fff8ec; box-shadow: 0 4px 12px rgba(118, 83, 63, .22); text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
           Gerenciar Promoções
@@ -571,6 +571,10 @@
         <a href="cupons.html" class="btn-refresh" id="btnCupons" title="Gerenciar cupons de desconto" style="background: var(--accent); color: #fff8ec; box-shadow: 0 4px 12px rgba(200, 121, 85, .22); text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h10"/></svg>
           Gerenciar Cupons
+        </a>
+        <a href="custos.html" class="btn-refresh" id="btnCustos" title="Gerenciar custos de produção e caixas" style="background: var(--accent-dark); color: #fff8ec; box-shadow: 0 4px 12px rgba(83, 37, 27, .22); text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Gerenciar Custos
         </a>
         <button class="btn-refresh" id="btnConciliar" title="Conciliar recibos de pagamento no Drive" style="background: #28a745; color: #ffffff; box-shadow: 0 4px 12px rgba(40, 167, 69, .22);">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
@@ -628,6 +632,10 @@
       <div class="kpi-card">
         <span class="kpi-label">Faturamento Total</span>
         <span class="kpi-value" id="kpiFaturamentoTotal" style="color: var(--ink);">R$ 0,00</span>
+      </div>
+      <div class="kpi-card" style="background: #e6f7ec; border: 1.5px solid var(--status-pago);">
+        <span class="kpi-label" style="color: var(--status-pago);">Lucro Líquido Real</span>
+        <span class="kpi-value" id="kpiLucroLiquidoReal" style="color: var(--status-pago);">R$ 0,00</span>
       </div>
     </section>
 
@@ -794,10 +802,67 @@
     let currentTab = "todos";
     let activeConfirmOrder = null;
 
+    // Globais para custos
+    let stateInsumos = [];
+    let stateFicha = [];
+    let stateGrade = [];
+    let custoProdUnitario = 0;
+
     const currency = new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL"
     });
+
+    function obterCustoEmbalagem(qtd) {
+      if (stateGrade.length === 0) return 0.80; // Fallback Caixa P
+      
+      const caixas = [...stateGrade].map(cx => {
+        const ins = stateInsumos.find(i => i.ID_Insumo === cx.ID_Insumo);
+        const custo = ins ? (parseFloat(ins.Custo_Unitario_Atual) || 0) : 0;
+        return {
+          capacidade: parseInt(cx.Capacidade_Max_Cadernos) || 1,
+          custo: custo
+        };
+      }).sort((a, b) => a.capacidade - b.capacidade);
+      
+      let selecionada = null;
+      for (let c of caixas) {
+        if (c.capacidade >= qtd) {
+          selecionada = c;
+          break;
+        }
+      }
+      if (!selecionada && caixas.length > 0) {
+        selecionada = caixas[caixas.length - 1];
+      }
+      return selecionada ? selecionada.custo : 0.80;
+    }
+
+    function obterCaixaGrade(qtd) {
+      if (stateGrade.length === 0) return "Fallback P";
+      
+      const caixas = [...stateGrade].sort((a, b) => (parseInt(a.Capacidade_Max_Cadernos) || 1) - (parseInt(b.Capacidade_Max_Cadernos) || 1));
+      let selecionada = null;
+      for (let c of caixas) {
+        if (parseInt(c.Capacidade_Max_Cadernos) >= qtd) {
+          selecionada = c;
+          break;
+        }
+      }
+      if (!selecionada && caixas.length > 0) {
+        selecionada = caixas[caixas.length - 1];
+      }
+      return selecionada ? selecionada.ID_Caixa.toUpperCase() : "FALLBACK P";
+    }
+
+    function obterLucroLiquido(o) {
+      const totalGeral = parseFloat(o.Total_Geral) || 0;
+      const qtd = parseInt(o.Qtd_Total) || 0;
+      const custoProd = qtd * custoProdUnitario;
+      const custoEmb = obterCustoEmbalagem(qtd);
+      const freteReal = parseFloat(o.Valor_Frete_Pago) || 0;
+      return totalGeral - custoProd - custoEmb - freteReal;
+    }
 
     function formatarDataBR(dataVal) {
       if (!dataVal) return "";
@@ -878,6 +943,7 @@
     const kpiFaturamentoPendente = document.getElementById("kpiFaturamentoPendente");
     const kpiFaturamentoCancelado = document.getElementById("kpiFaturamentoCancelado");
     const kpiFaturamentoTotal = document.getElementById("kpiFaturamentoTotal");
+    const kpiLucroLiquidoReal = document.getElementById("kpiLucroLiquidoReal");
 
     // Modal Elements
     const confirmLabelModal = document.getElementById("confirmLabelModal");
@@ -933,6 +999,33 @@
       ordersList.style.display = "none";
       
       try {
+        // Primeiro busca dados de custos
+        try {
+          const resCustos = await fetch(BACKEND_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "get_custos_data" })
+          });
+          if (resCustos.ok) {
+            const dataCustos = await resCustos.json();
+            if (dataCustos.success) {
+              stateInsumos = dataCustos.insumos || [];
+              stateFicha = dataCustos.ficha || [];
+              stateGrade = dataCustos.grade || [];
+              
+              // Calcula o custo unitário de produção do caderno_14x9
+              let totalFicha = 0;
+              stateFicha.forEach(item => {
+                const ins = stateInsumos.find(i => i.ID_Insumo === item.ID_Insumo);
+                const cost = ins ? (parseFloat(ins.Custo_Unitario_Atual) || 0) : 0;
+                totalFicha += item.Quantidade_Consumida * cost;
+              });
+              custoProdUnitario = totalFicha;
+            }
+          }
+        } catch (cErr) {
+          console.error("Erro ao buscar dados de custos:", cErr);
+        }
+
         const response = await fetch(BACKEND_URL, {
           method: "POST",
           body: JSON.stringify({ action: "get_all_orders" })
@@ -1018,6 +1111,10 @@
       // 10. Faturamento Total (todos exceto pendentes e cancelados)
       const fatTotal = pagosList.reduce((sum, o) => sum + (parseFloat(o.Valor_Produtos) || 0), 0);
       kpiFaturamentoTotal.textContent = currency.format(fatTotal);
+      
+      // 11. Lucro Líquido Real Total (pedidos pagos)
+      const lucroTotal = pagosList.reduce((sum, o) => sum + obterLucroLiquido(o), 0);
+      kpiLucroLiquidoReal.textContent = currency.format(lucroTotal);
     }
 
     function renderOrders() {
@@ -1232,6 +1329,28 @@
               </div>
               <div style="font-size: 11.5px; color: var(--muted); text-align: right; margin-top: 2px;">
                 Método: ${o.Frete_Metodo}
+              </div>
+            </div>
+            
+            <!-- Detalhamento de Custos e Margem de Lucro -->
+            <div class="cost-details-summary" style="margin-top: 12px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 12px; display: flex; flex-direction: column; gap: 4px;">
+              <div class="price-row" style="color: var(--muted);">
+                <span>Custo Produção:</span>
+                <span>${currency.format(parseInt(o.Qtd_Total) * custoProdUnitario)}</span>
+              </div>
+              <div class="price-row" style="color: var(--muted);">
+                <span>Embalagem (${obterCaixaGrade(parseInt(o.Qtd_Total))}):</span>
+                <span>${currency.format(obterCustoEmbalagem(parseInt(o.Qtd_Total)))}</span>
+              </div>
+              ${parseFloat(o.Valor_Frete_Pago) ? `
+              <div class="price-row" style="color: var(--muted);">
+                <span>Frete Pago (Real):</span>
+                <span>${currency.format(parseFloat(o.Valor_Frete_Pago))}</span>
+              </div>
+              ` : ""}
+              <div class="price-row" style="font-weight: 700; color: ${obterLucroLiquido(o) >= 0 ? 'var(--status-pago)' : 'var(--status-cancelado)'};">
+                <span>Lucro Real:</span>
+                <span>${currency.format(obterLucroLiquido(o))}</span>
               </div>
             </div>
 
