@@ -489,7 +489,7 @@
 
           <!-- Seleção de produtos específicos -->
           <div class="form-group hidden" id="productsSelectionGroup">
-            <label>Selecione as Capas Elegíveis</label>
+            <label>Selecione as Capas e Miolos Elegíveis</label>
             <div style="display: flex; gap: 8px; margin-bottom: 8px;">
               <button type="button" id="btnSelectAll" style="font-size: 11.5px; cursor: pointer; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--line); background: var(--paper-strong);">Marcar Todas</button>
               <button type="button" id="btnDeselectAll" style="font-size: 11.5px; cursor: pointer; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--line); background: var(--paper-strong);">Desmarcar Todas</button>
@@ -559,6 +559,14 @@
       ...Array.from({ length: 14 }, (_, index) => `Capa ${index + 1}`),
       "Capa lisa"
     ];
+    // Catálogo de Miolos conhecido
+    const catalogInteriors = [
+      "Pautado simples",
+      "Pautado com data",
+      "Sem pauta com data",
+      "Sem pauta liso"
+    ];
+    const catalogProducts = [...catalogCovers, ...catalogInteriors];
 
     const cuponsTableBody = document.getElementById("cuponsTableBody");
     const couponForm = document.getElementById("couponForm");
@@ -577,13 +585,13 @@
 
     // Inicialização
     document.addEventListener("DOMContentLoaded", () => {
-      // Preencher checkboxes de capas
+      // Preencher checkboxes de capas e miolos
       renderProductCheckboxes();
       
       // Carregar cupons da planilha
       fetchCupons();
       
-      // Controlar exibição da seleção de capas
+      // Controlar exibição da seleção de capas/miolos
       discountTypeSelect.addEventListener("change", (e) => {
         if (e.target.value === "produto") {
           productsSelectionGroup.classList.remove("hidden");
@@ -592,7 +600,7 @@
         }
       });
 
-      // Seleção rápida de capas
+      // Seleção rápida de capas/miolos
       btnSelectAll.addEventListener("click", () => setAllCheckboxes(true));
       btnDeselectAll.addEventListener("click", () => setAllCheckboxes(false));
 
@@ -628,21 +636,25 @@
     }
 
     function renderProductCheckboxes() {
-      productsCheckboxGrid.innerHTML = catalogCovers.map((cover, idx) => `
-        <label class="checkbox-item">
-          <input type="checkbox" name="cover_eligible" value="${cover}">
-          ${cover}
-        </label>
-      `).join("");
+      productsCheckboxGrid.innerHTML = catalogProducts.map((prod, idx) => {
+        const isInterior = catalogInteriors.includes(prod);
+        const labelStyle = isInterior ? 'font-weight: 700; color: var(--accent);' : '';
+        return `
+          <label class="checkbox-item" style="${labelStyle}">
+            <input type="checkbox" name="product_eligible" value="${prod}">
+            ${prod}
+          </label>
+        `;
+      }).join("");
     }
 
     function setAllCheckboxes(checked) {
-      const checkboxes = document.getElementsByName("cover_eligible");
+      const checkboxes = document.getElementsByName("product_eligible");
       checkboxes.forEach(cb => cb.checked = checked);
     }
 
     function getSelectedCheckboxes() {
-      const checkboxes = document.getElementsByName("cover_eligible");
+      const checkboxes = document.getElementsByName("product_eligible");
       const selected = [];
       checkboxes.forEach(cb => {
         if (cb.checked) selected.push(cb.value);
@@ -752,7 +764,7 @@
       if (c.Tipo_Desconto === "produto") {
         productsSelectionGroup.classList.remove("hidden");
         const listEspec = (c.Produtos_Especificos || "").split(",").map(x => x.trim());
-        const checkboxes = document.getElementsByName("cover_eligible");
+        const checkboxes = document.getElementsByName("product_eligible");
         checkboxes.forEach(cb => {
           cb.checked = listEspec.includes(cb.value);
         });

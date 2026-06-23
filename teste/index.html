@@ -1168,6 +1168,7 @@
             <button id="applyCouponBtn" type="button" class="add-item" style="min-height: 38px; box-shadow: none; font-size: 13px; padding: 0 14px; margin-top: 0; background: var(--kraft); color: #fff; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s;">Aplicar</button>
           </div>
           <div id="couponFeedback" style="display: none; font-size: 12px; margin-top: 6px; font-weight: 600;"></div>
+          <div style="font-size: 11px; color: var(--muted); margin-top: 5px; font-weight: 500; text-align: center;">Apenas um cupom por pedido (não acumulativo).</div>
         </div>
 
         <div class="total"><span>Total</span><strong id="summaryTotal">R$ 0</strong></div>
@@ -1928,7 +1929,11 @@
             let qtyElegiveis = 0;
             cart.forEach(item => {
               const coverNameLower = item.coverName.trim().toLowerCase();
-              const isMatch = listEspec.some(espec => coverNameLower.includes(espec) || espec.includes(coverNameLower));
+              const interiorNameLower = item.interiorName.trim().toLowerCase();
+              const isMatch = listEspec.some(espec => 
+                coverNameLower.includes(espec) || espec.includes(coverNameLower) ||
+                interiorNameLower.includes(espec) || espec.includes(interiorNameLower)
+              );
               if (isMatch) {
                 qtyElegiveis += item.qty;
               }
@@ -1970,13 +1975,17 @@
             } else {
               cart.forEach(item => {
                 const coverNameLower = item.coverName.trim().toLowerCase();
-                const isMatch = listEspec.some(espec => coverNameLower.includes(espec) || espec.includes(coverNameLower));
+                const interiorNameLower = item.interiorName.trim().toLowerCase();
+                const isMatch = listEspec.some(espec => 
+                  coverNameLower.includes(espec) || espec.includes(coverNameLower) ||
+                  interiorNameLower.includes(espec) || espec.includes(interiorNameLower)
+                );
                 if (isMatch) qtyElegiveis += item.qty;
               });
             }
             if (qtyElegiveis === 0) {
               feedback.style.color = "#c87955";
-              feedback.textContent = "Cupom válido, mas nenhuma capa no carrinho é elegível.";
+              feedback.textContent = "Cupom válido, mas nenhum item elegível no carrinho.";
             } else {
               feedback.style.color = "#28a745";
               feedback.textContent = `Cupom "${activeCoupon.codigo}" aplicado!`;
