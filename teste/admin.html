@@ -1227,9 +1227,11 @@
                 <option value="Pago" ${o.Status === "Pago" ? "selected" : ""}>Pago</option>
                 <option value="Em Produção" ${o.Status === "Em Produção" ? "selected" : ""}>Em Produção</option>
                 <option value="Pronto para Envio" ${o.Status === "Pronto para Envio" ? "selected" : ""}>Pronto para Envio</option>
-                <option value="Etiqueta Gerada" ${o.Status === "Etiqueta Gerada" ? "selected" : ""}>Etiqueta Gerada</option>
-                <option value="Enviado" ${o.Status === "Enviado" ? "selected" : ""}>Enviado</option>
-                <option value="Em Transito" ${o.Status === "Em Transito" ? "selected" : ""}>Em Trânsito</option>
+                ${!isFreeShipping ? `
+                  <option value="Etiqueta Gerada" ${o.Status === "Etiqueta Gerada" ? "selected" : ""}>Etiqueta Gerada</option>
+                  <option value="Enviado" ${o.Status === "Enviado" ? "selected" : ""}>Enviado</option>
+                  <option value="Em Transito" ${o.Status === "Em Transito" ? "selected" : ""}>Em Trânsito</option>
+                ` : ""}
                 <option value="Recebido (Finalizado)" ${o.Status === "Recebido (Finalizado)" ? "selected" : ""}>Recebido (Finalizado)</option>
                 <option value="Cancelado (Desistência)" ${o.Status === "Cancelado (Desistência)" ? "selected" : ""}>Cancelado (Desistência)</option>
               </select>
