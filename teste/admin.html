@@ -927,13 +927,19 @@
         const card = document.createElement("article");
         card.className = "order-card";
         
-        const dateFormatted = new Date(o.Data_Pedido).toLocaleString("pt-BR", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit"
-        });
+        let dateFormatted = "Não informada";
+        if (o.Data_Pedido) {
+          const d = new Date(o.Data_Pedido);
+          if (!isNaN(d.getTime())) {
+            dateFormatted = d.toLocaleString("pt-BR", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit"
+            });
+          }
+        }
 
         const statusLower = String(o.Status).toLowerCase();
         let badgeClass = "badge-outros";
@@ -1368,13 +1374,19 @@
         `;
       });
 
-      const dateFormatted = new Date(order.Data_Pedido).toLocaleString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
-      });
+      let dateFormatted = "Não informada";
+      if (order.Data_Pedido) {
+        const d = new Date(order.Data_Pedido);
+        if (!isNaN(d.getTime())) {
+          dateFormatted = d.toLocaleString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+          });
+        }
+      }
 
       const htmlContent = `
         <!DOCTYPE html>
