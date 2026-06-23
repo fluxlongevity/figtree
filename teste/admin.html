@@ -590,16 +590,36 @@
         <span class="kpi-value" id="kpiPendente" style="color: var(--status-pendente);">0</span>
       </div>
       <div class="kpi-card">
-        <span class="kpi-label">Pagos / Produção</span>
-        <span class="kpi-value" id="kpiPago" style="color: var(--status-pago);">0</span>
+        <span class="kpi-label">Produção</span>
+        <span class="kpi-value" id="kpiProducao" style="color: var(--status-producao);">0</span>
       </div>
       <div class="kpi-card">
-        <span class="kpi-label">Pronto para Envio</span>
-        <span class="kpi-value" id="kpiPronto" style="color: var(--status-pronto);">0</span>
+        <span class="kpi-label">Envio</span>
+        <span class="kpi-value" id="kpiEnvio" style="color: var(--status-enviado);">0</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Finalizado</span>
+        <span class="kpi-value" id="kpiFinalizado" style="color: var(--status-recebido);">0</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Cancelados</span>
+        <span class="kpi-value" id="kpiCancelados" style="color: var(--status-cancelado);">0</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Pagos</span>
+        <span class="kpi-value" id="kpiPagos" style="color: var(--status-pago);">0</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Faturamento Pendente</span>
+        <span class="kpi-value" id="kpiFaturamentoPendente" style="color: var(--status-pendente);">R$ 0,00</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Faturamento Cancelado</span>
+        <span class="kpi-value" id="kpiFaturamentoCancelado" style="color: var(--status-cancelado);">R$ 0,00</span>
       </div>
       <div class="kpi-card">
         <span class="kpi-label">Faturamento Total</span>
-        <span class="kpi-value" id="kpiFaturamento">R$ 0,00</span>
+        <span class="kpi-value" id="kpiFaturamentoTotal" style="color: var(--ink);">R$ 0,00</span>
       </div>
     </section>
 
@@ -842,9 +862,14 @@
     // KPI Elements
     const kpiTotal = document.getElementById("kpiTotal");
     const kpiPendente = document.getElementById("kpiPendente");
-    const kpiPago = document.getElementById("kpiPago");
-    const kpiPronto = document.getElementById("kpiPronto");
-    const kpiFaturamento = document.getElementById("kpiFaturamento");
+    const kpiProducao = document.getElementById("kpiProducao");
+    const kpiEnvio = document.getElementById("kpiEnvio");
+    const kpiFinalizado = document.getElementById("kpiFinalizado");
+    const kpiCancelados = document.getElementById("kpiCancelados");
+    const kpiPagos = document.getElementById("kpiPagos");
+    const kpiFaturamentoPendente = document.getElementById("kpiFaturamentoPendente");
+    const kpiFaturamentoCancelado = document.getElementById("kpiFaturamentoCancelado");
+    const kpiFaturamentoTotal = document.getElementById("kpiFaturamentoTotal");
 
     // Modal Elements
     const confirmLabelModal = document.getElementById("confirmLabelModal");
@@ -927,17 +952,64 @@
     }
 
     function updateKPIs() {
+      // 1. Total de Pedidos
       kpiTotal.textContent = allOrders.length;
-      kpiPendente.textContent = allOrders.filter(o => o.Status === "Pendente de Pagamento" || o.Status === "Pendente").length;
-      kpiPago.textContent = allOrders.filter(o => o.Status !== "Pendente de Pagamento" && o.Status !== "Pendente" && o.Status !== "Cancelado (Desistência)").length;
-      kpiPronto.textContent = allOrders.filter(o => o.Status === "Pronto para Envio").length;
       
-      const totalRevenue = allOrders.reduce((sum, o) => {
-        if (o.Status === "Cancelado (Desistência)") return sum;
-        return sum + (parseFloat(o.Valor_Produtos) || 0);
-      }, 0);
+      // 2. Pendentes (status: "Pendente de Pagamento" ou "Pendente")
+      const pendentesList = allOrders.filter(o => {
+        const s = String(o.Status).toLowerCase();
+        return s.includes("pendente");
+      });
+      kpiPendente.textContent = pendentesList.length;
       
-      kpiFaturamento.textContent = currency.format(totalRevenue);
+      // 3. Produção (status: "Em Produção", "Pronto para Envio", "Etiqueta Gerada")
+      const producaoList = allOrders.filter(o => {
+        const s = String(o.Status).toLowerCase();
+        return s === "em produção" || s === "em producao" || s === "pronto para envio" || s === "etiqueta gerada";
+      });
+      kpiProducao.textContent = producaoList.length;
+      
+      // 4. Envio (status: "Enviado", "Em Trânsito")
+      const envioList = allOrders.filter(o => {
+        const s = String(o.Status).toLowerCase();
+        return s === "enviado" || s.includes("transito") || s.includes("trânsito");
+      });
+      kpiEnvio.textContent = envioList.length;
+      
+      // 5. Finalizado (status: "Recebido (Finalizado)" ou "Recebido")
+      const finalizadoList = allOrders.filter(o => {
+        const s = String(o.Status).toLowerCase();
+        return s.includes("recebido");
+      });
+      kpiFinalizado.textContent = finalizadoList.length;
+      
+      // 6. Cancelados (status: "Cancelado (Desistência)")
+      const canceladosList = allOrders.filter(o => {
+        const s = String(o.Status).toLowerCase();
+        return s.includes("cancelado") || s.includes("desistência") || s.includes("desistencia");
+      });
+      kpiCancelados.textContent = canceladosList.length;
+      
+      // 7. Pagos (todos exceto pendentes e cancelados)
+      const pagosList = allOrders.filter(o => {
+        const s = String(o.Status).toLowerCase();
+        const isPendente = s.includes("pendente");
+        const isCancelado = s.includes("cancelado") || s.includes("desistência") || s.includes("desistencia");
+        return !isPendente && !isCancelado;
+      });
+      kpiPagos.textContent = pagosList.length;
+      
+      // 8. Faturamento Pendente
+      const fatPendente = pendentesList.reduce((sum, o) => sum + (parseFloat(o.Valor_Produtos) || 0), 0);
+      kpiFaturamentoPendente.textContent = currency.format(fatPendente);
+      
+      // 9. Faturamento Cancelado
+      const fatCancelado = canceladosList.reduce((sum, o) => sum + (parseFloat(o.Valor_Produtos) || 0), 0);
+      kpiFaturamentoCancelado.textContent = currency.format(fatCancelado);
+      
+      // 10. Faturamento Total (todos exceto pendentes e cancelados)
+      const fatTotal = pagosList.reduce((sum, o) => sum + (parseFloat(o.Valor_Produtos) || 0), 0);
+      kpiFaturamentoTotal.textContent = currency.format(fatTotal);
     }
 
     function renderOrders() {
