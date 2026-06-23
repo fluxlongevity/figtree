@@ -716,10 +716,15 @@
     }
 
     .discount-note {
-      margin: 12px 0 0;
+      margin: 0 0 14px;
       color: var(--muted);
-      font-size: 14px;
-      line-height: 1.4;
+      font-size: 13.5px;
+      line-height: 1.45;
+      padding: 12px 14px;
+      background: rgba(182, 132, 85, 0.08); /* 8% Kraft */
+      border: 1px dashed rgba(182, 132, 85, 0.25);
+      border-radius: 10px;
+      font-weight: 500;
     }
 
     .whatsapp-button {
@@ -1152,6 +1157,8 @@
         <div class="cart-list" id="cartList">
           <p class="empty-cart">Escolha capa, miolo e quantidade. Depois clique em “Adicionar esta configuração”.</p>
         </div>
+        <!-- Dica de promoção e upsell acima dos totais -->
+        <p class="discount-note" id="discountNote">A promoção 4 por R$ 45 é calculada pelo total de cadernos no pedido.</p>
         <div class="summary-line"><span>Total de cadernos</span><strong id="summaryQty">0</strong></div>
         
         <!-- Economia de Kit no Resumo -->
@@ -1183,7 +1190,6 @@
         </div>
 
         <div class="total"><span>Total</span><strong id="summaryTotal">R$ 0</strong></div>
-        <p class="discount-note" id="discountNote">A promoção 4 por R$ 45 é calculada pelo total de cadernos no pedido.</p>
         <div style="display: flex; gap: 10px; margin-top: 18px; width: 100%;">
           <button class="whatsapp-button is-disabled" id="whatsappButton" type="button" style="margin-top: 0; flex: 1; min-width: 0;">Adicione itens ao pedido</button>
           <button id="reopenPixButton" type="button" style="display: none; width: auto; min-height: 54px; border: 0; border-radius: 10px; align-items: center; justify-content: center; padding: 0 16px; background: #32BCAD; color: #fff; font-weight: 900; box-shadow: 0 14px 30px rgba(50, 188, 173, .22); cursor: pointer; gap: 6px; font-size: 14px; white-space: nowrap;">
