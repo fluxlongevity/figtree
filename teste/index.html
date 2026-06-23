@@ -1892,13 +1892,23 @@
         carousel.style.scrollBehavior = "smooth";
       }, 100);
       
+      const updateButtons = (index) => {
+        prevBtn.style.display = index === 0 ? "none" : "flex";
+        nextBtn.style.display = index === zoomItems.length - 1 ? "none" : "flex";
+      };
+
+      updateButtons(startIndex);
+
       let lastIndex = startIndex;
       carousel.addEventListener("scroll", () => {
         const width = carousel.clientWidth || 1;
         const index = Math.round(carousel.scrollLeft / width);
-        if (index >= 0 && index < zoomItems.length && index !== lastIndex) {
-          lastIndex = index;
-          previewTitle.textContent = zoomItems[index].name;
+        if (index >= 0 && index < zoomItems.length) {
+          updateButtons(index);
+          if (index !== lastIndex) {
+            lastIndex = index;
+            previewTitle.textContent = zoomItems[index].name;
+          }
         }
       });
       
