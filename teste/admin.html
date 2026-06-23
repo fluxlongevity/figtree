@@ -942,7 +942,9 @@
         }
 
         let expiraTexto = "";
-        if (o.Data_Emissao_Etiqueta && !o.Data_Postagem && String(o.Superfrete_Status).toLowerCase() !== "canceled" && String(o.Superfrete_Status).toLowerCase() !== "cancelled" && String(o.Superfrete_Status).toLowerCase() !== "delivered") {
+        const statusSF = String(o.Superfrete_Status).toLowerCase().trim();
+        const isPendentePostagem = (statusSF !== "posted" && statusSF !== "delivered" && statusSF !== "canceled" && statusSF !== "cancelled");
+        if (o.Data_Emissao_Etiqueta && isPendentePostagem) {
           const dataEmissao = new Date(o.Data_Emissao_Etiqueta);
           if (!isNaN(dataEmissao.getTime())) {
             const dEmissaoZerada = new Date(dataEmissao.getFullYear(), dataEmissao.getMonth(), dataEmissao.getDate());
