@@ -1690,11 +1690,15 @@
       const interiorNameLower = item.interiorName.trim().toLowerCase();
       
       for (const p of promocoesAtivas) {
-        const pCapaLower = String(p.Capa).trim().toLowerCase();
-        const pMioloLower = String(p.Miolo).trim().toLowerCase();
+        const pCapaLower = String(p.Capa || "Qualquer").trim().toLowerCase();
+        const pMioloLower = String(p.Miolo || "Qualquer").trim().toLowerCase();
         
-        const capaMatch = pCapaLower === "qualquer" || coverNameLower.includes(pCapaLower) || pCapaLower.includes(coverNameLower);
-        const mioloMatch = pMioloLower === "qualquer" || interiorNameLower.includes(pMioloLower) || pMioloLower.includes(interiorNameLower);
+        // Divide por vírgula para suportar múltiplos itens específicos (exatamente como nos cupons)
+        const capasElegiveis = pCapaLower.split(/\s*,\s*/);
+        const miolosElegiveis = pMioloLower.split(/\s*,\s*/);
+        
+        const capaMatch = pCapaLower === "qualquer" || capasElegiveis.some(c => c === coverNameLower);
+        const mioloMatch = pMioloLower === "qualquer" || miolosElegiveis.some(m => m === interiorNameLower);
         
         if (capaMatch && mioloMatch) {
           let precoUnitario = 15;
