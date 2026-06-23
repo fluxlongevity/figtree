@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gerenciamento de Cupons - FigTree</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;600;700;800&display=swap");
+
+    :root {
+      --bg: #efe2cf;
+      --paper: #fff8ec;
+      --paper-strong: #fffdf7;
+      --kraft: #b68455;
+      --ink: #3a1d16;
+      --muted: #76533f;
+      --accent: #c87955;
+      --accent-dark: #53251b;
+      --sage: #b9c5a8;
+      --line: rgba(82, 48, 30, .18);
+      --shadow: 0 16px 36px rgba(70, 45, 29, .10);
+      --serif: "Cormorant Garamond", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      --sans: "Inter", Arial, Helvetica, sans-serif;
+      --status-cancelado: #dc3545;
+      --status-pago: #28a745;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      overflow-x: hidden;
+      font-family: var(--sans);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 8%, rgba(178, 197, 166, .26), transparent 23rem),
+        radial-gradient(circle at 92% 5%, rgba(235, 194, 125, .22), transparent 27rem),
+        linear-gradient(145deg, #fbf2e7 0%, var(--bg) 100%);
+    }
+
+    .container {
+      width: min(1200px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 44px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(28px, 4vw, 38px);
+      font-weight: 700;
+    }
+
+    .btn-header {
+      background: var(--accent-dark);
+      color: #fff8ec;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(83, 37, 27, .18);
+      text-decoration: none;
+      font-size: 14px;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn-header:hover {
+      background: #3c1912;
+    }
+
+    .btn-header:active {
+      transform: scale(0.98);
+    }
+
+    .btn-create {
+      background: var(--accent);
+      box-shadow: 0 4px 12px rgba(200, 121, 85, .18);
+    }
+
+    .btn-create:hover {
+      background: #b5633e;
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+
+    @media (min-width: 900px) {
+      .layout-grid {
+        grid-template-columns: 2.8fr 1.2fr;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: rgba(255, 248, 235, .84);
+      border: 1px solid rgba(89, 54, 34, .16);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(7px);
+    }
+
+    .card-title {
+      font-family: var(--serif);
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 20px;
+      border-bottom: 1px dashed var(--line);
+      padding-bottom: 10px;
+    }
+
+    /* Table styles */
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      padding: 12px 16px;
+      border-bottom: 2px solid var(--line);
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+    }
+
+    tr:hover td {
+      background: rgba(255, 253, 247, 0.4);
+    }
+
+    .cupom-code {
+      font-weight: 800;
+      color: var(--accent-dark);
+      background: rgba(83, 37, 27, 0.06);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13.5px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-carrinho { background: #e6f7ec; color: #28a745; }
+    .badge-frete { background: #e6f0ff; color: #007bff; }
+    .badge-produto { background: #fcf6f0; color: #b68455; }
+    .badge-sim { background: #fff2f2; color: #dc3545; }
+    .badge-nao { background: #e9ecef; color: #495057; }
+
+    .btn-delete {
+      background: none;
+      border: 0;
+      color: var(--status-cancelado);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-delete:hover {
+      background: rgba(220, 53, 69, 0.1);
+      transform: scale(1.08);
+    }
+
+    /* Form styles */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group.hidden {
+      display: none;
+    }
+
+    label {
+      display: block;
+      font-size: 13.5px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+
+    input[type="text"], input[type="number"], input[type="date"], select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid rgba(89, 54, 34, .25);
+      border-radius: 8px;
+      background: var(--paper-strong);
+      font-size: 14px;
+      outline: none;
+      color: var(--ink);
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid rgba(89, 54, 34, .20);
+      border-radius: 8px;
+      padding: 12px;
+      background: var(--paper-strong);
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checkbox-item input {
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--accent-dark);
+      color: #fff8ec;
+      border: 0;
+      border-radius: 8px;
+      padding: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(83, 37, 27, .18);
+      font-size: 14.5px;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 10px;
+    }
+
+    .btn-submit:hover {
+      background: #3c1912;
+    }
+
+    .btn-submit:active {
+      transform: scale(0.98);
+    }
+
+    /* Modal / Feedback Overlay */
+    .loading-stage {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(83, 37, 27, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      color: #fff8ec;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .loading-stage.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid rgba(255, 248, 235, 0.25);
+      border-top-color: #fff8ec;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1100;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      background: var(--paper-strong);
+      border-left: 5px solid var(--accent);
+      padding: 14px 20px;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      font-size: 13.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(30px);
+      opacity: 0;
+      animation: slideIn 0.3s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      min-width: 250px;
+    }
+
+    @keyframes slideIn {
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .toast.toast-error {
+      border-left-color: var(--status-cancelado);
+    }
+
+    .toast.toast-success {
+      border-left-color: var(--status-pago);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="header-left">
+        <h1>🎟️ Sistema de Cupons</h1>
+      </div>
+      <div style="display: flex; gap: 12px;">
+        <a href="admin.html" class="btn-header">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          Painel de Pedidos
+        </a>
+      </div>
+    </header>
+
+    <main class="layout-grid">
+      <!-- Coluna da Tabela de Cupons -->
+      <section class="card">
+        <h2 class="card-title">Cupons Cadastrados</h2>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Tipo Desconto</th>
+                <th>Valor</th>
+                <th>Produtos Aplicáveis</th>
+                <th>Uso Único</th>
+                <th>Usado</th>
+                <th>Expira em</th>
+                <th style="width: 50px;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="cuponsTableBody">
+              <tr>
+                <td colspan="8" style="text-align: center; color: var(--muted); padding: 30px;">Carregando cupons...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Coluna do Formulário de Criação -->
+      <aside class="card">
+        <h2 class="card-title" id="formTitle">Novo Cupom</h2>
+        <form id="couponForm">
+          <div class="form-group">
+            <label for="couponCode">Código do Cupom</label>
+            <input type="text" id="couponCode" required placeholder="EX: DESCONTO10" pattern="^[a-zA-Z0-9_\-]+$" title="Apenas letras, números e traços. Sem espaços.">
+          </div>
+
+          <div class="form-group">
+            <label for="discountType">Tipo de Desconto</label>
+            <select id="discountType" required>
+              <option value="carrinho">Carrinho (Produtos + Frete)</option>
+              <option value="frete">Apenas no Frete</option>
+              <option value="produto">Produtos Específicos</option>
+            </select>
+          </div>
+
+          <!-- Seleção de produtos específicos -->
+          <div class="form-group hidden" id="productsSelectionGroup">
+            <label>Selecione as Capas Elegíveis</label>
+            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+              <button type="button" id="btnSelectAll" style="font-size: 11.5px; cursor: pointer; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--line); background: var(--paper-strong);">Marcar Todas</button>
+              <button type="button" id="btnDeselectAll" style="font-size: 11.5px; cursor: pointer; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--line); background: var(--paper-strong);">Desmarcar Todas</button>
+            </div>
+            <div class="checkbox-grid" id="productsCheckboxGrid">
+              <!-- Checkboxes criadas dinamicamente -->
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="valueType">Tipo de Valor</label>
+            <select id="valueType" required>
+              <option value="percentual">Porcentagem (%)</option>
+              <option value="fixo">Valor Fixo (R$)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="discountValue">Valor do Desconto</label>
+            <input type="number" id="discountValue" required step="0.01" min="0.01" placeholder="10.00">
+          </div>
+
+          <div class="form-group">
+            <label for="oneTimeUse">Uso Único?</label>
+            <select id="oneTimeUse" required>
+              <option value="Não">Não</option>
+              <option value="Sim">Sim</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="expirationDate">Data de Expiração (Opcional)</label>
+            <input type="date" id="expirationDate">
+          </div>
+
+          <button type="submit" class="btn-submit">Salvar Cupom</button>
+        </form>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Loading Modal -->
+  <div class="loading-stage" id="loadingStage">
+    <div class="spinner"></div>
+    <div id="loadingMessage">Carregando dados...</div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbycjYy2UiWKMJAQcrFEs9IFJ42LTKtSJMgUufCYErjlX9U80m6V7M1pHvRb0gbH5TSF/exec";
+
+    // Catálogo de Capas conhecido
+    const catalogCovers = [
+      ...Array.from({ length: 14 }, (_, index) => `Capa ${index + 1}`),
+      "Capa lisa"
+    ];
+
+    const cuponsTableBody = document.getElementById("cuponsTableBody");
+    const couponForm = document.getElementById("couponForm");
+    const discountTypeSelect = document.getElementById("discountType");
+    const productsSelectionGroup = document.getElementById("productsSelectionGroup");
+    const productsCheckboxGrid = document.getElementById("productsCheckboxGrid");
+    const btnSelectAll = document.getElementById("btnSelectAll");
+    const btnDeselectAll = document.getElementById("btnDeselectAll");
+    const loadingStage = document.getElementById("loadingStage");
+    const loadingMessage = document.getElementById("loadingMessage");
+    const toastContainer = document.getElementById("toastContainer");
+
+    let allCupons = [];
+
+    // Inicialização
+    document.addEventListener("DOMContentLoaded", () => {
+      // Preencher checkboxes de capas
+      renderProductCheckboxes();
+      
+      // Carregar cupons da planilha
+      fetchCupons();
+      
+      // Controlar exibição da seleção de capas
+      discountTypeSelect.addEventListener("change", (e) => {
+        if (e.target.value === "produto") {
+          productsSelectionGroup.classList.remove("hidden");
+        } else {
+          productsSelectionGroup.classList.add("hidden");
+        }
+      });
+
+      // Seleção rápida de capas
+      btnSelectAll.addEventListener("click", () => setAllCheckboxes(true));
+      btnDeselectAll.addEventListener("click", () => setAllCheckboxes(false));
+
+      // Salvar cupom
+      couponForm.addEventListener("submit", handleFormSubmit);
+    });
+
+    function showLoading(msg = "Processando...") {
+      loadingMessage.textContent = msg;
+      loadingStage.classList.add("is-open");
+    }
+
+    function hideLoading() {
+      loadingStage.classList.remove("is-open");
+    }
+
+    function showToast(message, isError = false) {
+      const toast = document.createElement("div");
+      toast.className = `toast ${isError ? 'toast-error' : 'toast-success'}`;
+      toast.innerHTML = `
+        <span>${isError ? '⚠️' : '✅'}</span>
+        <div>${message}</div>
+      `;
+      toastContainer.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = "slideOut 0.3s forwards";
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function renderProductCheckboxes() {
+      productsCheckboxGrid.innerHTML = catalogCovers.map((cover, idx) => `
+        <label class="checkbox-item">
+          <input type="checkbox" name="cover_eligible" value="${cover}">
+          ${cover}
+        </label>
+      `).join("");
+    }
+
+    function setAllCheckboxes(checked) {
+      const checkboxes = document.getElementsByName("cover_eligible");
+      checkboxes.forEach(cb => cb.checked = checked);
+    }
+
+    function getSelectedCheckboxes() {
+      const checkboxes = document.getElementsByName("cover_eligible");
+      const selected = [];
+      checkboxes.forEach(cb => {
+        if (cb.checked) selected.push(cb.value);
+      });
+      return selected;
+    }
+
+    async function fetchCupons() {
+      showLoading("Carregando cupons da planilha...");
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "get_cupons" })
+        });
+        const data = await response.json();
+        if (data.success) {
+          allCupons = data.cupons || [];
+          renderCuponsTable();
+        } else {
+          showToast("Erro ao carregar cupons: " + data.error, true);
+        }
+      } catch (err) {
+        console.error(err);
+        showToast("Erro de comunicação com o servidor ao listar cupons.", true);
+      } finally {
+        hideLoading();
+      }
+    }
+
+    function renderCuponsTable() {
+      if (allCupons.length === 0) {
+        cuponsTableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--muted); padding: 30px;">Nenhum cupom cadastrado.</td></tr>`;
+        return;
+      }
+
+      cuponsTableBody.innerHTML = allCupons.map(c => {
+        const formattedVal = c.Tipo_Valor === "percentual" ? `${c.Valor}%` : `R$ ${parseFloat(c.Valor).toFixed(2)}`;
+        
+        let formattedExp = "Não expira";
+        if (c.Data_Expiracao) {
+          try {
+            const d = new Date(c.Data_Expiracao);
+            if (!isNaN(d.getTime())) {
+              const userTimezoneOffset = d.getTimezoneOffset() * 60000;
+              const dateLocal = new Date(d.getTime() + userTimezoneOffset);
+              formattedExp = dateLocal.toLocaleDateString("pt-BR");
+            }
+          } catch (e) {}
+        }
+
+        const isExpirado = c.Data_Expiracao && new Date(c.Data_Expiracao).getTime() < new Date().setHours(0,0,0,0);
+        const expStyle = isExpirado ? "color: var(--status-cancelado); font-weight: bold;" : "";
+        const expLabel = isExpirado ? `${formattedExp} (Expirado)` : formattedExp;
+
+        return `
+          <tr>
+            <td><span class="cupom-code">${c.Codigo}</span></td>
+            <td><span class="badge badge-${c.Tipo_Desconto}">${c.Tipo_Desconto}</span></td>
+            <td><strong>${formattedVal}</strong></td>
+            <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${c.Produtos_Especificos || 'Qualquer'}">
+              ${c.Produtos_Especificos || 'Qualquer'}
+            </td>
+            <td><span class="badge badge-${c.Uso_Unico.toLowerCase() === 'sim' ? 'sim' : 'nao'}">${c.Uso_Unico}</span></td>
+            <td><span class="badge badge-${c.Usado.toLowerCase() === 'sim' ? 'sim' : 'nao'}">${c.Usado}</span></td>
+            <td style="${expStyle}">${expLabel}</td>
+            <td style="text-align: center;">
+              <button class="btn-delete" onclick="handleDeleteCoupon('${c.Codigo}')" title="Excluir cupom">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+
+      const codigo = document.getElementById("couponCode").value.trim().toUpperCase();
+      const tipo_desconto = document.getElementById("discountType").value;
+      const tipo_valor = document.getElementById("valueType").value;
+      const valor = parseFloat(document.getElementById("discountValue").value);
+      const uso_unico = document.getElementById("oneTimeUse").value;
+      const data_expiracao = document.getElementById("expirationDate").value;
+
+      let produtos_especificos = "Qualquer";
+      if (tipo_desconto === "produto") {
+        const selectedProducts = getSelectedCheckboxes();
+        if (selectedProducts.length === 0) {
+          showToast("Por favor, selecione pelo menos uma capa elegível para o cupom de produto.", true);
+          return;
+        }
+        produtos_especificos = selectedProducts.join(", ");
+      }
+
+      const cupomPayload = {
+        codigo,
+        tipo_desconto,
+        tipo_valor,
+        valor,
+        uso_unico,
+        usado: "Não",
+        data_expiracao,
+        produtos_especificos
+      };
+
+      showLoading("Salvando cupom na planilha...");
+
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "salvar_cupom",
+            cupom: cupomPayload
+          })
+        });
+        const data = await response.json();
+        if (data.success) {
+          showToast(`Cupom ${codigo} salvo com sucesso!`);
+          couponForm.reset();
+          productsSelectionGroup.classList.add("hidden");
+          setAllCheckboxes(false);
+          await fetchCupons();
+        } else {
+          showToast("Erro ao salvar cupom: " + data.error, true);
+        }
+      } catch (err) {
+        console.error(err);
+        showToast("Erro de comunicação com o servidor ao salvar o cupom.", true);
+      } finally {
+        hideLoading();
+      }
+    }
+
+    async function handleDeleteCoupon(codigo) {
+      if (!confirm(`Tem certeza que deseja excluir permanentemente o cupom ${codigo}?`)) {
+        return;
+      }
+
+      showLoading(`Excluindo cupom ${codigo}...`);
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "excluir_cupom",
+            cupom: codigo
+          })
+        });
+        const data = await response.json();
+        if (data.success) {
+          showToast(`Cupom ${codigo} excluído com sucesso!`);
+          await fetchCupons();
+        } else {
+          showToast("Erro ao excluir cupom: " + data.error, true);
+        }
+      } catch (err) {
+        console.error(err);
+        showToast("Erro de comunicação com o servidor ao excluir o cupom.", true);
+      } finally {
+        hideLoading();
+      }
+    }
+  </script>
+</body>
+</html>

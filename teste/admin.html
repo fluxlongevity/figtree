@@ -564,6 +564,10 @@
         <p style="margin: 4px 0 0; color: var(--muted); font-size: 14.5px;">Gerenciamento de produção e etiquetas SuperFrete</p>
       </div>
       <div style="display: flex; gap: 12px; align-items: center;">
+        <a href="cupons.html" class="btn-refresh" id="btnCupons" title="Gerenciar cupons de desconto" style="background: var(--accent); color: #fff8ec; box-shadow: 0 4px 12px rgba(200, 121, 85, .22); text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h10"/></svg>
+          Gerenciar Cupons
+        </a>
         <button class="btn-refresh" id="btnConciliar" title="Conciliar recibos de pagamento no Drive" style="background: #28a745; color: #ffffff; box-shadow: 0 4px 12px rgba(40, 167, 69, .22);">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
           Conciliar Recibos
@@ -1212,6 +1216,12 @@
                 <span>Frete:</span>
                 <span>${isFreeShipping ? "Grátis" : currency.format(parseFloat(o.Valor_Frete) || 0)}</span>
               </div>
+              ${o.Cupom_Codigo ? `
+              <div class="price-row" style="color: var(--status-cancelado); font-weight: bold;">
+                <span>Cupom (${o.Cupom_Codigo}):</span>
+                <span>-${currency.format(parseFloat(o.Cupom_Desconto_Valor) || 0)}</span>
+              </div>
+              ` : ""}
               <div class="price-row grand-total">
                 <span>Total:</span>
                 <span>${currency.format(parseFloat(o.Total_Geral) || 0)}</span>

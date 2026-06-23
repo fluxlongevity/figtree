@@ -1154,6 +1154,22 @@
         </div>
         <div class="summary-line"><span>Total de cadernos</span><strong id="summaryQty">0</strong></div>
         <div class="summary-line" id="shippingSummaryLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid rgba(89, 54, 34, .12); color: var(--muted);"><span>Frete: <span id="shippingMethodName">-</span></span><strong id="shippingSummaryPrice">R$ 0</strong></div>
+        
+        <!-- Linha do Desconto do Cupom no Resumo -->
+        <div class="summary-line" id="couponSummaryLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid rgba(89, 54, 34, .12); color: #dc3545; font-weight: 600;">
+          <span>Desconto Cupom (<span id="couponSummaryCode">-</span>)</span>
+          <strong id="couponSummaryDiscount">-R$ 0,00</strong>
+        </div>
+
+        <!-- Seção do Cupom de Desconto (Input e Botão) -->
+        <div class="coupon-section" id="couponSection" style="margin: 14px 0; padding: 14px 0; border-top: 1px dashed var(--line); border-bottom: 1px dashed var(--line);">
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="text" id="couponInput" placeholder="CUPOM DE DESCONTO" style="flex: 1; padding: 10px 12px; border: 1px solid rgba(89, 54, 34, .25); border-radius: 8px; background: var(--paper-strong); font-size: 13px; text-transform: uppercase;" />
+            <button id="applyCouponBtn" type="button" class="add-item" style="min-height: 38px; box-shadow: none; font-size: 13px; padding: 0 14px; margin-top: 0; background: var(--kraft); color: #fff; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s;">Aplicar</button>
+          </div>
+          <div id="couponFeedback" style="display: none; font-size: 12px; margin-top: 6px; font-weight: 600;"></div>
+        </div>
+
         <div class="total"><span>Total</span><strong id="summaryTotal">R$ 0</strong></div>
         <p class="discount-note" id="discountNote">A promoção 4 por R$ 45 é calculada pelo total de cadernos no pedido.</p>
         <div style="display: flex; gap: 10px; margin-top: 18px; width: 100%;">
@@ -1345,11 +1361,14 @@
     let isOrderSaved = false;
     let lastSavedOrderKey = "";
     let lastCepResponseData = null;
+    let activeCoupon = null;
+    let couponDiscountValue = 0;
 
     function updateDisabledState() {
       const elementsToDisable = [
         "quantity", "minus", "plus", "addItem",
-        "name", "phone", "cep", "calcShipping", "notes"
+        "name", "phone", "cep", "calcShipping", "notes",
+        "couponInput", "applyCouponBtn"
       ];
       
       elementsToDisable.forEach(id => {
@@ -1705,6 +1724,10 @@
         shippingText = `${selectedShipping.name} (${currency.format(selectedShipping.price)}) - CEP: ${document.getElementById("cep").value.trim()}`;
       }
 
+      if (activeCoupon) {
+        grandTotal -= couponDiscountValue;
+      }
+
       const itemLines = cart.map((item, index) => `${index + 1}. ${item.qty}x ${item.coverName} - miolo: ${item.interiorName}`);
 
       const header = orderId 
@@ -1728,7 +1751,14 @@
         ...itemLines,
         "",
         `Total de cadernos: ${totalQty}`,
-        `Valor dos Cadernos: ${currency.format(productTotal)}`,
+        `Valor dos Cadernos: ${currency.format(productTotal)}`
+      );
+
+      if (activeCoupon) {
+        lines.push(`🎟️ Cupom: ${activeCoupon.codigo} (-${currency.format(couponDiscountValue)})`);
+      }
+
+      lines.push(
         `Frete: ${shippingText}`,
         `Total Geral: ${currency.format(grandTotal)}`,
         `Entrega: ${delivery}`,
@@ -1874,6 +1904,98 @@
         document.getElementById("shippingSummaryPrice").textContent = currency.format(selectedShipping.price);
       } else {
         document.getElementById("shippingSummaryLine").style.display = "none";
+      }
+
+      // Cálculo do Desconto do Cupom
+      couponDiscountValue = 0;
+      if (activeCoupon) {
+        const type = activeCoupon.tipo_desconto;
+        const valType = activeCoupon.tipo_valor;
+        const val = activeCoupon.valor;
+        
+        let valorElegivel = 0;
+        
+        if (type === "produto") {
+          const especStr = activeCoupon.produtos_especificos || "";
+          const listEspec = especStr.split(",")
+            .map(c => c.trim().toLowerCase())
+            .filter(c => c.length > 0);
+          
+          if (listEspec.length === 0 || listEspec.includes("qualquer")) {
+            valorElegivel = productTotal;
+          } else {
+            const precoMedioUnitario = totalQty > 0 ? (productTotal / totalQty) : 0;
+            let qtyElegiveis = 0;
+            cart.forEach(item => {
+              const coverNameLower = item.coverName.trim().toLowerCase();
+              const isMatch = listEspec.some(espec => coverNameLower.includes(espec) || espec.includes(coverNameLower));
+              if (isMatch) {
+                qtyElegiveis += item.qty;
+              }
+            });
+            valorElegivel = qtyElegiveis * precoMedioUnitario;
+          }
+        } else if (type === "frete") {
+          if (selectedShipping) {
+            valorElegivel = selectedShipping.price;
+          }
+        } else if (type === "carrinho") {
+          valorElegivel = productTotal + (selectedShipping ? selectedShipping.price : 0);
+        }
+        
+        if (valType === "percentual") {
+          couponDiscountValue = valorElegivel * (val / 100);
+        } else if (valType === "fixo") {
+          couponDiscountValue = Math.min(val, valorElegivel);
+        }
+        
+        couponDiscountValue = Math.max(0, Math.min(couponDiscountValue, grandTotal));
+        grandTotal -= couponDiscountValue;
+        
+        document.getElementById("couponSummaryLine").style.display = "flex";
+        document.getElementById("couponSummaryCode").textContent = activeCoupon.codigo;
+        document.getElementById("couponSummaryDiscount").textContent = "-" + currency.format(couponDiscountValue);
+        
+        const feedback = document.getElementById("couponFeedback");
+        if (feedback) {
+          feedback.style.display = "block";
+          if (type === "produto") {
+            const especStr = activeCoupon.produtos_especificos || "";
+            const listEspec = especStr.split(",")
+              .map(c => c.trim().toLowerCase())
+              .filter(c => c.length > 0);
+            let qtyElegiveis = 0;
+            if (listEspec.length === 0 || listEspec.includes("qualquer")) {
+              qtyElegiveis = totalQty;
+            } else {
+              cart.forEach(item => {
+                const coverNameLower = item.coverName.trim().toLowerCase();
+                const isMatch = listEspec.some(espec => coverNameLower.includes(espec) || espec.includes(coverNameLower));
+                if (isMatch) qtyElegiveis += item.qty;
+              });
+            }
+            if (qtyElegiveis === 0) {
+              feedback.style.color = "#c87955";
+              feedback.textContent = "Cupom válido, mas nenhuma capa no carrinho é elegível.";
+            } else {
+              feedback.style.color = "#28a745";
+              feedback.textContent = `Cupom "${activeCoupon.codigo}" aplicado!`;
+            }
+          } else if (type === "frete") {
+            if (!selectedShipping) {
+              feedback.style.color = "#c87955";
+              feedback.textContent = "Cupom válido! Calcule e selecione o frete para obter o desconto.";
+            } else {
+              feedback.style.color = "#28a745";
+              feedback.textContent = `Cupom "${activeCoupon.codigo}" aplicado!`;
+            }
+          } else {
+            feedback.style.color = "#28a745";
+            feedback.textContent = `Cupom "${activeCoupon.codigo}" aplicado!`;
+          }
+        }
+      } else {
+        document.getElementById("couponSummaryLine").style.display = "none";
       }
 
       summaryQty.textContent = totalQty;
@@ -3108,7 +3230,7 @@
       
       const totalQty = getTotalQuantity();
       const productTotal = calculateTotal(totalQty);
-      const grandTotal = productTotal + selectedShipping.price;
+      const grandTotal = Math.max(0, productTotal + selectedShipping.price - couponDiscountValue);
       const itemLines = cart.map(item => `${item.qty}x ${item.coverName} (${item.interiorName})`).join(", ");
 
       // Fallback robusto se as variáveis globais não estiverem preenchidas (ex.: preenchimento manual)
@@ -3160,7 +3282,9 @@
         valor_frete: selectedShipping.price,
         total_geral: grandTotal,
         observacoes: document.getElementById("notes").value.trim(),
-        pix_payload: generatePixCopiaCola(grandTotal)
+        pix_payload: generatePixCopiaCola(grandTotal),
+        cupom_codigo: activeCoupon ? activeCoupon.codigo : "",
+        cupom_desconto: couponDiscountValue
       };
 
       if (!BACKEND_URL) {
@@ -3219,6 +3343,96 @@
         updateSummary();
       }
     }
+
+    // --- CUPOM DE DESCONTO ---
+    async function handleCouponAction() {
+      const couponInput = document.getElementById("couponInput");
+      const applyBtn = document.getElementById("applyCouponBtn");
+      const feedback = document.getElementById("couponFeedback");
+      
+      if (activeCoupon) {
+        activeCoupon = null;
+        couponDiscountValue = 0;
+        couponInput.value = "";
+        couponInput.disabled = false;
+        applyBtn.textContent = "Aplicar";
+        applyBtn.style.background = "var(--kraft)";
+        feedback.style.display = "none";
+        feedback.textContent = "";
+        updateSummary();
+        return;
+      }
+      
+      const code = couponInput.value.trim().toUpperCase();
+      if (!code) {
+        feedback.style.display = "block";
+        feedback.style.color = "#dc3545";
+        feedback.textContent = "Por favor, digite o código de um cupom.";
+        return;
+      }
+      
+      applyBtn.disabled = true;
+      couponInput.disabled = true;
+      applyBtn.textContent = "Validando...";
+      feedback.style.display = "none";
+      
+      try {
+        if (!BACKEND_URL) {
+          throw new Error("Backend URL não configurada.");
+        }
+        
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "validar_cupom",
+            cupom: code
+          })
+        });
+        
+        if (!response.ok) throw new Error("Erro de comunicação com o servidor.");
+        const data = await response.json();
+        
+        if (data.success) {
+          activeCoupon = data.cupom;
+          applyBtn.disabled = false;
+          applyBtn.textContent = "Remover";
+          applyBtn.style.background = "#dc3545";
+          feedback.style.display = "block";
+          feedback.style.color = "#28a745";
+          feedback.textContent = `Cupom "${activeCoupon.codigo}" applied!`;
+          updateSummary();
+        } else {
+          activeCoupon = null;
+          couponDiscountValue = 0;
+          applyBtn.disabled = false;
+          couponInput.disabled = false;
+          applyBtn.textContent = "Aplicar";
+          feedback.style.display = "block";
+          feedback.style.color = "#dc3545";
+          feedback.textContent = data.error || "Cupom inválido.";
+          updateSummary();
+        }
+      } catch (err) {
+        console.error("Erro ao validar cupom:", err);
+        activeCoupon = null;
+        couponDiscountValue = 0;
+        applyBtn.disabled = false;
+        couponInput.disabled = false;
+        applyBtn.textContent = "Aplicar";
+        feedback.style.display = "block";
+        feedback.style.color = "#dc3545";
+        feedback.textContent = "Erro ao validar cupom. Verifique sua conexão.";
+        updateSummary();
+      }
+    }
+
+    document.getElementById("applyCouponBtn").addEventListener("click", handleCouponAction);
+    document.getElementById("couponInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleCouponAction();
+      }
+    });
 
     quantityInput.addEventListener("input", updateCurrentSelection);
 
