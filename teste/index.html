@@ -1795,6 +1795,8 @@
       const cepVal = document.getElementById("cep").value.trim();
       const isCartEmpty = cart.length === 0;
       const isNameEmpty = nameVal.length === 0;
+      const nameParts = nameVal.split(/\s+/).filter(part => part.length > 0);
+      const isNameIncomplete = nameParts.length < 2;
       const isDeliveryEmpty = deliveryVal.length === 0;
       const isCepEmpty = cepVal.length === 0;
       const isShippingEmpty = !selectedShipping;
@@ -1802,7 +1804,7 @@
       // Valida se o campo de entrega não está incompleto (deve conter número/complemento além do autocompletado do CEP)
       const isDeliveryIncomplete = isDeliveryEmpty || /,\s*(nº\s*)?$/i.test(deliveryVal);
       
-      const isDisabled = isCartEmpty || isNameEmpty || isDeliveryIncomplete || isCepEmpty || !isCepValid || isShippingEmpty;
+      const isDisabled = isCartEmpty || isNameEmpty || isNameIncomplete || isDeliveryIncomplete || isCepEmpty || !isCepValid || isShippingEmpty;
 
       whatsappButton.classList.toggle("is-disabled", isDisabled);
       
@@ -1810,6 +1812,8 @@
         whatsappButton.textContent = "Adicione itens ao pedido";
       } else if (isNameEmpty) {
         whatsappButton.textContent = "Preencha seu Nome para enviar";
+      } else if (isNameIncomplete) {
+        whatsappButton.textContent = "Preencha Nome e Sobrenome";
       } else if (isCepEmpty) {
         whatsappButton.textContent = "Preencha o CEP para enviar";
       } else if (!isCepValid) {
