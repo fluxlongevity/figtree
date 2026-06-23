@@ -1171,6 +1171,9 @@
           <strong id="summaryKitDiscount">-R$ 0,00</strong>
         </div>
         
+        <!-- Promoções Automáticas por Item -->
+        <div id="autoPromotionsContainer"></div>
+        
         <div class="summary-line" id="shippingSummaryLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid rgba(89, 54, 34, .12); color: var(--muted);"><span>Frete: <span id="shippingMethodName">-</span></span><strong id="shippingSummaryPrice">R$ 0</strong></div>
         
         <!-- Linha do Desconto do Cupom no Resumo -->
@@ -1678,6 +1681,105 @@
 
     const cart = [];
 
+    let promocoesAtivas = [];
+
+    function obterPrecoItem(item) {
+      if (promocoesAtivas.length === 0) return null;
+      
+      const coverNameLower = item.coverName.trim().toLowerCase();
+      const interiorNameLower = item.interiorName.trim().toLowerCase();
+      
+      for (const p of promocoesAtivas) {
+        const pCapaLower = String(p.Capa).trim().toLowerCase();
+        const pMioloLower = String(p.Miolo).trim().toLowerCase();
+        
+        const capaMatch = pCapaLower === "qualquer" || coverNameLower.includes(pCapaLower) || pCapaLower.includes(coverNameLower);
+        const mioloMatch = pMioloLower === "qualquer" || interiorNameLower.includes(pMioloLower) || pMioloLower.includes(interiorNameLower);
+        
+        if (capaMatch && mioloMatch) {
+          let precoUnitario = 15;
+          const val = Number(p.Valor) || 0;
+          if (String(p.Tipo_Valor).trim().toLowerCase() === "percentual") {
+            precoUnitario = 15 * (1 - val / 100);
+          } else if (String(p.Tipo_Valor).trim().toLowerCase() === "fixo") {
+            precoUnitario = Math.max(0, 15 - val);
+          }
+          return {
+            nome: p.Nome,
+            precoUnitario: precoUnitario,
+            precoTotal: precoUnitario * item.qty,
+            descontoUnitario: 15 - precoUnitario
+          };
+        }
+      }
+      return null;
+    }
+
+    async function carregarPromocoes() {
+      if (!BACKEND_URL) return;
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "get_promocoes" })
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.promocoes) {
+            promocoesAtivas = data.promocoes.filter(p => String(p.Ativa).trim().toLowerCase() === "sim");
+            console.log("Promoções ativas carregadas:", promocoesAtivas);
+            updateSummary();
+          }
+        }
+      } catch (e) {
+        console.error("Erro ao carregar promoções:", e);
+      }
+    }
+
+    function calcularTotalProdutosCarrinho() {
+      let totalQty = 0;
+      let totalQtyNormais = 0;
+      let totalPromocionais = 0;
+      let totalDescontoPromocionais = 0;
+      const promocoesAplicadasMap = {};
+      
+      cart.forEach(item => {
+        totalQty += item.qty;
+        const promoInfo = obterPrecoItem(item);
+        if (promoInfo) {
+          totalPromocionais += promoInfo.precoTotal;
+          totalDescontoPromocionais += promoInfo.descontoUnitario * item.qty;
+          const nomePromo = promoInfo.nome;
+          if (!promocoesAplicadasMap[nomePromo]) {
+            promocoesAplicadasMap[nomePromo] = 0;
+          }
+          promocoesAplicadasMap[nomePromo] += promoInfo.descontoUnitario * item.qty;
+        } else {
+          totalQtyNormais += item.qty;
+        }
+      });
+      
+      const productTotalNormais = calculateTotal(totalQtyNormais);
+      const productTotal = productTotalNormais + totalPromocionais;
+      const precoCheio = totalQty * 15;
+      const descontoValor = precoCheio - productTotal;
+      const descontoPercentual = precoCheio > 0 ? Math.round((descontoValor / precoCheio) * 100) : 0;
+      const descontoKitNormais = (totalQtyNormais * 15) - productTotalNormais;
+      
+      return {
+        totalQty: totalQty,
+        totalQtyNormais: totalQtyNormais,
+        productTotalNormais: productTotalNormais,
+        totalPromocionais: totalPromocionais,
+        totalDescontoPromocionais: totalDescontoPromocionais,
+        promocoesAplicadasMap: promocoesAplicadasMap,
+        productTotal: productTotal,
+        precoCheio: precoCheio,
+        descontoValor: descontoValor,
+        descontoPercentual: descontoPercentual,
+        descontoKitNormais: descontoKitNormais
+      };
+    }
+
     const currency = new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
@@ -1754,8 +1856,10 @@
       const phone = document.getElementById("phone").value.trim() || "Não informado";
       const delivery = document.getElementById("delivery").value.trim() || "Combinar";
       const notes = document.getElementById("notes").value.trim() || "Nenhuma";
-      const totalQty = getTotalQuantity();
-      const productTotal = calculateTotal(totalQty);
+      
+      const calcResult = calcularTotalProdutosCarrinho();
+      const totalQty = calcResult.totalQty;
+      const productTotal = calcResult.productTotal;
       
       let grandTotal = productTotal;
       let shippingText = "Não selecionado";
@@ -1794,11 +1898,17 @@
         `Valor dos Cadernos: ${currency.format(productTotal)}`
       );
 
-      const precoCheio = totalQty * 15;
-      const descontoValor = precoCheio - productTotal;
-      if (descontoValor > 0) {
-        const descontoPercentual = Math.round((descontoValor / precoCheio) * 100);
-        lines.push(`🔥 Economia do Kit: -${currency.format(descontoValor)} (${descontoPercentual}% de desconto)`);
+      if (calcResult.descontoValor > 0) {
+        lines.push(`🔥 Economia Total: -${currency.format(calcResult.descontoValor)} (${calcResult.descontoPercentual}% de desconto)`);
+        if (calcResult.descontoKitNormais > 0) {
+          lines.push(`   • Desconto de Volume (Kits): -${currency.format(calcResult.descontoKitNormais)}`);
+        }
+        Object.keys(calcResult.promocoesAplicadasMap).forEach(nomePromo => {
+          const descVal = calcResult.promocoesAplicadasMap[nomePromo];
+          if (descVal > 0) {
+            lines.push(`   • Promoção ${nomePromo}: -${currency.format(descVal)}`);
+          }
+        });
       }
 
       if (activeCoupon) {
@@ -1938,12 +2048,15 @@
       updateCurrentSelection();
       renderCart();
 
-      const totalQty = getTotalQuantity();
-      const productTotal = calculateTotal(totalQty);
-
-      const precoCheio = totalQty * 15;
-      const descontoValor = precoCheio - productTotal;
-      const descontoPercentual = precoCheio > 0 ? Math.round((descontoValor / precoCheio) * 100) : 0;
+      const calcResult = calcularTotalProdutosCarrinho();
+      const totalQty = calcResult.totalQty;
+      const productTotal = calcResult.productTotal;
+      const totalQtyNormais = calcResult.totalQtyNormais;
+      const productTotalNormais = calcResult.productTotalNormais;
+      const precoCheio = calcResult.precoCheio;
+      const descontoValor = calcResult.descontoValor;
+      const descontoPercentual = calcResult.descontoPercentual;
+      const descontoKitNormais = calcResult.descontoKitNormais;
 
       const fullPriceLine = document.getElementById("fullPriceLine");
       const kitDiscountLine = document.getElementById("kitDiscountLine");
@@ -1953,14 +2066,33 @@
 
       if (descontoValor > 0) {
         fullPriceLine.style.display = "flex";
-        kitDiscountLine.style.display = "flex";
         summaryFullPrice.textContent = currency.format(precoCheio);
-        summaryKitDiscount.textContent = "-" + currency.format(descontoValor);
-        kitDiscountPercent.textContent = `${descontoPercentual}%`;
       } else {
         fullPriceLine.style.display = "none";
+      }
+
+      if (descontoKitNormais > 0) {
+        kitDiscountLine.style.display = "flex";
+        summaryKitDiscount.textContent = "-" + currency.format(descontoKitNormais);
+        const percentKit = Math.round(descontoKitNormais / (totalQtyNormais * 15) * 100);
+        kitDiscountPercent.textContent = `${percentKit}%`;
+      } else {
         kitDiscountLine.style.display = "none";
       }
+
+      // Renderizar as promoções automáticas de produto
+      const autoPromosContainer = document.getElementById("autoPromotionsContainer");
+      autoPromosContainer.innerHTML = "";
+      Object.keys(calcResult.promocoesAplicadasMap).forEach(nomePromo => {
+        const descVal = calcResult.promocoesAplicadasMap[nomePromo];
+        if (descVal > 0) {
+          const promoLine = document.createElement("div");
+          promoLine.className = "summary-line";
+          promoLine.style.cssText = "display: flex; justify-content: space-between; gap: 14px; padding: 12px 0; color: #28a745; font-weight: 600;";
+          promoLine.innerHTML = `<span>Promoção: ${nomePromo}</span><strong>-${currency.format(descVal)}</strong>`;
+          autoPromosContainer.appendChild(promoLine);
+        }
+      });
 
       let grandTotal = productTotal;
       if (selectedShipping) {
@@ -2076,38 +2208,42 @@
       summaryTotal.textContent = currency.format(grandTotal);
 
       let noteText = "";
-      if (totalQty === 0) {
-        noteText = "Para aproveitar melhor a produção e reduzir desperdício, compre em quantidades pares e aproveite nossos kits promocionais!";
-      } else if (totalQty === 1) {
-        noteText = "Você selecionou 1 unidade avulsa. Adicione mais 1 e leve o Kit com 2 por R$ 28 (desconto de R$ 2)!";
-      } else if (totalQty === 2) {
-        noteText = "Promoção aplicada: Kit 2 (R$ 14,00 por caderninho). Adicione mais 2 e aproveite o Kit com 4 por R$ 45!";
-      } else if (totalQty === 3) {
-        noteText = "Dica: Adicione mais 1 caderno e leve o Kit com 4 pelo mesmo preço (R$ 45)! É um caderno a mais grátis.";
-      } else if (totalQty === 4) {
-        noteText = "Promoção aplicada: Kit 4 (R$ 11,25 por caderninho). Leve mais cadernos e economize ainda mais!";
-      } else if (totalQty >= 5 && totalQty <= 7) {
-        const falta = 8 - totalQty;
-        const txtFalta = falta === 1 ? "mais 1 caderno" : `mais ${falta} cadernos`;
-        if (totalQty === 7) {
-          noteText = `Dica: Adicione mais 1 caderno e leve o Kit com 8 pagando R$ 11,00 a MENOS (R$ 79 pelo Kit 8 vs R$ 90 por 7 cadernos)!`;
+      if (totalQtyNormais === 0) {
+        if (totalQty > 0) {
+          noteText = "Você selecionou caderno(s) com desconto especial da planilha! Adicione itens normais para economizar com os kits progressivos.";
+        } else {
+          noteText = "Para aproveitar melhor a produção e reduzir desperdício, compre em quantidades pares e aproveite nossos kits promocionais!";
+        }
+      } else if (totalQtyNormais === 1) {
+        noteText = "Você selecionou 1 caderno normal. Adicione mais 1 normal e leve o Kit com 2 por R$ 28 (desconto de R$ 2)!";
+      } else if (totalQtyNormais === 2) {
+        noteText = "Promoção aplicada nos normais: Kit 2 (R$ 14,00 por caderninho). Adicione mais 2 normais e aproveite o Kit com 4 por R$ 45!";
+      } else if (totalQtyNormais === 3) {
+        noteText = "Dica: Adicione mais 1 caderno normal e leve o Kit com 4 pelo mesmo preço (R$ 45)! É um caderno normal a mais grátis.";
+      } else if (totalQtyNormais === 4) {
+        noteText = "Promoção aplicada nos normais: Kit 4 (R$ 11,25 por caderninho). Leve mais cadernos e economize ainda mais!";
+      } else if (totalQtyNormais >= 5 && totalQtyNormais <= 7) {
+        const falta = 8 - totalQtyNormais;
+        const txtFalta = falta === 1 ? "mais 1 caderno normal" : `mais ${falta} cadernos normais`;
+        if (totalQtyNormais === 7) {
+          noteText = `Dica: Adicione mais 1 caderno normal e leve o Kit com 8 pagando R$ 11,00 a MENOS (R$ 79 pelo Kit 8 vs R$ 90 por 7 cadernos)!`;
         } else {
           noteText = `Selecione ${txtFalta} para atingir o Kit com 8 por R$ 79 e economize muito no custo unitário (R$ 9,88 por caderninho)!`;
         }
-      } else if (totalQty === 8) {
-        noteText = "Promoção aplicada: Kit 8 (R$ 9,88 por caderninho). Excelente escolha!";
-      } else if (totalQty >= 9 && totalQty <= 11) {
-        const falta = 12 - totalQty;
-        const txtFalta = falta === 1 ? "mais 1 caderno" : `mais ${falta} cadernos`;
-        if (totalQty === 11) {
-          noteText = `Dica: Adicione mais 1 caderno e leve o Kit com 12 pagando R$ 15,00 a MENOS (R$ 109 pelo Kit 12 vs R$ 124 por 11 cadernos)!`;
+      } else if (totalQtyNormais === 8) {
+        noteText = "Promoção aplicada nos normais: Kit 8 (R$ 9,88 por caderninho). Excelente escolha!";
+      } else if (totalQtyNormais >= 9 && totalQtyNormais <= 11) {
+        const falta = 12 - totalQtyNormais;
+        const txtFalta = falta === 1 ? "mais 1 caderno normal" : `mais ${falta} cadernos normais`;
+        if (totalQtyNormais === 11) {
+          noteText = `Dica: Adicione mais 1 caderno normal e leve o Kit com 12 pagando R$ 15,00 a MENOS (R$ 109 pelo Kit 12 vs R$ 124 por 11 cadernos)!`;
         } else {
           noteText = `Selecione ${txtFalta} para atingir o Kit com 12 por R$ 109 e tenha o melhor custo-benefício (R$ 9,08 por caderninho)!`;
         }
-      } else if (totalQty === 12) {
-        noteText = "Promoção aplicada: Kit 12 (R$ 9,08 por caderninho). Perfeito para presentear ou revender!";
+      } else if (totalQtyNormais === 12) {
+        noteText = "Promoção aplicada nos normais: Kit 12 (R$ 9,08 por caderninho). Perfeito para presentear ou revender!";
       } else {
-        noteText = `Kits combinados aplicados para ${totalQty} cadernos! Para quantidades personalizadas ou atacado, clique no botão para nos consultar via WhatsApp.`;
+        noteText = `Kits combinados aplicados para ${totalQtyNormais} cadernos normais! Para quantidades personalizadas ou atacado, fale conosco.`;
       }
       
       discountNote.textContent = noteText;
@@ -3540,6 +3676,7 @@
     renderCovers();
     renderInteriors();
     updateSummary();
+    carregarPromocoes();
     detectAssetsDynamically();
   </script>
 </body>
