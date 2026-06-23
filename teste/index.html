@@ -2578,6 +2578,28 @@
         return;
       }
 
+      if (!deliveryNumero || !deliveryRua) {
+        if (!silent) {
+          const fallbackData = {
+            logradouro: deliveryRua,
+            bairro: deliveryBairro,
+            localidade: deliveryCidade,
+            uf: deliveryEstado
+          };
+          openAddressModal(cepVal, lastCepResponseData || fallbackData);
+          if (deliveryNumero) addressModalNum.value = deliveryNumero;
+          if (deliveryComplemento) addressModalComp.value = deliveryComplemento;
+          if (lastCepResponseData && !lastCepResponseData.logradouro) {
+            addressModalStreet.value = deliveryRua;
+            addressModalDistrict.value = deliveryBairro;
+          } else if (!lastCepResponseData) {
+            addressModalStreet.value = deliveryRua;
+            addressModalDistrict.value = deliveryBairro;
+          }
+        }
+        return;
+      }
+
       if (!BACKEND_URL) {
         if (!silent) {
           showCustomAlert("Simulação de Frete", "O Backend URL ainda não foi configurado. Carregando opções simuladas para teste de layout.", null);
