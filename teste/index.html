@@ -1917,28 +1917,33 @@
         ...itemLines,
         "",
         `Total de cadernos: ${totalQty}`,
-        `Valor dos Cadernos: ${currency.format(productTotal)}`
+        `Subtotal dos Cadernos: ${currency.format(calcResult.precoCheio)}`
       );
 
+      lines.push(`Frete: ${shippingText}`);
+
       if (calcResult.descontoValor > 0) {
-        lines.push(`🔥 Economia Total: -${currency.format(calcResult.descontoValor)} (${calcResult.descontoPercentual}% de desconto)`);
         if (calcResult.descontoKitNormais > 0) {
-          lines.push(`   • Desconto de Volume (Kits): -${currency.format(calcResult.descontoKitNormais)}`);
+          lines.push(`\u{1F525} Desconto de Volume (Kits): -${currency.format(calcResult.descontoKitNormais)}`);
         }
         Object.keys(calcResult.promocoesAplicadasMap).forEach(nomePromo => {
           const descVal = calcResult.promocoesAplicadasMap[nomePromo];
           if (descVal > 0) {
-            lines.push(`   • Promoção ${nomePromo}: -${currency.format(descVal)}`);
+            lines.push(`\u{1F525} Promoção ${nomePromo}: -${currency.format(descVal)}`);
           }
         });
       }
 
       if (activeCoupon) {
-        lines.push(`🎟️ Cupom: ${activeCoupon.codigo} (-${currency.format(couponDiscountValue)})`);
+        lines.push(`\u{1F39F}\u{FE0F} Cupom: ${activeCoupon.codigo} (-${currency.format(couponDiscountValue)})`);
+      }
+
+      const economiaTotal = calcResult.descontoValor + (activeCoupon ? couponDiscountValue : 0);
+      if (economiaTotal > 0) {
+        lines.push(`(Você economizou ${currency.format(economiaTotal)} neste pedido! \u{1F31F})`);
       }
 
       lines.push(
-        `Frete: ${shippingText}`,
         "",
         `Total Geral: ${currency.format(grandTotal)}`,
         "",
