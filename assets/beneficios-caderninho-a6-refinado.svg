@@ -28,7 +28,7 @@
     <text class="label" x="0" y="38" text-anchor="middle">Várias capas</text>
     <circle cx="0" cy="145" r="76" fill="#bd704f"/>
     <circle cx="0" cy="145" r="68" fill="none" stroke="#e1aa8c" stroke-width="2" opacity=".8"/>
-    <g class="icon" transform="translate(-46 96)">
+    <g class="icon" transform="translate(-46 89)">
       <path d="M19 18H72V96H19Z"/>
       <path d="M8 30V106H61M30 6H84V84M40 29H62M40 42H57"/>
     </g>
