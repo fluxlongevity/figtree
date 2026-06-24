@@ -2978,14 +2978,13 @@
 
     confirmNo.addEventListener("click", () => {
       closeConfirm();
-      // Rola a tela até o topo do formulário de dados (Passo 4)
-      const step4 = document.getElementById("step4");
-      if (step4) {
-        step4.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
       const nameInput = document.getElementById("name");
       if (nameInput) {
         nameInput.focus();
+        // Pequeno atraso para aguardar a subida do teclado no mobile e centralizar o campo sem cortes
+        setTimeout(() => {
+          nameInput.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 200);
       }
     });
 
