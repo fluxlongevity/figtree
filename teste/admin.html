@@ -813,7 +813,13 @@
       currency: "BRL"
     });
 
-    function obterCustoEmbalagem(qtd) {
+    function obterCustoEmbalagem(qtd, isLocal = false) {
+      if (isLocal) {
+        const insSaco = stateInsumos.find(i => i.ID_Insumo.trim() === 'saco_organza_16x23');
+        const sacoCusto = insSaco ? (parseFloat(insSaco.Custo_Unitario_Atual) || 0) : 1.70;
+        return Math.ceil(qtd / 8) * sacoCusto;
+      }
+      
       if (stateGrade.length === 0) return 0.80; // Fallback Caixa P
       
       const caixas = [...stateGrade].map(cx => {
@@ -859,8 +865,27 @@
       const totalGeral = parseFloat(o.Total_Geral) || 0;
       const qtd = parseInt(o.Qtd_Total) || 0;
       const custoProd = qtd * custoProdUnitario;
-      const custoEmb = obterCustoEmbalagem(qtd);
+      
+      const metodo = String(o.Frete_Metodo || "").trim();
+      const isLocal = metodo.toLowerCase().includes("local");
+      
+      let custoEmb = obterCustoEmbalagem(qtd, isLocal);
+      
+      // Se foi enviado por transportadora (não é local, e existe valor de frete pago registrado)
       const freteReal = parseFloat(o.Valor_Frete_Pago) || 0;
+      if (!isLocal && freteReal > 0) {
+        const insFita = stateInsumos.find(i => i.ID_Insumo.trim() === 'fita_crepe_kraft_ 48x50');
+        const insAdesivo = stateInsumos.find(i => i.ID_Insumo.trim() === 'adesivo_hot_melt');
+        const insTinta = stateInsumos.find(i => i.ID_Insumo.trim() === 'tinta');
+        
+        const fitaCusto = insFita ? (parseFloat(insFita.Custo_Unitario_Atual) || 0) : 0.598;
+        const TalkAdesivo = insAdesivo ? (parseFloat(insAdesivo.Custo_Unitario_Atual) || 0) : 0.58;
+        const tintaCusto = insTinta ? (parseFloat(insTinta.Custo_Unitario_Atual) || 0) : 0.01;
+        
+        const custoAdicionalFulfillment = (0.53 * fitaCusto) + (0.5 * TalkAdesivo) + (2 * tintaCusto);
+        custoEmb += custoAdicionalFulfillment;
+      }
+      
       return totalGeral - custoProd - custoEmb - freteReal;
     }
 
