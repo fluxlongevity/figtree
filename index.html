@@ -162,10 +162,21 @@
       filter: drop-shadow(0 18px 30px rgba(62, 38, 23, .18));
     }
 
+    @keyframes slowPulse {
+      0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 16px 24px rgba(67, 34, 24, .18));
+      }
+      50% {
+        transform: scale(1.02);
+        filter: drop-shadow(0 20px 32px rgba(67, 34, 24, .24));
+      }
+    }
+
     .price-art {
       width: min(620px, 96%);
       margin: -4px auto 0;
-      filter: drop-shadow(0 16px 24px rgba(67, 34, 24, .18));
+      animation: slowPulse 5s ease-in-out infinite;
     }
 
     .benefits-art {
@@ -232,12 +243,12 @@
 
     .panel,
     .summary {
-      border: 1px solid rgba(89, 54, 34, .16);
-      border-radius: 12px;
-      background: rgba(255, 248, 235, .84);
-      box-shadow: 0 16px 36px rgba(70, 45, 29, .10);
-      padding: 22px;
-      backdrop-filter: blur(7px);
+      border: 1px solid rgba(89, 54, 34, .12);
+      border-radius: 16px;
+      background: rgba(255, 248, 235, .88);
+      box-shadow: 0 20px 48px rgba(70, 45, 29, .08);
+      padding: 24px;
+      backdrop-filter: blur(12px);
       min-width: 0;
     }
 
@@ -283,12 +294,12 @@
     .cover-option,
     .interior-option {
       border: 1px solid rgba(84, 51, 31, .16);
-      border-radius: 10px;
+      border-radius: 12px;
       background: #fffaf1;
       color: var(--ink);
       cursor: pointer;
       text-align: left;
-      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+      transition: transform .25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .25s cubic-bezier(0.4, 0, 0.2, 1), border-color .25s ease;
     }
 
     .cover-option {
@@ -299,15 +310,16 @@
     .interior-option:hover,
     .cover-option:focus-visible,
     .interior-option:focus-visible {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 22px rgba(78, 48, 30, .14);
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 14px 28px rgba(78, 48, 30, .12);
+      border-color: rgba(78, 48, 30, .4);
       outline: none;
     }
 
     .cover-option.is-selected,
     .interior-option.is-selected {
       border-color: #4b2118;
-      box-shadow: 0 0 0 3px rgba(189, 117, 79, .24);
+      box-shadow: 0 0 0 3px rgba(189, 117, 79, .24), 0 4px 10px rgba(75, 33, 24, .12);
     }
 
     .cover-thumb {
@@ -318,6 +330,19 @@
       background: #eee0cf;
       overflow: hidden;
       box-shadow: inset 0 0 0 1px rgba(80, 48, 31, .08);
+    }
+
+    .cover-thumb-base {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .cover-option:hover .cover-thumb-base {
+      transform: scale(1.06);
     }
 
     .zoom-button {
@@ -522,12 +547,13 @@
     input,
     textarea {
       width: 100%;
-      border: 1px solid rgba(89, 54, 34, .20);
-      border-radius: 10px;
+      border: 1px solid rgba(89, 54, 34, .16);
+      border-radius: 12px;
       padding: 13px 14px;
       color: var(--ink);
       background: var(--paper-strong);
       outline: none;
+      transition: border-color .25s ease, box-shadow .25s ease;
     }
 
     textarea {
@@ -538,7 +564,7 @@
     input:focus,
     textarea:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(189, 117, 79, .18);
+      box-shadow: 0 4px 12px rgba(200, 121, 85, .06), 0 0 0 3px rgba(200, 121, 85, .22);
     }
 
     .qty-row {
@@ -578,13 +604,25 @@
     .add-item {
       min-height: 52px;
       border: 0;
-      border-radius: 10px;
-      background: var(--accent-dark);
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent-dark), #3a1d16);
       color: #fff5e8;
       cursor: pointer;
       font-weight: 900;
-      padding: 0 18px;
+      padding: 0 20px;
       box-shadow: 0 12px 24px rgba(83, 37, 27, .18);
+      transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .2s ease, background .2s ease;
+    }
+
+    .add-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 32px rgba(83, 37, 27, .26);
+      background: linear-gradient(135deg, #6b3124, var(--accent-dark));
+    }
+
+    .add-item:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 6px 12px rgba(83, 37, 27, .12);
     }
 
     .current-selection {
@@ -757,22 +795,35 @@
       min-height: 54px;
       margin-top: 18px;
       border: 0;
-      border-radius: 10px;
+      border-radius: 12px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       padding: 0 20px;
-      background: #1f7d43;
+      background: linear-gradient(135deg, #1f7d43, #155e32);
       color: #fff;
       text-decoration: none;
       font-weight: 900;
       box-shadow: 0 14px 30px rgba(31, 125, 67, .22);
+      transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .2s ease, background .2s ease;
+    }
+
+    .whatsapp-button:not(.is-disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 36px rgba(31, 125, 67, .32);
+      background: linear-gradient(135deg, #28a156, #1f7d43);
+    }
+
+    .whatsapp-button:not(.is-disabled):active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 8px 16px rgba(31, 125, 67, .16);
     }
 
     .whatsapp-button.is-disabled {
       background: #9a8c7b;
       box-shadow: none;
       cursor: not-allowed;
+      transform: none !important;
     }
 
     @media (max-width: 980px) {
@@ -1644,6 +1695,18 @@
           state.coverSrc = cover.src;
           state.coverThumb = cover.thumbSrc;
           updateSummary();
+
+          if (typeof gtag === "function") {
+            gtag('event', 'select_item', {
+              item_list_id: 'covers',
+              item_list_name: 'Capas dos Caderninhos',
+              items: [{
+                item_id: cover.name.toLowerCase().replace(/\s+/g, '_'),
+                item_name: cover.name,
+                item_category: 'Capas'
+              }]
+            });
+          }
         };
 
         button.addEventListener("click", event => {
@@ -1689,6 +1752,18 @@
           state.interiorName = interior.name;
           state.interiorSrc = interior.src;
           updateSummary();
+
+          if (typeof gtag === "function") {
+            gtag('event', 'select_item', {
+              item_list_id: 'interiors',
+              item_list_name: 'Miolos dos Caderninhos',
+              items: [{
+                item_id: interior.name.toLowerCase().replace(/\s+/g, '_'),
+                item_name: interior.name,
+                item_category: 'Miolos'
+              }]
+            });
+          }
         };
 
         button.addEventListener("click", event => {
@@ -1826,6 +1901,22 @@
           qty
         });
       }
+
+      if (typeof gtag === "function") {
+        const itemPrice = calculateTotal(qty) / qty;
+        gtag('event', 'add_to_cart', {
+          currency: 'BRL',
+          value: calculateTotal(qty),
+          items: [{
+            item_id: `${state.coverName.toLowerCase().replace(/\s+/g, '_')}_${state.interiorName.toLowerCase().replace(/\s+/g, '_')}`,
+            item_name: `${state.coverName} - Miolo: ${state.interiorName}`,
+            item_category: 'Caderno Customizado',
+            price: itemPrice,
+            quantity: qty
+          }]
+        });
+      }
+
       quantityInput.value = 1;
       updateSummary();
 
@@ -1834,8 +1925,34 @@
       confirmModal.setAttribute("aria-hidden", "false");
     });
 
+    let checkoutStarted = false;
+    function startCheckoutEvent() {
+      if (!checkoutStarted) {
+        checkoutStarted = true;
+        if (typeof gtag === "function") {
+          const totalQty = getTotalQuantity();
+          const total = calculateTotal(totalQty);
+          gtag('event', 'begin_checkout', {
+            currency: 'BRL',
+            value: total,
+            items: cart.map(item => ({
+              item_id: `${item.coverName.toLowerCase().replace(/\s+/g, '_')}_${item.interiorName.toLowerCase().replace(/\s+/g, '_')}`,
+              item_name: `${item.coverName} - Miolo: ${item.interiorName}`,
+              item_category: 'Caderno Customizado',
+              price: calculateTotal(item.qty) / item.qty,
+              quantity: item.qty
+            }))
+          });
+        }
+      }
+    }
+
     ["name", "delivery", "notes"].forEach(id => {
       document.getElementById(id).addEventListener("input", updateSummary);
+    });
+
+    ["name", "phone", "delivery", "notes"].forEach(id => {
+      document.getElementById(id).addEventListener("focus", startCheckoutEvent);
     });
 
     function cleanPhoneDigits(val) {
@@ -1916,6 +2033,23 @@
         event.preventDefault();
         showCustomAlert("Entrega obrigatória", "Por favor, preencha o campo de <strong>Entrega</strong> (bloco/apto ou combinar) para finalizar seu pedido.", document.getElementById("delivery"));
         return;
+      }
+
+      if (typeof gtag === "function") {
+        const totalQty = getTotalQuantity();
+        const total = calculateTotal(totalQty);
+        gtag('event', 'purchase', {
+          transaction_id: 'TX_' + new Date().getTime(),
+          value: total,
+          currency: 'BRL',
+          items: cart.map(item => ({
+            item_id: `${item.coverName.toLowerCase().replace(/\s+/g, '_')}_${item.interiorName.toLowerCase().replace(/\s+/g, '_')}`,
+            item_name: `${item.coverName} - Miolo: ${item.interiorName}`,
+            item_category: 'Caderno Customizado',
+            price: calculateTotal(item.qty) / item.qty,
+            quantity: item.qty
+          }))
+        });
       }
     });
 
