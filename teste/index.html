@@ -640,7 +640,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #ffffff;
+      background: #eaeaea;
       border: 1px solid rgba(89, 54, 34, .12);
       border-radius: 6px;
       padding: 3px;
@@ -724,7 +724,7 @@
       background: rgba(182, 132, 85, 0.08); /* 8% Kraft */
       border: 1px dashed rgba(182, 132, 85, 0.25);
       border-radius: 10px;
-      font-weight: 500;
+      font-weight: 700;
     }
 
     .whatsapp-button {
@@ -1119,7 +1119,7 @@
         <p class="small-note">Depois de adicionar, você pode escolher outra capa ou outro miolo e adicionar mais cadernos ao mesmo pedido.</p>
       </section>
 
-      <section class="panel">
+      <section class="panel" id="step4">
         <h2 class="section-title"><span class="step">4</span>Seus dados</h2>
         <div class="form-grid">
           <div class="field">
@@ -1152,7 +1152,7 @@
         </div>
       </section>
 
-      <aside class="summary" aria-label="Resumo do pedido">
+      <aside class="summary" id="orderSummary" aria-label="Resumo do pedido">
         <h2>Resumo do pedido</h2>
         <div class="cart-list" id="cartList">
           <p class="empty-cart">Escolha capa, miolo e quantidade. Depois clique em “Adicionar esta configuração”.</p>
@@ -1233,6 +1233,24 @@
         <div style="display: flex; gap: 12px; justify-content: center; width: 100%;">
           <button class="add-item" type="button" id="confirmYes" style="box-shadow: none; min-height: 44px; padding: 0 20px; font-size: 15px; font-weight: 800;">Sim, adicionar outro</button>
           <button class="remove-item" type="button" id="confirmNo" style="width: auto; height: 44px; border-radius: 10px; padding: 0 20px; background: #f1dfce; font-size: 15px; font-weight: 800;">Não, finalizar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmação de Exclusão de Item -->
+  <div class="preview-modal" id="deleteConfirmModal" aria-hidden="true">
+    <div class="preview-dialog" style="width: min(420px, 94%);" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle">
+      <div class="preview-header">
+        <h2 id="deleteConfirmTitle" style="font-size: 24px; font-family: var(--serif);">Remover item?</h2>
+      </div>
+      <div class="preview-body" style="padding: 24px; text-align: center; background: #fff8ec; flex-direction: column;">
+        <p style="margin: 0 0 22px; font-size: 16px; line-height: 1.55; color: var(--ink);">
+          Deseja realmente remover este item do seu resumo de pedido?
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center; width: 100%;">
+          <button class="add-item" type="button" id="deleteConfirmYes" style="box-shadow: none; min-height: 44px; padding: 0 20px; font-size: 15px; font-weight: 800; background: #c63b2f; color: #fff;">Sim, remover</button>
+          <button class="remove-item" type="button" id="deleteConfirmNo" style="width: auto; height: 44px; border-radius: 10px; padding: 0 20px; background: #f1dfce; font-size: 15px; font-weight: 800; color: var(--ink);">Não, manter</button>
         </div>
       </div>
     </div>
@@ -2030,9 +2048,7 @@
 
           removeBtn.addEventListener("click", () => {
             if (isOrderSaved) return;
-            cart.splice(index, 1);
-            updateSummary();
-            autoRecalculateShipping();
+            openDeleteConfirm(index);
           });
           cartList.appendChild(row);
         });
@@ -2544,6 +2560,41 @@
       if (event.target === confirmModal) closeConfirm();
     });
 
+    // Configuração do Modal de Confirmação de Exclusão
+    const deleteConfirmModal = document.getElementById("deleteConfirmModal");
+    const deleteConfirmYes = document.getElementById("deleteConfirmYes");
+    const deleteConfirmNo = document.getElementById("deleteConfirmNo");
+    let itemIndexToDelete = null;
+
+    function openDeleteConfirm(index) {
+      itemIndexToDelete = index;
+      deleteConfirmModal.classList.add("is-open");
+      deleteConfirmModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeDeleteConfirm() {
+      itemIndexToDelete = null;
+      deleteConfirmModal.classList.remove("is-open");
+      deleteConfirmModal.setAttribute("aria-hidden", "true");
+    }
+
+    deleteConfirmYes.addEventListener("click", () => {
+      if (itemIndexToDelete !== null) {
+        cart.splice(itemIndexToDelete, 1);
+        updateSummary();
+        autoRecalculateShipping();
+      }
+      closeDeleteConfirm();
+    });
+
+    deleteConfirmNo.addEventListener("click", () => {
+      closeDeleteConfirm();
+    });
+
+    deleteConfirmModal.addEventListener("click", event => {
+      if (event.target === deleteConfirmModal) closeDeleteConfirm();
+    });
+
     // Configuração do Modal de Alerta Customizado (Bonito)
     const alertModal = document.getElementById("alertModal");
     const alertTitle = document.getElementById("alertTitle");
@@ -2878,6 +2929,7 @@
       if (event.key === "Escape") {
         if (previewModal.classList.contains("is-open")) closePreview();
         if (confirmModal.classList.contains("is-open")) closeConfirm();
+        if (deleteConfirmModal.classList.contains("is-open")) closeDeleteConfirm();
         if (alertModal.classList.contains("is-open")) closeAlert();
         if (addressModal.classList.contains("is-open")) closeAddressModal();
         if (pixModal.classList.contains("is-open")) closePixModal();
@@ -2918,10 +2970,13 @@
 
     confirmNo.addEventListener("click", () => {
       closeConfirm();
-      // Rola a tela até o formulário de dados (Passo 4)
+      // Rola a tela até o topo do formulário de dados (Passo 4)
+      const step4 = document.getElementById("step4");
+      if (step4) {
+        step4.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
       const nameInput = document.getElementById("name");
       if (nameInput) {
-        nameInput.scrollIntoView({ behavior: "smooth", block: "center" });
         nameInput.focus();
       }
     });
@@ -3273,6 +3328,10 @@
             state.cpf = "";
           }
           updateSummary();
+          const summaryEl = document.getElementById("orderSummary");
+          if (summaryEl) {
+            summaryEl.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
         });
 
         shippingOptionsList.appendChild(card);
@@ -3425,6 +3484,14 @@
       if (nameParts.length < 2) {
         showCustomAlert("Nome incompleto", "Por favor, insira o seu <strong>Nome Completo</strong> (Nome e Sobrenome) para a emissão da etiqueta de envio.", document.getElementById("name"));
         return;
+      }
+
+      if (phoneVal.length > 0) {
+        const phoneDigits = phoneVal.replace(/\D/g, "");
+        if (phoneDigits.length < 10 || phoneDigits.length > 11) {
+          showCustomAlert("WhatsApp incompleto", "Por favor, insira o número do seu <strong>WhatsApp com o DDD</strong> completo (10 ou 11 dígitos).", document.getElementById("phone"));
+          return;
+        }
       }
 
       if (isCepEmpty) {
