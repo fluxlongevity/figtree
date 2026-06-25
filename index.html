@@ -228,6 +228,145 @@
       color: var(--ink);
     }
 
+    .specs-panel {
+      margin-top: 30px;
+      overflow: hidden;
+    }
+
+    .details-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 20px;
+    }
+
+    .details-title {
+      margin-bottom: 8px;
+    }
+
+    .details-copy {
+      margin: 0;
+      max-width: 640px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .details-seal {
+      width: 118px;
+      min-height: 118px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      border-radius: 999px;
+      background: #fff6e8;
+      border: 1px solid rgba(82, 48, 30, .16);
+      color: var(--ink);
+      box-shadow: inset 0 0 0 8px rgba(185, 197, 168, .18);
+      font-family: var(--serif);
+      font-size: 25px;
+      font-weight: 700;
+      line-height: .95;
+    }
+
+    .details-seal span {
+      display: block;
+      margin-top: 5px;
+      font-family: var(--sans);
+      font-size: 11px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+
+    .details-benefits {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .detail-benefit {
+      padding: 16px 16px 15px;
+      border-radius: 14px;
+      background: rgba(255, 253, 247, .66);
+      border: 1px solid rgba(82, 48, 30, .12);
+    }
+
+    .detail-benefit strong,
+    .spec-item strong {
+      display: block;
+      color: var(--ink);
+    }
+
+    .detail-benefit strong {
+      font-family: var(--serif);
+      font-size: 22px;
+      line-height: 1.02;
+    }
+
+    .detail-benefit span {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+    }
+
+    .spec-item {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 11px;
+      align-items: start;
+      padding: 14px;
+      border-radius: 13px;
+      background: rgba(255, 255, 255, .38);
+      border: 1px solid rgba(82, 48, 30, .09);
+    }
+
+    .spec-token {
+      width: 34px;
+      height: 34px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(200, 121, 85, .16);
+      color: var(--accent-dark);
+      font-weight: 800;
+      font-size: 11px;
+      letter-spacing: .03em;
+    }
+
+    .spec-item strong {
+      font-size: 14px;
+      line-height: 1.2;
+    }
+
+    .spec-item span:not(.spec-token) {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.42;
+    }
+
+    .details-note {
+      margin: 17px 0 0;
+      padding-top: 15px;
+      border-top: 1px solid rgba(82, 48, 30, .11);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
     .order-area {
       display: grid;
       gap: 18px;
@@ -886,6 +1025,23 @@
         scroll-snap-align: center;
       }
 
+      .details-head {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+      }
+
+      .details-seal {
+        width: 100%;
+        min-height: auto;
+        padding: 14px 18px;
+        border-radius: 14px;
+        display: block;
+      }
+
+      .details-benefits {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
       .panel,
       .summary {
         padding: 18px;
@@ -1116,60 +1272,75 @@
       </div>
     </section>
 
-    <!-- Painel de Detalhes do Produto -->
-    <section class="panel specs-panel" style="margin-top: 30px;">
-      <h2 class="section-title" style="font-family: var(--serif); font-size: 32px; font-weight: 700; margin-bottom: 20px;">Detalhes do Produto</h2>
-      <div class="specs-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
-        <div class="spec-item" style="display: flex; gap: 12px; align-items: flex-start;">
-          <span style="font-size: 24px; line-height: 1;">📏</span>
+    <section class="panel specs-panel">
+      <div class="details-head">
+        <div>
+          <h2 class="section-title details-title">Detalhes que fazem diferença</h2>
+          <p class="details-copy">Um caderninho compacto, bonito e resistente para deixar por perto nas ideias do dia, listas rápidas, estudos, recados e pequenos planos.</p>
+        </div>
+        <div class="details-seal">14 × 9<span>tamanho de bolso</span></div>
+      </div>
+
+      <div class="details-benefits" aria-label="Principais benefícios">
+        <div class="detail-benefit">
+          <strong>Leve para carregar</strong>
+          <span>Vai bem na bolsa, no bolso ou na mesa de trabalho sem ocupar espaço.</span>
+        </div>
+        <div class="detail-benefit">
+          <strong>Capa com presença</strong>
+          <span>Papel Kraft 240 g/m² com visual natural e desenhos em line art.</span>
+        </div>
+        <div class="detail-benefit">
+          <strong>Do seu jeito</strong>
+          <span>Escolha a capa e combine com o miolo que combina com sua rotina.</span>
+        </div>
+      </div>
+
+      <div class="specs-grid">
+        <div class="spec-item">
+          <span class="spec-token">60</span>
           <div>
-            <strong style="display: block; font-size: 15px; color: var(--ink);">Tamanho: 14 cm × 9 cm</strong>
-            <span style="font-size: 13px; color: var(--muted);">Ideal para carregar no bolso ou na bolsa.</span>
+            <strong>60 páginas</strong>
+            <span>Boa quantidade para uso diário sem deixar o caderno pesado.</span>
           </div>
         </div>
-        <div class="spec-item" style="display: flex; gap: 12px; align-items: flex-start;">
-          <span style="font-size: 24px; line-height: 1;">📄</span>
+        <div class="spec-item">
+          <span class="spec-token">K</span>
           <div>
-            <strong style="display: block; font-size: 15px; color: var(--ink);">60 páginas</strong>
-            <span style="font-size: 13px; color: var(--muted);">Espaço perfeito para as suas anotações.</span>
+            <strong>Kraft 240 g/m²</strong>
+            <span>Capa firme, resistente e com acabamento artesanal.</span>
           </div>
         </div>
-        <div class="spec-item" style="display: flex; gap: 12px; align-items: flex-start;">
-          <span style="font-size: 24px; line-height: 1;">📎</span>
+        <div class="spec-item">
+          <span class="spec-token">M</span>
           <div>
-            <strong style="display: block; font-size: 15px; color: var(--ink);">Tipo Grampeado</strong>
-            <span style="font-size: 13px; color: var(--muted);">Acabamento leve, prático e resistente.</span>
+            <strong>Miolo à escolha</strong>
+            <span>Com pauta, sem pauta, pontilhado ou quadriculado.</span>
           </div>
         </div>
-        <div class="spec-item" style="display: flex; gap: 12px; align-items: flex-start;">
-          <span style="font-size: 24px; line-height: 1;">📕</span>
+        <div class="spec-item">
+          <span class="spec-token">G</span>
           <div>
-            <strong style="display: block; font-size: 15px; color: var(--ink);">Capa em papel Kraft 240 g/m²</strong>
-            <span style="font-size: 13px; color: var(--muted);">Capa firme, resistente e com acabamento natural.</span>
+            <strong>Grampeado no centro</strong>
+            <span>Acabamento simples, leve e prático para o uso no dia a dia.</span>
           </div>
         </div>
-        <div class="spec-item" style="display: flex; gap: 12px; align-items: flex-start;">
-          <span style="font-size: 24px; line-height: 1;">📝</span>
+        <div class="spec-item">
+          <span class="spec-token">A</span>
           <div>
-            <strong style="display: block; font-size: 15px; color: var(--ink);">Pautas Personalizáveis</strong>
-            <span style="font-size: 13px; color: var(--muted);">Com ou sem pauta (definido no Passo 2).</span>
+            <strong>Várias capas</strong>
+            <span>Opções diferentes para escolher, presentear ou montar kits.</span>
           </div>
         </div>
-        <div class="spec-item" style="display: flex; gap: 12px; align-items: flex-start;">
-          <span style="font-size: 24px; line-height: 1;">⏱️</span>
+        <div class="spec-item">
+          <span class="spec-token">E</span>
           <div>
-            <strong style="display: block; font-size: 15px; color: var(--ink);">Prazo de Entrega</strong>
-            <span style="font-size: 13px; color: var(--muted);">A combinar com o vendedor, dependendo da quantidade.</span>
-          </div>
-        </div>
-        <div class="spec-item" style="display: flex; gap: 12px; align-items: flex-start;">
-          <span style="font-size: 24px; line-height: 1;">🚚</span>
-          <div>
-            <strong style="display: block; font-size: 15px; color: var(--ink);">Frete / Entrega</strong>
-            <span style="font-size: 13px; color: var(--muted);">A combinar com o vendedor, dependendo da localidade.</span>
+            <strong>Entrega combinada</strong>
+            <span>Prazo e entrega definidos de acordo com quantidade e localidade.</span>
           </div>
         </div>
       </div>
+      <p class="details-note">Na promoção, 4 unidades saem por R$ 45. Uma boa opção para comprar com capas diferentes ou dividir com a família.</p>
     </section>
 
     <section class="order-area" aria-label="Formulário de pedido">
