@@ -1948,6 +1948,17 @@
     const previewBody = document.getElementById("previewBody");
     const previewClose = document.getElementById("previewClose");
 
+    function scrollPanelIntoView(panel) {
+      if (!panel) return;
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const topOffset = window.innerWidth <= 720 ? 28 : 36;
+      const targetTop = Math.max(panel.getBoundingClientRect().top + window.pageYOffset - topOffset, 0);
+      window.scrollTo({
+        top: targetTop,
+        behavior: prefersReducedMotion ? "auto" : "smooth"
+      });
+    }
+
     const zoomIcon = `
       <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="6"></circle>
@@ -2604,7 +2615,7 @@
           if (shouldScroll) {
             const step2Panel = document.getElementById("interiorGrid") ? document.getElementById("interiorGrid").closest(".panel") : null;
             if (step2Panel) {
-              step2Panel.scrollIntoView({ behavior: "smooth", block: "center" });
+              scrollPanelIntoView(step2Panel);
             }
           }
         };
@@ -2670,7 +2681,7 @@
           if (shouldScroll) {
             const step3Panel = document.getElementById("currentSelection") ? document.getElementById("currentSelection").closest(".panel") : null;
             if (step3Panel) {
-              step3Panel.scrollIntoView({ behavior: "smooth", block: "center" });
+              scrollPanelIntoView(step3Panel);
             }
           }
         };
