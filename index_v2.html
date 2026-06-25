@@ -235,9 +235,9 @@
 
     .details-head {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 18px;
-      align-items: end;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      align-items: start;
       margin-bottom: 20px;
     }
 
@@ -254,30 +254,31 @@
     }
 
     .details-seal {
-      min-width: 168px;
-      min-height: 66px;
+      width: fit-content;
+      min-height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 10px;
       text-align: left;
-      border-radius: 16px;
+      border-radius: 999px;
       background: #fff6e8;
       border: 1px solid rgba(82, 48, 30, .16);
       color: var(--ink);
-      box-shadow: inset 0 0 0 5px rgba(185, 197, 168, .15), 0 14px 28px rgba(70, 45, 29, .06);
+      box-shadow: 0 10px 22px rgba(70, 45, 29, .05);
       font-family: var(--serif);
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 700;
       line-height: 1;
-      padding: 12px 18px;
+      padding: 8px 15px 8px 10px;
+      margin-top: 12px;
     }
 
     .details-seal span {
       display: block;
-      margin-top: 3px;
+      margin-top: 2px;
       font-family: var(--sans);
-      font-size: 11px;
+      font-size: 10px;
       line-height: 1.2;
       text-transform: uppercase;
       letter-spacing: .08em;
@@ -292,11 +293,11 @@
 
     .details-seal::before {
       content: "";
-      width: 35px;
-      height: 35px;
-      border-radius: 10px;
-      border: 2px solid rgba(83, 37, 27, .72);
-      box-shadow: 7px 5px 0 rgba(185, 197, 168, .26);
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: 1.8px solid rgba(83, 37, 27, .68);
+      box-shadow: 5px 4px 0 rgba(185, 197, 168, .24);
       flex: 0 0 auto;
     }
 
@@ -1061,9 +1062,7 @@
         width: 100%;
         min-width: 0;
         min-height: auto;
-        justify-content: flex-start;
-        padding: 14px 20px;
-        border-radius: 14px;
+        padding: 9px 15px 9px 10px;
       }
 
       .details-benefits {
@@ -1618,8 +1617,8 @@
         <div>
           <h2 class="section-title details-title">Detalhes que fazem diferença</h2>
           <p class="details-copy">Um caderninho compacto, bonito e resistente para deixar por perto nas ideias do dia, listas rápidas, estudos, recados e pequenos planos.</p>
+          <div class="details-seal"><strong>14 × 9</strong><span>tamanho de bolso</span></div>
         </div>
-        <div class="details-seal"><strong>14 × 9</strong><span>tamanho de bolso</span></div>
       </div>
 
       <div class="details-benefits" aria-label="Principais benefícios">
