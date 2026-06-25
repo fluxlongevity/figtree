@@ -291,12 +291,16 @@
       color: var(--ink);
     }
 
-    .details-seal::before {
-      content: "";
-      width: 32px;
-      height: 1px;
-      background: currentColor;
-      opacity: .55;
+    .details-size-icon {
+      width: 36px;
+      height: 22px;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: .78;
       flex: 0 0 auto;
     }
 
@@ -352,8 +356,8 @@
     }
 
     .spec-token {
-      width: 38px;
-      height: 38px;
+      width: 46px;
+      height: 46px;
       display: inline-grid;
       place-items: center;
       border-radius: 50%;
@@ -362,8 +366,8 @@
     }
 
     .spec-token svg {
-      width: 21px;
-      height: 21px;
+      width: 26px;
+      height: 26px;
       display: block;
       fill: none;
       stroke: currentColor;
@@ -1065,13 +1069,14 @@
       }
 
       .spec-token {
-        width: 46px;
-        height: 46px;
+        width: 58px;
+        height: 58px;
       }
 
       .spec-token svg {
-        width: 25px;
-        height: 25px;
+        width: 34px;
+        height: 34px;
+        stroke-width: 1.75;
       }
 
       .details-benefits {
@@ -1626,7 +1631,13 @@
         <div>
           <h2 class="section-title details-title">Detalhes que fazem diferença</h2>
           <p class="details-copy">Um caderninho compacto, bonito e resistente para deixar por perto nas ideias do dia, listas rápidas, estudos, recados e pequenos planos.</p>
-          <div class="details-seal"><strong>14 cm × 9 cm</strong><span>tamanho de bolso</span></div>
+          <div class="details-seal">
+            <svg class="details-size-icon" viewBox="0 0 40 24" aria-hidden="true">
+              <path d="M4 15h32" />
+              <path d="M6 9v6M12 11v4M18 9v6M24 11v4M30 9v6M36 11v4" />
+            </svg>
+            <strong>14 cm × 9 cm</strong><span>tamanho de bolso</span>
+          </div>
         </div>
       </div>
 
