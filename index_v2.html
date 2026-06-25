@@ -317,7 +317,7 @@
 
     .specs-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
     }
 
@@ -1042,6 +1042,10 @@
         grid-template-columns: minmax(0, 1fr);
       }
 
+      .specs-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
       .panel,
       .summary {
         padding: 18px;
@@ -1363,7 +1367,7 @@
     }
 
     .v2 .specs-grid {
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)) !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
       gap: 12px !important;
     }
 
@@ -1497,6 +1501,10 @@
 
       .v2 .details-benefits {
         grid-template-columns: minmax(0, 1fr);
+      }
+
+      .v2 .specs-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
       }
 
       .v2 .panel,
