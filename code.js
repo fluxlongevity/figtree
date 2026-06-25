@@ -2716,3 +2716,62 @@ function processarWebhookSuperFreteDirect(payload) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 }
+
+/**
+ * Cadastra o webhook automaticamente na API do SuperFrete (Seu Rastreio).
+ * Pode ser executada diretamente do editor do Google Apps Script.
+ */
+function registrarWebhookNoSuperFrete() {
+  const token = PropertiesService.getScriptProperties().getProperty("SUPERFRETE_TOKEN");
+  if (!token) {
+    throw new Error("Token da SuperFrete nao configurado nas propriedades do script (SUPERFRETE_TOKEN).");
+  }
+
+  let webAppUrl = "";
+  try {
+    webAppUrl = ScriptApp.getService().getUrl();
+  } catch (e) {
+    Logger.log("Nao foi possivel detectar a URL do Web App automaticamente: " + e.message);
+  }
+
+  if (!webAppUrl) {
+    webAppUrl = "https://script.google.com/macros/s/AKfycbycjYy2UiWKMJAQcrFEs9IFJ42LTKtSJMgUufCYErjlX9U80m6V7M1pHvRb0gbH5TSF/exec";
+  }
+
+  // Garante que a URL termine com o parametro source
+  if (webAppUrl.indexOf("?") === -1) {
+    webAppUrl += "?source=superfrete";
+  } else if (webAppUrl.indexOf("source=superfrete") === -1) {
+    webAppUrl += "&source=superfrete";
+  }
+
+  const url = "https://api.seurastreio.com.br/api/public/webhooks";
+  
+  const payload = {
+    name: "Notificacao Automatica FigTree",
+    url: webAppUrl,
+    events: ["default"] // Assina todos os eventos (em_curso, saiu_para_entrega, entregue, etc.)
+  };
+  
+  const options = {
+    method: "post",
+    contentType: "application/json",
+    headers: {
+      "Authorization": "Bearer " + token
+    },
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  };
+  
+  const response = UrlFetchApp.fetch(url, options);
+  const responseText = response.getContentText();
+  const responseCode = response.getResponseCode();
+  
+  Logger.log("Response Code: " + responseCode);
+  Logger.log("Response Text: " + responseText);
+  
+  return {
+    statusCode: responseCode,
+    response: responseText
+  };
+}
