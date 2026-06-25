@@ -254,31 +254,44 @@
     }
 
     .details-seal {
-      width: 118px;
-      min-height: 118px;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      border-radius: 999px;
+      min-width: 188px;
+      min-height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      text-align: left;
+      border-radius: 16px;
       background: #fff6e8;
       border: 1px solid rgba(82, 48, 30, .16);
       color: var(--ink);
-      box-shadow: inset 0 0 0 8px rgba(185, 197, 168, .18);
+      box-shadow: inset 0 0 0 5px rgba(185, 197, 168, .15), 0 14px 28px rgba(70, 45, 29, .06);
       font-family: var(--serif);
       font-size: 25px;
       font-weight: 700;
-      line-height: .95;
+      line-height: 1;
+      padding: 12px 18px;
     }
 
     .details-seal span {
       display: block;
-      margin-top: 5px;
+      margin-top: 3px;
       font-family: var(--sans);
       font-size: 11px;
       line-height: 1.2;
       text-transform: uppercase;
       letter-spacing: .08em;
       color: var(--muted);
+    }
+
+    .details-seal::before {
+      content: "";
+      width: 35px;
+      height: 35px;
+      border-radius: 10px;
+      border: 2px solid rgba(83, 37, 27, .72);
+      box-shadow: 7px 5px 0 rgba(185, 197, 168, .26);
+      flex: 0 0 auto;
     }
 
     .details-benefits {
@@ -340,9 +353,17 @@
       border-radius: 50%;
       background: rgba(200, 121, 85, .16);
       color: var(--accent-dark);
-      font-weight: 800;
-      font-size: 11px;
-      letter-spacing: .03em;
+    }
+
+    .spec-token svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.85;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .spec-item strong {
@@ -1032,10 +1053,10 @@
 
       .details-seal {
         width: 100%;
+        min-width: 0;
         min-height: auto;
         padding: 14px 18px;
         border-radius: 14px;
-        display: block;
       }
 
       .details-benefits {
@@ -1611,42 +1632,42 @@
 
       <div class="specs-grid">
         <div class="spec-item">
-          <span class="spec-token">60</span>
+          <span class="spec-token" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4h7l3 3v13H7z"/><path d="M14 4v4h4"/><path d="M10 12h5M10 15h5"/></svg></span>
           <div>
             <strong>60 páginas</strong>
             <span>Boa quantidade para uso diário sem deixar o caderno pesado.</span>
           </div>
         </div>
         <div class="spec-item">
-          <span class="spec-token">K</span>
+          <span class="spec-token" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 5h10v14H7z"/><path d="M9 8h6M9 11h6M9 14h4"/><path d="M7 5c-1 1.5-1 12.5 0 14"/></svg></span>
           <div>
             <strong>Kraft 240 g/m²</strong>
             <span>Capa firme, resistente e com acabamento artesanal.</span>
           </div>
         </div>
         <div class="spec-item">
-          <span class="spec-token">M</span>
+          <span class="spec-token" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6c2-1 5-1 7 1 2-2 5-2 7-1v13c-2-1-5-1-7 1-2-2-5-2-7-1z"/><path d="M12 7v13"/><path d="M8 10h2M14 10h2M8 13h2M14 13h2"/></svg></span>
           <div>
             <strong>Miolo à escolha</strong>
             <span>Com pauta, sem pauta, pontilhado ou quadriculado.</span>
           </div>
         </div>
         <div class="spec-item">
-          <span class="spec-token">G</span>
+          <span class="spec-token" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 7h5c2.5 0 4 1.5 4 3.6V16c0 2-1.3 3-3 3s-3-1-3-3V8.5c0-1 .7-1.5 1.5-1.5S14 7.5 14 8.5V16"/></svg></span>
           <div>
             <strong>Grampeado no centro</strong>
             <span>Acabamento simples, leve e prático para o uso no dia a dia.</span>
           </div>
         </div>
         <div class="spec-item">
-          <span class="spec-token">A</span>
+          <span class="spec-token" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 8h9v11H6z"/><path d="M9 5h9v11"/><path d="M12 3h8v11"/></svg></span>
           <div>
             <strong>Várias capas</strong>
             <span>Opções diferentes para escolher, presentear ou montar kits.</span>
           </div>
         </div>
         <div class="spec-item">
-          <span class="spec-token">E</span>
+          <span class="spec-token" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h11v8H4z"/><path d="M15 11h3l2 2v3h-5z"/><circle cx="8" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/></svg></span>
           <div>
             <strong>Entrega combinada</strong>
             <span>Prazo e entrega definidos de acordo com quantidade e localidade.</span>

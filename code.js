@@ -2722,9 +2722,14 @@ function processarWebhookSuperFreteDirect(payload) {
  * Pode ser executada diretamente do editor do Google Apps Script.
  */
 function registrarWebhookNoSuperFrete() {
-  const token = PropertiesService.getScriptProperties().getProperty("SUPERFRETE_TOKEN");
+  // Busca o token do Seu Rastreio (necessário para a API de Webhooks) ou cai de volta para o do SuperFrete
+  let token = PropertiesService.getScriptProperties().getProperty("SEURASTREIO_TOKEN");
   if (!token) {
-    throw new Error("Token da SuperFrete nao configurado nas propriedades do script (SUPERFRETE_TOKEN).");
+    token = PropertiesService.getScriptProperties().getProperty("SUPERFRETE_TOKEN");
+  }
+  
+  if (!token) {
+    throw new Error("Token de autenticacao nao configurado nas propriedades do script (defina SEURASTREIO_TOKEN ou SUPERFRETE_TOKEN).");
   }
 
   let webAppUrl = "";
