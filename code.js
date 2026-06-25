@@ -2700,9 +2700,59 @@ function processarWebhookSuperFrete(e) {
 
 function processarWebhookSuperFreteDirect(payload) {
   try {
-    const orderId = payload.order ? payload.order.orderId : null;
+    const dataObj = payload.data || {};
+    const packageId = dataObj.id ? String(dataObj.id).trim() : "";
+    const trackingCode = dataObj.tracking ? String(dataObj.tracking).trim() : "";
+    
+    // Tenta obter também um orderId de fallback (caso o payload mude ou em testes rápidos)
+    let orderId = payload.order ? payload.order.orderId : null;
+    
+    if (!packageId && !trackingCode && !orderId) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: "Nenhum ID de pacote, codigo de rastreio ou ID de pedido encontrado no payload" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+    let ss = null;
+    try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
+    if (!ss) ss = SpreadsheetApp.openById(spreadsheetId);
+    
+    const sheet = ss.getSheetByName("Pedidos");
+    if (!sheet) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: "Planilha nao encontrada" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    const data = sheet.getDataRange().getValues();
+    const headers = data[0];
+    
+    const colIdPedido = headers.indexOf("ID_Pedido");
+    const colPackageId = headers.indexOf("Superfrete_Package_ID");
+    const colTracking = headers.indexOf("Codigo_Rastreio");
+    
+    if (colIdPedido === -1) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: "Coluna ID_Pedido nao encontrada" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
     if (!orderId) {
-      return ContentService.createTextOutput(JSON.stringify({ success: false, error: "ID do pedido nao encontrado no payload" }))
+      // Busca na planilha pelo Package ID ou pelo Código de Rastreio
+      for (let i = 1; i < data.length; i++) {
+        const rowPackageId = colPackageId !== -1 ? String(data[i][colPackageId]).trim() : "";
+        const rowTracking = colTracking !== -1 ? String(data[i][colTracking]).trim() : "";
+        
+        const matchPackage = packageId && rowPackageId && (rowPackageId === packageId);
+        const matchTracking = trackingCode && rowTracking && (rowTracking === trackingCode);
+        
+        if (matchPackage || matchTracking) {
+          orderId = data[i][colIdPedido];
+          break;
+        }
+      }
+    }
+    
+    if (!orderId) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: "Nenhum pedido correspondente encontrado na planilha para o pacote " + packageId + " / " + trackingCode }))
         .setMimeType(ContentService.MimeType.JSON);
     }
     
@@ -2718,18 +2768,13 @@ function processarWebhookSuperFreteDirect(payload) {
 }
 
 /**
- * Cadastra o webhook automaticamente na API do SuperFrete (Seu Rastreio).
+ * Cadastra o webhook automaticamente na API oficial do SuperFrete.
  * Pode ser executada diretamente do editor do Google Apps Script.
  */
 function registrarWebhookNoSuperFrete() {
-  // Busca o token do Seu Rastreio (necessário para a API de Webhooks) ou cai de volta para o do SuperFrete
-  let token = PropertiesService.getScriptProperties().getProperty("SEURASTREIO_TOKEN");
+  const token = PropertiesService.getScriptProperties().getProperty("SUPERFRETE_TOKEN");
   if (!token) {
-    token = PropertiesService.getScriptProperties().getProperty("SUPERFRETE_TOKEN");
-  }
-  
-  if (!token) {
-    throw new Error("Token de autenticacao nao configurado nas propriedades do script (defina SEURASTREIO_TOKEN ou SUPERFRETE_TOKEN).");
+    throw new Error("Token da SuperFrete nao configurado nas propriedades do script (SUPERFRETE_TOKEN).");
   }
 
   let webAppUrl = "";
@@ -2750,12 +2795,12 @@ function registrarWebhookNoSuperFrete() {
     webAppUrl += "&source=superfrete";
   }
 
-  const url = "https://api.seurastreio.com.br/api/public/webhooks";
+  const url = "https://api.superfrete.com/api/v0/webhook";
   
   const payload = {
     name: "Notificacao Automatica FigTree",
     url: webAppUrl,
-    events: ["default"] // Assina todos os eventos (em_curso, saiu_para_entrega, entregue, etc.)
+    events: ["order.posted", "order.delivered", "order.cancelled"]
   };
   
   const options = {
