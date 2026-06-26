@@ -419,10 +419,11 @@ function selecionarCaixaLogistica(ss, qty) {
   
   const caixas = [];
   for (let i = 1; i < data.length; i++) {
+    const capacidadeRaw = parseInt(data[i][capIdx], 10);
     caixas.push({
       id: data[i][idIdx],
       idInsumo: insumoIdx !== -1 ? data[i][insumoIdx] : null,
-      capacidade: parseInt(data[i][capIdx]) || 1,
+      capacidade: isNaN(capacidadeRaw) ? 1 : capacidadeRaw,
       comprimento: parseFloat(data[i][compIdx]) || 0,
       largura: parseFloat(data[i][largIdx]) || 0,
       altura: parseFloat(data[i][altIdx]) || 0,
