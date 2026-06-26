@@ -2164,10 +2164,20 @@
       Object.keys(calcResult.promocoesAplicadasMap).forEach(nomePromo => {
         const descVal = calcResult.promocoesAplicadasMap[nomePromo];
         if (descVal > 0) {
+          const promoObj = promocoesAtivas.find(p => p.Nome === nomePromo);
+          let pctText = "";
+          if (promoObj) {
+            const val = Number(promoObj.Valor) || 0;
+            if (String(promoObj.Tipo_Valor).trim().toLowerCase() === "percentual") {
+              pctText = ` (${Math.round(val)}%)`;
+            } else {
+              pctText = ` (${Math.round((val / 15) * 100)}%)`;
+            }
+          }
           const promoLine = document.createElement("div");
           promoLine.className = "summary-line";
           promoLine.style.cssText = "display: flex; justify-content: space-between; gap: 14px; padding: 12px 0; color: #28a745; font-weight: 600;";
-          promoLine.innerHTML = `<span>Promoção: ${nomePromo}</span><strong>-${currency.format(descVal)}</strong>`;
+          promoLine.innerHTML = `<span>Promoção: ${nomePromo}${pctText}</span><strong>-${currency.format(descVal)}</strong>`;
           autoPromosContainer.appendChild(promoLine);
         }
       });
