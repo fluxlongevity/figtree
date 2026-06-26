@@ -2161,6 +2161,33 @@
     }
 
     function updateSummary() {
+      const checkEligibility = (item, listEspec) => {
+        const coverNameLower = item.coverName.trim().toLowerCase();
+        const interiorNameLower = item.interiorName.trim().toLowerCase();
+        const specifiedCovers = [];
+        const specifiedInteriors = [];
+        listEspec.forEach(espec => {
+          const especLower = espec.trim().toLowerCase();
+          if (especLower.length === 0) return;
+          const isCover = covers.some(c => c.name.trim().toLowerCase() === especLower);
+          const isInterior = interiors.some(i => i.name.trim().toLowerCase() === especLower);
+          if (isCover) {
+            specifiedCovers.push(especLower);
+          } else if (isInterior) {
+            specifiedInteriors.push(especLower);
+          }
+        });
+        if (specifiedCovers.length === 0 && specifiedInteriors.length === 0) {
+          return listEspec.some(espec => 
+            coverNameLower.includes(espec) || espec.includes(coverNameLower) ||
+            interiorNameLower.includes(espec) || espec.includes(interiorNameLower)
+          );
+        }
+        const coverMatch = specifiedCovers.length === 0 || specifiedCovers.includes(coverNameLower);
+        const interiorMatch = specifiedInteriors.length === 0 || specifiedInteriors.includes(interiorNameLower);
+        return coverMatch && interiorMatch;
+      };
+
       if (isOrderSaved) {
         const currentKey = getOrderKey();
         if (currentKey !== lastSavedOrderKey) {
@@ -2265,12 +2292,7 @@
             const precoMedioUnitario = totalQty > 0 ? (productTotal / totalQty) : 0;
             let qtyElegiveis = 0;
             cart.forEach(item => {
-              const coverNameLower = item.coverName.trim().toLowerCase();
-              const interiorNameLower = item.interiorName.trim().toLowerCase();
-              const isMatch = listEspec.some(espec => 
-                coverNameLower.includes(espec) || espec.includes(coverNameLower) ||
-                interiorNameLower.includes(espec) || espec.includes(interiorNameLower)
-              );
+              const isMatch = checkEligibility(item, listEspec);
               if (isMatch) {
                 qtyElegiveis += item.qty;
               }
@@ -2311,12 +2333,7 @@
               qtyElegiveis = totalQty;
             } else {
               cart.forEach(item => {
-                const coverNameLower = item.coverName.trim().toLowerCase();
-                const interiorNameLower = item.interiorName.trim().toLowerCase();
-                const isMatch = listEspec.some(espec => 
-                  coverNameLower.includes(espec) || espec.includes(coverNameLower) ||
-                  interiorNameLower.includes(espec) || espec.includes(interiorNameLower)
-                );
+                const isMatch = checkEligibility(item, listEspec);
                 if (isMatch) qtyElegiveis += item.qty;
               });
             }
