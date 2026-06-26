@@ -3540,11 +3540,19 @@ function cadastrarNoSeuRastreio(pedido, trackingCode) {
     
     const cleanPhone = String(pedido.Whatsapp || "").replace(/\D/g, "");
     
+    let carrier = "Correios";
+    const metodo = String(pedido.Frete_Metodo || "").toUpperCase();
+    if (metodo.indexOf("JADLOG") !== -1) {
+      carrier = "Jadlog";
+    } else if (metodo.indexOf("LOGGI") !== -1) {
+      carrier = "Loggi";
+    }
+    
     const payload = {
       "externalId": String(pedido.ID_Pedido),
       "orderNumber": "#" + pedido.ID_Pedido,
       "trackingCode": String(trackingCode).trim(),
-      "trackingCarrier": "Correios",
+      "trackingCarrier": carrier,
       "status": "shipped",
       "customerName": String(pedido.Nome || "").trim(),
       "phone": cleanPhone
@@ -3555,7 +3563,8 @@ function cadastrarNoSeuRastreio(pedido, trackingCode) {
       "contentType": "application/json",
       "headers": {
         "Authorization": "Bearer " + apiKey,
-        "Accept": "application/json"
+        "Accept": "application/json",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
       },
       "payload": JSON.stringify(payload),
       "muteHttpExceptions": true
