@@ -959,8 +959,8 @@ function atualizarStatusPedido(orderId, novoStatus, dataPagamento) {
         noPrazo = true;
       }
 
-      // Só tenta cancelar na API se o status logístico atual for cancelável (released, printed ou pending)
-      const statusCancelaveis = ["released", "printed", "pending"];
+      // Só tenta cancelar na API se o status logístico atual for cancelável (paid, released, printed ou pending)
+      const statusCancelaveis = ["paid", "released", "printed", "pending"];
       const deveCancelarNaAPI = statusCancelaveis.includes(sfStatus) && noPrazo;
 
       if (sfStatus === "pending" && !deveCancelarNaAPI) {
@@ -1606,8 +1606,8 @@ function conciliarRecibos() {
       if (!statusFinais.includes(String(currentStatus).toLowerCase())) {
         newPanelStatus = "Recebido (Finalizado)";
       }
-    } else if (sfStatus === "released" || sfStatus === "printed") {
-      // Se liberada ou impressa na API, o status do painel deve ser "Etiqueta Gerada"
+    } else if (sfStatus === "paid" || sfStatus === "released" || sfStatus === "printed") {
+      // Se paga, liberada ou impressa na API, o status do painel deve ser "Etiqueta Gerada"
       const statusFinais = ["etiqueta gerada", "enviado", "em transito", "em trânsito", "recebido (finalizado)", "recebido"];
       if (!statusFinais.includes(String(currentStatus).toLowerCase())) {
         newPanelStatus = "Etiqueta Gerada";
@@ -2006,8 +2006,8 @@ function atualizarRastreamentoPedido(orderId) {
       rowValues[descontoEstimadoIndex] = parseFloat(resData.discount);
     }
 
-    // Se a etiqueta foi emitida e paga (status is released, printed, posted, delivered)
-    const statusEmitidos = ["released", "printed", "posted", "delivered"];
+    // Se a etiqueta foi emitida e paga (status is paid, released, printed, posted, delivered)
+    const statusEmitidos = ["paid", "released", "printed", "posted", "delivered"];
     if (statusEmitidos.includes(sfStatus)) {
       // Atualizar PDF da Etiqueta se estiver vazio
       if (pdfIndex !== -1 && !rowValues[pdfIndex]) {
@@ -2045,7 +2045,7 @@ function atualizarRastreamentoPedido(orderId) {
         rowValues[postagemIndex] = resData.posted_at;
       } else if ((sfStatus === "posted" || sfStatus === "delivered") && !rowValues[postagemIndex]) {
         rowValues[postagemIndex] = resData.updated_at || new Date();
-      } else if (sfStatus === "released" || sfStatus === "printed" || sfStatus === "canceled" || sfStatus === "cancelled" || sfStatus === "") {
+      } else if (sfStatus === "paid" || sfStatus === "released" || sfStatus === "printed" || sfStatus === "canceled" || sfStatus === "cancelled" || sfStatus === "") {
         rowValues[postagemIndex] = "";
       }
     }
@@ -3208,7 +3208,7 @@ function processarWebhookSuperFreteDirect(payload) {
           titulo = "❌ Etiqueta Cancelada (Pedido #" + orderId + ")";
         } else if (sfStatus === "pending") {
           titulo = "⚠️ Etiqueta Pendente de Saldo (Pedido #" + orderId + ")";
-        } else if (sfStatus === "released" || sfStatus === "printed") {
+        } else if (sfStatus === "paid" || sfStatus === "released" || sfStatus === "printed") {
           titulo = "🎫 Etiqueta Gerada / Paga (Pedido #" + orderId + ")";
           customMensagem = "A etiqueta do pedido #" + orderId + " foi emitida e paga com sucesso!\n\n" +
                            "• Status Interno: " + res.updatedPanelStatus + "\n" +
