@@ -93,6 +93,18 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
+    if (action === "set_property") {
+      PropertiesService.getScriptProperties().setProperty(requestData.name, requestData.value);
+      return ContentService.createTextOutput(JSON.stringify({ success: true }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    if (action === "delete_property") {
+      PropertiesService.getScriptProperties().deleteProperty(requestData.name);
+      return ContentService.createTextOutput(JSON.stringify({ success: true }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
     if (action === "get_properties") {
       const props = PropertiesService.getScriptProperties().getProperties();
       return ContentService.createTextOutput(JSON.stringify({ success: true, properties: props }))
@@ -105,10 +117,21 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
-    if (action === "test_ntfy") {
+    if (action === "test_telegram") {
       try {
-        const response = enviarNotificacaoNtfy(requestData.titulo, requestData.mensagem, requestData.tipo, requestData.tags);
+        const response = enviarNotificacaoTelegram(requestData.titulo, requestData.mensagem);
         return ContentService.createTextOutput(JSON.stringify({ success: true, response: response }))
+          .setMimeType(ContentService.MimeType.JSON);
+      } catch (err) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.message }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+
+    if (action === "configurar_telegram") {
+      try {
+        const response = configurarTelegramChatId();
+        return ContentService.createTextOutput(JSON.stringify(response))
           .setMimeType(ContentService.MimeType.JSON);
       } catch (err) {
         return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.message }))
@@ -669,7 +692,7 @@ function salvarPedido(pedido) {
     }
   }
 
-  // Envia notificação push pelo ntfy.sh
+  // Envia notificação pelo Telegram
   try {
     const titulo = "🛍️ Novo Pedido Recebido! (Pedido #" + nextId + ")";
     const mensagem = "Um novo pedido de cadernos foi registrado na planilha.\n\n" +
@@ -677,9 +700,9 @@ function salvarPedido(pedido) {
                      "• Itens: " + (pedido.itens || "Não especificado") + "\n" +
                      "• Total: R$ " + (pedido.total_geral || 0) + "\n" +
                      "• Método Frete: " + (pedido.frete_metodo || "Não escolhido");
-    enviarNotificacaoNtfy(titulo, mensagem, "sales");
-  } catch (errNtfy) {
-    Logger.log("Erro ao enviar notificacao de novo pedido para ntfy: " + errNtfy.message);
+    enviarNotificacaoTelegram(titulo, mensagem);
+  } catch (errTelegram) {
+    Logger.log("Erro ao enviar notificacao de novo pedido para Telegram: " + errTelegram.message);
   }
 
   return { success: true, orderId: nextId };
@@ -920,13 +943,13 @@ function atualizarStatusPedido(orderId, novoStatus, dataPagamento) {
       const deveCancelarNaAPI = statusCancelaveis.includes(sfStatus) && noPrazo;
 
       if (sfStatus === "pending" && !deveCancelarNaAPI) {
-        // Envia notificação ntfy informando o cancelamento do rascunho pendente (se não cancelado na API)
+        // Envia notificação informando o cancelamento do rascunho pendente
         try {
           const titulo = "❌ Etiqueta Cancelada (Pedido #" + orderId + ")";
           const mensagem = "A etiqueta pendente de saldo do pedido #" + orderId + " foi cancelada e removida.";
-          enviarNotificacaoNtfy(titulo, mensagem, "shipping", "x,warning,package");
-        } catch (errNtfy) {
-          Logger.log("Erro ao enviar notificacao ntfy de cancelamento: " + errNtfy.message);
+          enviarNotificacaoTelegram(titulo, mensagem);
+        } catch (errTelegram) {
+          Logger.log("Erro ao enviar notificacao Telegram de cancelamento: " + errTelegram.message);
         }
       }
 
@@ -952,13 +975,13 @@ function atualizarStatusPedido(orderId, novoStatus, dataPagamento) {
           }
         }
         
-        // Envia notificação ntfy informando o cancelamento
+        // Envia notificação informando o cancelamento
         try {
           const titulo = "❌ Etiqueta Cancelada (Pedido #" + orderId + ")";
           const mensagem = "A etiqueta do pedido #" + orderId + " foi cancelada com sucesso na SuperFrete.";
-          enviarNotificacaoNtfy(titulo, mensagem, "shipping", "x,warning,package");
-        } catch (errNtfy) {
-          Logger.log("Erro ao enviar notificacao ntfy de cancelamento: " + errNtfy.message);
+          enviarNotificacaoTelegram(titulo, mensagem);
+        } catch (errTelegram) {
+          Logger.log("Erro ao enviar notificacao Telegram de cancelamento: " + errTelegram.message);
         }
       }
 
@@ -1378,15 +1401,15 @@ function emitirEtiquetaPedido(orderId) {
       // O PDF deve ficar vazio de acordo com o pedido do usuário
       if (pdfIndex !== -1) sheet.getRange(rowIdx, pdfIndex + 1).setValue("");
       
-      // Envia notificação ntfy informando a falta de saldo com as tags de aviso
+      // Envia notificação informando a falta de saldo
       try {
         const titulo = "⚠️ Etiqueta Pendente de Saldo (Pedido #" + orderId + ")";
         const mensagem = "Tentativa de gerar etiqueta para o pedido #" + orderId + " falhou por falta de saldo.\n\n" +
                          "O pedido foi agendado como PENDENTE no carrinho da SuperFrete.\n\n" +
                          "• Adicione saldo no painel da SuperFrete para emitir.";
-        enviarNotificacaoNtfy(titulo, mensagem, "shipping", "warning,money_with_wings,package");
-      } catch (errNtfy) {
-        Logger.log("Erro ao enviar notificacao ntfy de falta de saldo: " + errNtfy.message);
+        enviarNotificacaoTelegram(titulo, mensagem);
+      } catch (errTelegram) {
+        Logger.log("Erro ao enviar notificacao Telegram de falta de saldo: " + errTelegram.message);
       }
 
       // Aguarda 1.5 segundo e atualiza o rastreamento do pedido para preencher as novas colunas de dimensão e prazos
@@ -1484,16 +1507,16 @@ function emitirEtiquetaPedido(orderId) {
   if (descontoFreteIndex !== -1) sheet.getRange(rowIdx, descontoFreteIndex + 1).setValue(descontoFreteReal);
   if (dataEmissaoIndex !== -1) sheet.getRange(rowIdx, dataEmissaoIndex + 1).setValue(dataHoraEmissao);
 
-  // Envia notificação ntfy de sucesso
+  // Envia notificação Telegram de sucesso
   try {
     const titulo = "🎫 Etiqueta Gerada (Pedido #" + orderId + ")";
     const mensagem = "Etiqueta gerada com sucesso para o pedido #" + orderId + "!\n\n" +
                      "• Método Frete: " + (pedido.Frete_Metodo || "Não informado") + "\n" +
                      "• Rastreamento: " + trackingCode + "\n" +
                      "• PDF da Etiqueta: " + labelPdfUrl;
-    enviarNotificacaoNtfy(titulo, mensagem, "shipping");
-  } catch (errNtfy) {
-    Logger.log("Erro ao enviar notificacao ntfy de etiqueta gerada: " + errNtfy.message);
+    enviarNotificacaoTelegram(titulo, mensagem);
+  } catch (errTelegram) {
+    Logger.log("Erro ao enviar notificacao Telegram de etiqueta gerada: " + errTelegram.message);
   }
 
   // Aguarda 3 segundos e atualiza o rastreamento do pedido para preencher as novas colunas de dimensão e prazos
@@ -1541,6 +1564,33 @@ function conciliarRecibos() {
     if (!pedidoStatus.existe) {
       resultados.push({ file: fileName, success: false, reason: "Pedido #" + orderId + " não encontrado na planilha" });
       continue;
+    }
+
+    // LOGICA DE ATUALIZACAO DE STATUS VIA WEBHOOK
+    if (sfStatus === "posted") {
+      // Se postado nos correios, o status do painel deve ser "Enviado"
+      const statusFinais = ["enviado", "em transito", "em trânsito", "recebido (finalizado)", "recebido"];
+      if (!statusFinais.includes(String(currentStatus).toLowerCase())) {
+        newPanelStatus = "Enviado";
+      }
+    } else if (sfStatus === "delivered") {
+      // Se entregue, o status do painel deve ser "Recebido (Finalizado)"
+      const statusFinais = ["recebido (finalizado)", "recebido"];
+      if (!statusFinais.includes(String(currentStatus).toLowerCase())) {
+        newPanelStatus = "Recebido (Finalizado)";
+      }
+    } else if (sfStatus === "released" || sfStatus === "printed") {
+      // Se liberada ou impressa na API, o status do painel deve ser "Etiqueta Gerada"
+      const statusFinais = ["etiqueta gerada", "enviado", "em transito", "em trânsito", "recebido (finalizado)", "recebido"];
+      if (!statusFinais.includes(String(currentStatus).toLowerCase())) {
+        newPanelStatus = "Etiqueta Gerada";
+      }
+    } else if (sfStatus === "canceled" || sfStatus === "cancelled") {
+      // Se cancelado na API, e o status do painel for logístico ativo, resetamos
+      const statusAtivos = ["pronto para envio", "etiqueta gerada", "enviado", "em transito", "em trânsito"];
+      if (statusAtivos.includes(String(currentStatus).toLowerCase())) {
+        newPanelStatus = "Pago"; // Volta para "Pago" para permitir gerar nova etiqueta
+      }
     }
 
     const statusLower = String(pedidoStatus.status).toLowerCase();
@@ -1915,6 +1965,39 @@ function atualizarRastreamentoPedido(orderId) {
     if (prazoIndex !== -1 && resData.delivery !== undefined) {
       rowValues[prazoIndex] = resData.delivery;
     }
+
+    // Se a etiqueta foi emitida e paga (status is released, printed, posted, delivered)
+    const statusEmitidos = ["released", "printed", "posted", "delivered"];
+    if (statusEmitidos.includes(sfStatus)) {
+      // Atualizar PDF da Etiqueta se estiver vazio
+      if (pdfIndex !== -1 && !rowValues[pdfIndex]) {
+        let pdfUrl = "";
+        if (resData.print && resData.print.url) {
+          pdfUrl = resData.print.url;
+          // Converter para link estável Base64
+          try {
+            const base64Id = Utilities.base64Encode(JSON.stringify({ order_id: packageId }), Utilities.Charset.UTF_8);
+            pdfUrl = "https://etiqueta.superfrete.com/_etiqueta/pdf/" + base64Id + "?format=A6";
+          } catch (e) {}
+        }
+        if (pdfUrl) {
+          rowValues[pdfIndex] = pdfUrl;
+        }
+      }
+      
+      // Atualizar Data de Emissao se estiver vazia
+      if (dataEmissaoIndex !== -1 && !rowValues[dataEmissaoIndex]) {
+        rowValues[dataEmissaoIndex] = resData.generated_at || resData.created_at || new Date();
+      }
+      
+      // Atualizar Valor Pago e Desconto se estiverem vazios ou zero
+      if (fretePagoIndex !== -1 && (!rowValues[fretePagoIndex] || parseFloat(rowValues[fretePagoIndex]) === 0)) {
+        rowValues[fretePagoIndex] = resData.price !== undefined ? parseFloat(resData.price) : 0;
+      }
+      if (descontoFreteIndex !== -1 && (!rowValues[descontoFreteIndex] || parseFloat(rowValues[descontoFreteIndex]) === 0)) {
+        rowValues[descontoFreteIndex] = resData.discount !== undefined ? parseFloat(resData.discount) : 0;
+      }
+    }
     
     // Gravar ou limpar datas de Postagem e Entrega de acordo com o status atual da SuperFrete
     if (postagemIndex !== -1) {
@@ -1937,16 +2020,16 @@ function atualizarRastreamentoPedido(orderId) {
       rowValues[formatoIndex] = resData.format;
     }
     if (pesoIndex !== -1 && resData.weight !== undefined) {
-      rowValues[pesoIndex] = resData.weight;
+      rowValues[pesoIndex] = parseFloat(resData.weight);
     }
     if (alturaIndex !== -1 && resData.height !== undefined) {
-      rowValues[alturaIndex] = resData.height;
+      rowValues[alturaIndex] = parseFloat(resData.height);
     }
     if (larguraIndex !== -1 && resData.width !== undefined) {
-      rowValues[larguraIndex] = resData.width;
+      rowValues[larguraIndex] = parseFloat(resData.width);
     }
     if (comprimentoIndex !== -1 && resData.length !== undefined) {
-      rowValues[comprimentoIndex] = resData.length;
+      rowValues[comprimentoIndex] = parseFloat(resData.length);
     }
     if (maoPropriaIndex !== -1 && resData.own_hand !== undefined) {
       rowValues[maoPropriaIndex] = resData.own_hand;
@@ -1955,7 +2038,7 @@ function atualizarRastreamentoPedido(orderId) {
       rowValues[avisoRecebimentoIndex] = resData.receipt;
     }
     if (valorDeclaradoIndex !== -1 && resData.insurance_value !== undefined) {
-      rowValues[valorDeclaradoIndex] = resData.insurance_value;
+      rowValues[valorDeclaradoIndex] = parseFloat(resData.insurance_value);
     }
 
     // Regras de atualização de status do painel
@@ -2012,6 +2095,7 @@ function atualizarRastreamentoPedido(orderId) {
       success: true, 
       orderId: orderId,
       tracking: resData.tracking || pedido.Codigo_Rastreio,
+      pdfUrl: pdfIndex !== -1 ? rowValues[pdfIndex] : (resData.print ? resData.print.url : ""),
       superfreteStatus: resData.status,
       deliveryTime: resData.delivery,
       postedAt: resData.posted_at,
@@ -3071,30 +3155,34 @@ function processarWebhookSuperFreteDirect(payload) {
       try {
         const sfStatus = String(res.superfreteStatus).toLowerCase().trim();
         let titulo = "📦 Atualização de Frete (Pedido #" + orderId + ")";
-        let tags = "package,bell";
+        
+        let customMensagem = "";
         
         if (sfStatus === "canceled" || sfStatus === "cancelled") {
           titulo = "❌ Etiqueta Cancelada (Pedido #" + orderId + ")";
-          tags = "x,warning,package";
         } else if (sfStatus === "pending") {
           titulo = "⚠️ Etiqueta Pendente de Saldo (Pedido #" + orderId + ")";
-          tags = "warning,money_with_wings,package";
+        } else if (sfStatus === "released" || sfStatus === "printed") {
+          titulo = "🎫 Etiqueta Gerada / Paga (Pedido #" + orderId + ")";
+          customMensagem = "A etiqueta do pedido #" + orderId + " foi emitida e paga com sucesso!\n\n" +
+                           "• Status Interno: " + res.updatedPanelStatus + "\n" +
+                           "• Status SuperFrete: " + res.superfreteStatus + "\n" +
+                           "• Rastreamento: " + (res.tracking || "Pendente") + "\n" +
+                           "• PDF da Etiqueta: " + (res.pdfUrl || "Disponível no painel");
         } else if (sfStatus === "posted") {
           titulo = "🚚 Pedido Postado nos Correios (Pedido #" + orderId + ")";
-          tags = "truck,package,bell";
         } else if (sfStatus === "delivered") {
           titulo = "🎉 Pedido Entregue (Pedido #" + orderId + ")";
-          tags = "tada,white_check_mark,package";
         }
         
-        const mensagem = "O status do pedido #" + orderId + " foi atualizado.\n\n" +
+        const mensagem = customMensagem || ("O status do pedido #" + orderId + " foi atualizado.\n\n" +
                          "• Status Interno: " + res.updatedPanelStatus + "\n" +
                          "• Status SuperFrete: " + res.superfreteStatus + "\n" +
-                         "• Rastreamento: " + (res.tracking || "Pendente");
+                         "• Rastreamento: " + (res.tracking || "Pendente"));
                          
-        enviarNotificacaoNtfy(titulo, mensagem, "shipping", tags);
-      } catch (errNtfy) {
-        Logger.log("Erro ao processar envio de notificacao ntfy: " + errNtfy.message);
+        enviarNotificacaoTelegram(titulo, mensagem);
+      } catch (errTelegram) {
+        Logger.log("Erro ao processar envio de notificacao Telegram: " + errTelegram.message);
       }
     }
     
@@ -3201,62 +3289,141 @@ function registrarWebhookNoSuperFrete() {
 }
 
 /**
- * Envia uma notificacao push para o ntfy.sh
+ * Envia uma notificação para o Telegram
  */
-function enviarNotificacaoNtfy(titulo, mensagem, tipo, customTags = null) {
-  let topic = "superfrete";
-  let serverUrl = "https://ntfy.sh";
-  let token = "";
-  
+function enviarNotificacaoTelegram(titulo, mensagem) {
   try {
     const scriptProps = PropertiesService.getScriptProperties();
-    serverUrl = scriptProps.getProperty("NTFY_SERVER_URL") || "https://ntfy.sh";
-    token = scriptProps.getProperty("NTFY_ACCESS_TOKEN") || "";
-    
-    if (tipo === "sales") {
-      topic = scriptProps.getProperty("NTFY_TOPIC_SALES") || "figtree-vendas";
-    } else {
-      // Mantém compatibilidade com a chave antiga NTFY_TOPIC ou usa o default "superfrete"
-      topic = scriptProps.getProperty("NTFY_TOPIC_SHIPPING") || 
-              scriptProps.getProperty("NTFY_TOPIC") || 
-              "superfrete";
+    let token = scriptProps.getProperty("TELEGRAM_BOT_TOKEN");
+    if (!token) {
+      token = "8782927815:AAEgY0cK1rC-d5dZOAYbA1xkDNySYoL81fY";
     }
-  } catch (e) {
-    Logger.log("Erro ao carregar propriedade do ntfy: " + e.message);
-  }
-
-  serverUrl = serverUrl.trim().replace(/\/$/, "");
-  const topicClean = topic.trim();
-  const url = topicClean.startsWith("http://") || topicClean.startsWith("https://")
-    ? topicClean
-    : serverUrl + "/" + topicClean;
-
-  const headers = {
-    "Title": titulo,
-    "Priority": tipo === "sales" ? "high" : "default", // Vendas com prioridade alta!
-    "Tags": customTags ? customTags : (tipo === "sales" ? "tada,shopping_bags,moneybag" : "package,truck,bell")
-  };
-
-  if (token) {
-    headers["Authorization"] = "Bearer " + token.trim();
-  }
-
-  const options = {
-    method: "post",
-    headers: headers,
-    payload: mensagem,
-    muteHttpExceptions: true
-  };
-  
-  try {
+    const chatId = scriptProps.getProperty("TELEGRAM_CHAT_ID");
+    
+    if (!chatId) {
+      Logger.log("Telegram Chat ID não configurado nas propriedades do script.");
+      return { success: false, error: "Telegram Chat ID não configurado" };
+    }
+    
+    const url = "https://api.telegram.org/bot" + token + "/sendMessage";
+    const formattedText = "<b>" + titulo + "</b>\n\n" + mensagem;
+    
+    const payload = {
+      chat_id: chatId,
+      text: formattedText,
+      parse_mode: "HTML"
+    };
+    
+    const options = {
+      method: "post",
+      contentType: "application/json",
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    };
+    
     const response = UrlFetchApp.fetch(url, options);
-    Logger.log("Ntfy.sh response code: " + response.getResponseCode());
+    const responseCode = response.getResponseCode();
+    const responseText = response.getContentText();
+    
+    Logger.log("Telegram response code: " + responseCode);
+    
     return {
-      responseCode: response.getResponseCode(),
-      responseBody: response.getContentText()
+      success: responseCode === 200,
+      statusCode: responseCode,
+      response: responseText
     };
   } catch (err) {
-    Logger.log("Erro ao enviar notificacao para o ntfy.sh: " + err.message);
+    Logger.log("Erro ao enviar notificação para o Telegram: " + err.message);
     throw err;
+  }
+}
+
+/**
+ * Configura o TELEGRAM_CHAT_ID a partir da última interação com o bot no /getUpdates
+ */
+function configurarTelegramChatId() {
+  try {
+    const scriptProps = PropertiesService.getScriptProperties();
+    let token = scriptProps.getProperty("TELEGRAM_BOT_TOKEN");
+    if (!token) {
+      token = "8782927815:AAEgY0cK1rC-d5dZOAYbA1xkDNySYoL81fY";
+      scriptProps.setProperty("TELEGRAM_BOT_TOKEN", token);
+    }
+    
+    // Limpar propriedades antigas do NTFY para não deixar "lixo"
+    const oldProps = ["NTFY_TOPIC", "NTFY_TOPIC_SALES", "NTFY_TOPIC_SHIPPING", "NTFY_SERVER_URL", "NTFY_ACCESS_TOKEN"];
+    oldProps.forEach(function(prop) {
+      try {
+        scriptProps.deleteProperty(prop);
+      } catch (e) {
+        Logger.log("Erro ao deletar propriedade " + prop + ": " + e.message);
+      }
+    });
+    
+    const url = "https://api.telegram.org/bot" + token + "/getUpdates";
+    const response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+    const responseCode = response.getResponseCode();
+    const responseText = response.getContentText();
+    
+    if (responseCode !== 200) {
+      return { success: false, error: "Erro ao chamar getUpdates: " + responseText };
+    }
+    
+    const data = JSON.parse(responseText);
+    if (!data.ok) {
+      return { success: false, error: "getUpdates retornou ok: false" };
+    }
+    
+    const results = data.result;
+    if (!results || results.length === 0) {
+      return { 
+        success: false, 
+        error: "Nenhuma mensagem recente encontrada. Por favor, envie uma mensagem para o bot no Telegram (ex: /start ou qualquer mensagem) e tente configurar novamente." 
+      };
+    }
+    
+    const lastUpdate = results[results.length - 1];
+    let chatId = null;
+    let username = "";
+    let firstName = "";
+    
+    if (lastUpdate.message) {
+      chatId = lastUpdate.message.chat.id;
+      username = lastUpdate.message.chat.username || "";
+      firstName = lastUpdate.message.chat.first_name || "";
+    } else if (lastUpdate.my_chat_member) {
+      chatId = lastUpdate.my_chat_member.chat.id;
+      username = lastUpdate.my_chat_member.chat.username || "";
+      firstName = lastUpdate.my_chat_member.chat.first_name || "";
+    }
+    
+    if (!chatId) {
+      return { success: false, error: "Não foi possível obter o Chat ID do último update." };
+    }
+    
+    scriptProps.setProperty("TELEGRAM_CHAT_ID", chatId.toString());
+    
+    // Envia mensagem de confirmação
+    const msgTest = "✅ Integração do Telegram configurada com sucesso!\nEste chat receberá as notificações de vendas e fretes do FigTree.";
+    UrlFetchApp.fetch("https://api.telegram.org/bot" + token + "/sendMessage", {
+      method: "post",
+      contentType: "application/json",
+      payload: JSON.stringify({
+        chat_id: chatId,
+        text: msgTest
+      }),
+      muteHttpExceptions: true
+    });
+    
+    return {
+      success: true,
+      chatId: chatId,
+      username: username,
+      firstName: firstName,
+      message: "Telegram Chat ID configurado com sucesso!"
+    };
+  } catch (err) {
+    Logger.log("Erro ao configurar Telegram Chat ID: " + err.message);
+    return { success: false, error: err.message };
   }
 }
