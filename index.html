@@ -1474,7 +1474,7 @@
         </div>
         <div class="summary-line" id="kitDiscountLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; color: #28a745; font-weight: 600;">
           <span>Desconto do Kit (<span id="kitDiscountPercent">0%</span>)</span>
-          <strong id="summaryKitDiscount">-R$ 0,00</strong>
+          <strong id="summaryKitDiscount" style="color: inherit;">-R$ 0,00</strong>
         </div>
         
         <!-- Promoções Automáticas por Item -->
@@ -1483,9 +1483,9 @@
         <div class="summary-line" id="shippingSummaryLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid rgba(89, 54, 34, .12); color: var(--muted);"><span>Frete: <span id="shippingMethodName">-</span></span><strong id="shippingSummaryPrice">R$ 0</strong></div>
         
         <!-- Linha do Desconto do Cupom no Resumo -->
-        <div class="summary-line" id="couponSummaryLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid rgba(89, 54, 34, .12); color: #dc3545; font-weight: 600;">
+        <div class="summary-line" id="couponSummaryLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid rgba(89, 54, 34, .12); color: #28a745; font-weight: 600;">
           <span>Desconto Cupom (<span id="couponSummaryCode">-</span>)</span>
-          <strong id="couponSummaryDiscount">-R$ 0,00</strong>
+          <strong id="couponSummaryDiscount" style="color: inherit;">-R$ 0,00</strong>
         </div>
 
         <!-- Seção do Cupom de Desconto (Input e Botão) -->
@@ -2533,7 +2533,7 @@
           const promoLine = document.createElement("div");
           promoLine.className = "summary-line";
           promoLine.style.cssText = "display: flex; justify-content: space-between; gap: 14px; padding: 12px 0; color: #28a745; font-weight: 600;";
-          promoLine.innerHTML = `<span>Promoção: ${nomePromo}${pctText}</span><strong>-${currency.format(descVal)}</strong>`;
+          promoLine.innerHTML = `<span>Promoção: ${nomePromo}${pctText}</span><strong style="color: inherit;">-${currency.format(descVal)}</strong>`;
           autoPromosContainer.appendChild(promoLine);
         }
       });
