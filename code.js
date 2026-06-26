@@ -93,6 +93,12 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
+    if (action === "reordenar_colunas") {
+      reordenarColunasPlanilha();
+      return ContentService.createTextOutput(JSON.stringify({ success: true }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
     if (action === "set_property") {
       PropertiesService.getScriptProperties().setProperty(requestData.name, requestData.value);
       return ContentService.createTextOutput(JSON.stringify({ success: true }))
@@ -592,7 +598,9 @@ function salvarPedido(pedido) {
     "ID_Pedido", "Status", "Data_Pedido", "Data_Pagamento", "Nome", "WhatsApp", "CPF",
     "Entrega_Rua", "Entrega_Numero", "Entrega_Complemento", "Entrega_Bairro", "Entrega_Cidade", "Entrega_Estado", "Entrega_CEP",
     "Itens", "Qtd_Total", "Valor_Produtos", "Cupom_Codigo", "Cupom_Desconto_Valor", "Frete_Metodo", "Valor_Frete", "Total_Geral", "Observacoes", "Pix_Payload",
-    "Superfrete_Package_ID", "Superfrete_Status", "Codigo_Rastreio", "Etiqueta_PDF_URL", "Data_Emissao_Etiqueta", "Valor_Frete_Pago", "Desconto_Frete", "Superfrete_Prazo_Entrega", "Data_Postagem", "Data_Entrega",
+    "Superfrete_Package_ID", "Superfrete_Status", "Codigo_Rastreio", "Etiqueta_PDF_URL", "Data_Emissao_Etiqueta", "Valor_Frete_Pago", "Desconto_Frete",
+    "Superfrete_Custo_Estimado", "Superfrete_Desconto_Estimado",
+    "Superfrete_Prazo_Entrega", "Data_Postagem", "Data_Entrega",
     "Superfrete_Formato", "Superfrete_Peso", "Superfrete_Altura", "Superfrete_Largura", "Superfrete_Comprimento",
     "Superfrete_Mao_Propria", "Superfrete_Aviso_Recebimento", "Superfrete_Valor_Declarado"
   ];
@@ -605,8 +613,8 @@ function salvarPedido(pedido) {
   // Lemos os cabeçalhos atuais da primeira linha
   let currentHeaders = sheet.getRange(1, 1, 1, Math.max(1, sheet.getLastColumn())).getValues()[0];
   
-  // Se a coluna antiga "Entrega_Endereco" existir, ou a nova "Entrega_Rua" estiver faltando, ou "Data_Pedido" estiver faltando, ou os campos de cupom estiverem ausentes, aciona a migração/reordenação
-  if (currentHeaders.indexOf("Entrega_Endereco") !== -1 || currentHeaders.indexOf("Entrega_Rua") === -1 || currentHeaders.indexOf("Data_Pedido") === -1 || currentHeaders.indexOf("Cupom_Codigo") === -1) {
+  // Se a coluna antiga "Entrega_Endereco" existir, ou a nova "Entrega_Rua" estiver faltando, ou "Data_Pedido" estiver faltando, ou os campos de cupom estiverem ausentes, ou as novas colunas estimadas estiverem ausentes, aciona a migração/reordenação
+  if (currentHeaders.indexOf("Entrega_Endereco") !== -1 || currentHeaders.indexOf("Entrega_Rua") === -1 || currentHeaders.indexOf("Data_Pedido") === -1 || currentHeaders.indexOf("Cupom_Codigo") === -1 || currentHeaders.indexOf("Superfrete_Custo_Estimado") === -1) {
     reordenarColunasPlanilha();
     currentHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
   }
@@ -993,6 +1001,8 @@ function atualizarStatusPedido(orderId, novoStatus, dataPagamento) {
       const prazoIndex = headers.indexOf("Superfrete_Prazo_Entrega");
       const fretePagoIndex = headers.indexOf("Valor_Frete_Pago");
       const descontoFreteIndex = headers.indexOf("Desconto_Frete");
+      const custoEstimadoIndex = headers.indexOf("Superfrete_Custo_Estimado");
+      const descontoEstimadoIndex = headers.indexOf("Superfrete_Desconto_Estimado");
       const superfreteStatusIndex = headers.indexOf("Superfrete_Status");
       const postagemIndex = headers.indexOf("Data_Postagem");
       const entregaIndex = headers.indexOf("Data_Entrega");
@@ -1004,6 +1014,8 @@ function atualizarStatusPedido(orderId, novoStatus, dataPagamento) {
       if (prazoIndex !== -1) sheet.getRange(rowIdx, prazoIndex + 1).setValue("");
       if (fretePagoIndex !== -1) sheet.getRange(rowIdx, fretePagoIndex + 1).setValue("");
       if (descontoFreteIndex !== -1) sheet.getRange(rowIdx, descontoFreteIndex + 1).setValue("");
+      if (custoEstimadoIndex !== -1) sheet.getRange(rowIdx, custoEstimadoIndex + 1).setValue("");
+      if (descontoEstimadoIndex !== -1) sheet.getRange(rowIdx, descontoEstimadoIndex + 1).setValue("");
       if (superfreteStatusIndex !== -1) sheet.getRange(rowIdx, superfreteStatusIndex + 1).setValue("");
       if (postagemIndex !== -1) sheet.getRange(rowIdx, postagemIndex + 1).setValue("");
       if (entregaIndex !== -1) sheet.getRange(rowIdx, entregaIndex + 1).setValue("");
@@ -1760,7 +1772,9 @@ function reordenarColunasPlanilha() {
     "ID_Pedido", "Status", "Data_Pedido", "Data_Pagamento", "Nome", "WhatsApp", "CPF",
     "Entrega_Rua", "Entrega_Numero", "Entrega_Complemento", "Entrega_Bairro", "Entrega_Cidade", "Entrega_Estado", "Entrega_CEP",
     "Itens", "Qtd_Total", "Valor_Produtos", "Cupom_Codigo", "Cupom_Desconto_Valor", "Frete_Metodo", "Valor_Frete", "Total_Geral", "Observacoes", "Pix_Payload",
-    "Superfrete_Package_ID", "Superfrete_Status", "Codigo_Rastreio", "Etiqueta_PDF_URL", "Data_Emissao_Etiqueta", "Valor_Frete_Pago", "Desconto_Frete", "Superfrete_Prazo_Entrega", "Data_Postagem", "Data_Entrega",
+    "Superfrete_Package_ID", "Superfrete_Status", "Codigo_Rastreio", "Etiqueta_PDF_URL", "Data_Emissao_Etiqueta", "Valor_Frete_Pago", "Desconto_Frete",
+    "Superfrete_Custo_Estimado", "Superfrete_Desconto_Estimado",
+    "Superfrete_Prazo_Entrega", "Data_Postagem", "Data_Entrega",
     "Superfrete_Formato", "Superfrete_Peso", "Superfrete_Altura", "Superfrete_Largura", "Superfrete_Comprimento",
     "Superfrete_Mao_Propria", "Superfrete_Aviso_Recebimento", "Superfrete_Valor_Declarado"
   ];
@@ -1929,6 +1943,8 @@ function atualizarRastreamentoPedido(orderId) {
     const dataEmissaoIndex = headers.indexOf("Data_Emissao_Etiqueta");
     const fretePagoIndex = headers.indexOf("Valor_Frete_Pago");
     const descontoFreteIndex = headers.indexOf("Desconto_Frete");
+    const custoEstimadoIndex = headers.indexOf("Superfrete_Custo_Estimado");
+    const descontoEstimadoIndex = headers.indexOf("Superfrete_Desconto_Estimado");
     const superfreteStatusIndex = headers.indexOf("Superfrete_Status");
     const prazoIndex = headers.indexOf("Superfrete_Prazo_Entrega");
     const postagemIndex = headers.indexOf("Data_Postagem");
@@ -1964,6 +1980,14 @@ function atualizarRastreamentoPedido(orderId) {
     }
     if (prazoIndex !== -1 && resData.delivery !== undefined) {
       rowValues[prazoIndex] = resData.delivery;
+    }
+
+    // Sempre atualizar os valores estimados e descontos se recebidos da API
+    if (custoEstimadoIndex !== -1 && resData.price !== undefined) {
+      rowValues[custoEstimadoIndex] = parseFloat(resData.price);
+    }
+    if (descontoEstimadoIndex !== -1 && resData.discount !== undefined) {
+      rowValues[descontoEstimadoIndex] = parseFloat(resData.discount);
     }
 
     // Se a etiqueta foi emitida e paga (status is released, printed, posted, delivered)
@@ -2082,6 +2106,8 @@ function atualizarRastreamentoPedido(orderId) {
       }
       if (fretePagoIndex !== -1) rowValues[fretePagoIndex] = "";
       if (descontoFreteIndex !== -1) rowValues[descontoFreteIndex] = "";
+      if (custoEstimadoIndex !== -1) rowValues[custoEstimadoIndex] = "";
+      if (descontoEstimadoIndex !== -1) rowValues[descontoEstimadoIndex] = "";
     }
 
     if (newPanelStatus && statusIndex !== -1) {
