@@ -93,10 +93,70 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
+    if (action === "get_properties") {
+      const props = PropertiesService.getScriptProperties().getProperties();
+      return ContentService.createTextOutput(JSON.stringify({ success: true, properties: props }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
     if (action === "validar_cupom") {
       const response = validarCupom(requestData.cupom);
       return ContentService.createTextOutput(JSON.stringify(response))
         .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    if (action === "test_ntfy") {
+      try {
+        const response = enviarNotificacaoNtfy(requestData.titulo, requestData.mensagem, requestData.tipo, requestData.tags);
+        return ContentService.createTextOutput(JSON.stringify({ success: true, response: response }))
+          .setMimeType(ContentService.MimeType.JSON);
+      } catch (err) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.message }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+
+    if (action === "reset_order") {
+      try {
+        const orderId = requestData.orderId;
+        const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+        let ss = null;
+        try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
+        if (!ss) ss = SpreadsheetApp.openById(spreadsheetId);
+        const sheet = ss.getSheetByName("Pedidos");
+        const data = sheet.getDataRange().getValues();
+        const headers = data[0];
+        
+        const statusIndex = headers.indexOf("Status");
+        const packageIdIndex = headers.indexOf("Superfrete_Package_ID");
+        const sfStatusIndex = headers.indexOf("Superfrete_Status");
+        const trackingIndex = headers.indexOf("Codigo_Rastreio");
+        const pdfIndex = headers.indexOf("Etiqueta_PDF_URL");
+        const dataEmissaoIndex = headers.indexOf("Data_Emissao_Etiqueta");
+        
+        let rowIdx = -1;
+        for (let i = 1; i < data.length; i++) {
+          if (parseInt(data[i][0]) === parseInt(orderId)) {
+            rowIdx = i + 1;
+            break;
+          }
+        }
+        if (rowIdx !== -1) {
+          sheet.getRange(rowIdx, statusIndex + 1).setValue("Pago");
+          if (packageIdIndex !== -1) sheet.getRange(rowIdx, packageIdIndex + 1).setValue("");
+          if (sfStatusIndex !== -1) sheet.getRange(rowIdx, sfStatusIndex + 1).setValue("");
+          if (trackingIndex !== -1) sheet.getRange(rowIdx, trackingIndex + 1).setValue("");
+          if (pdfIndex !== -1) sheet.getRange(rowIdx, pdfIndex + 1).setValue("");
+          if (dataEmissaoIndex !== -1) sheet.getRange(rowIdx, dataEmissaoIndex + 1).setValue("");
+          return ContentService.createTextOutput(JSON.stringify({ success: true }))
+            .setMimeType(ContentService.MimeType.JSON);
+        }
+        return ContentService.createTextOutput(JSON.stringify({ success: false, error: "Pedido não encontrado" }))
+          .setMimeType(ContentService.MimeType.JSON);
+      } catch (err) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.message }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
     }
 
     if (action === "get_cupons") {
@@ -405,30 +465,56 @@ function obterCustosDynamic(ss, caixa, qty) {
 }
 
 function selecionarCaixaLogistica(ss, qty) {
-  const sheetGrade = obterPlanilhaGradeCaixas(ss);
-  const data = sheetGrade.getDataRange().getValues();
-  const headers = data[0];
-  
-  const idIdx = headers.indexOf("ID_Caixa");
-  const insumoIdx = headers.indexOf("ID_Insumo");
-  const capIdx = headers.indexOf("Capacidade_Max_Cadernos");
-  const compIdx = headers.indexOf("Comprimento_CM");
-  const largIdx = headers.indexOf("Largura_CM");
-  const altIdx = headers.indexOf("Altura_CM");
-  const pesoIdx = headers.indexOf("Peso_Vazio_KG");
-  
-  const caixas = [];
-  for (let i = 1; i < data.length; i++) {
-    const capacidadeRaw = parseInt(data[i][capIdx], 10);
-    caixas.push({
-      id: data[i][idIdx],
-      idInsumo: insumoIdx !== -1 ? data[i][insumoIdx] : null,
-      capacidade: isNaN(capacidadeRaw) ? 1 : capacidadeRaw,
-      comprimento: parseFloat(data[i][compIdx]) || 0,
-      largura: parseFloat(data[i][largIdx]) || 0,
-      altura: parseFloat(data[i][altIdx]) || 0,
-      peso: parseFloat(data[i][pesoIdx]) || 0
-    });
+  const cacheKey = "GRADE_CAIXAS_CACHE";
+  const cache = CacheService.getScriptCache();
+  let caixasJson = null;
+  try {
+    caixasJson = cache.get(cacheKey);
+  } catch (e) {
+    Logger.log("Erro ao acessar o cache: " + e.message);
+  }
+
+  let caixas = [];
+  if (caixasJson) {
+    try {
+      caixas = JSON.parse(caixasJson);
+    } catch (e) {
+      Logger.log("Erro ao fazer parse do cache de caixas: " + e.message);
+    }
+  }
+
+  if (caixas.length === 0) {
+    const sheetGrade = obterPlanilhaGradeCaixas(ss);
+    const data = sheetGrade.getDataRange().getValues();
+    const headers = data[0];
+    
+    const idIdx = headers.indexOf("ID_Caixa");
+    const insumoIdx = headers.indexOf("ID_Insumo");
+    const capIdx = headers.indexOf("Capacidade_Max_Cadernos");
+    const compIdx = headers.indexOf("Comprimento_CM");
+    const largIdx = headers.indexOf("Largura_CM");
+    const altIdx = headers.indexOf("Altura_CM");
+    const pesoIdx = headers.indexOf("Peso_Vazio_KG");
+    
+    for (let i = 1; i < data.length; i++) {
+      const capacidadeRaw = parseInt(data[i][capIdx], 10);
+      caixas.push({
+        id: data[i][idIdx],
+        idInsumo: insumoIdx !== -1 ? data[i][insumoIdx] : null,
+        capacidade: isNaN(capacidadeRaw) ? 1 : capacidadeRaw,
+        comprimento: parseFloat(data[i][compIdx]) || 0,
+        largura: parseFloat(data[i][largIdx]) || 0,
+        altura: parseFloat(data[i][altIdx]) || 0,
+        peso: parseFloat(data[i][pesoIdx]) || 0
+      });
+    }
+    
+    // Salva no cache por 2 minutos (120 segundos) para minimizar acessos futuros à planilha mas refletir alterações rápidas
+    try {
+      cache.put(cacheKey, JSON.stringify(caixas), 120);
+    } catch (cacheErr) {
+      Logger.log("Erro ao salvar caixas no cache: " + cacheErr.message);
+    }
   }
   
   // Ordena por capacidade crescente
@@ -736,6 +822,16 @@ function atualizarStatusPedido(orderId, novoStatus, dataPagamento) {
     pedido[header] = data[rowIdx - 1][index];
   });
 
+  // Validação: se o status logístico atual for "pending" (Aguardando Emissão/Sem Saldo),
+  // impede a mudança para qualquer status diferente de "Cancelado (Desistência)" ou do próprio "Etiqueta Gerada"
+  const currentSfStatus = String(pedido.Superfrete_Status || "").toLowerCase().trim();
+  const hasPdf = !!pedido.Etiqueta_PDF_URL;
+  const isSemSaldo = (currentSfStatus === "pending" && !hasPdf);
+
+  if (isSemSaldo && novoStatus !== "Cancelado (Desistência)" && novoStatus !== "Etiqueta Gerada") {
+    return { success: false, error: "Este pedido está com etiqueta pendente de saldo no SuperFrete e não pode ser alterado para outros status, exceto 'Cancelado (Desistência)'." };
+  }
+
   // Se o novo status for "Cancelado (Desistência)"
   if (novoStatus === "Cancelado (Desistência)") {
     let packageId = pedido.Superfrete_Package_ID;
@@ -776,11 +872,14 @@ function atualizarStatusPedido(orderId, novoStatus, dataPagamento) {
             "muteHttpExceptions": true
           };
           const resInfo = UrlFetchApp.fetch(baseUrl + "/api/v0/order/info/" + packageId, optInfo);
-          if (resInfo.getResponseCode() === 200) {
+          const resCode = resInfo.getResponseCode();
+          if (resCode === 200) {
             const dataInfo = JSON.parse(resInfo.getContentText());
             if (dataInfo.status) {
               sfStatus = String(dataInfo.status).toLowerCase().trim();
             }
+          } else if (resCode === 404 || resCode === 400) {
+            sfStatus = "not_found";
           }
         } catch (err) {
           Logger.log("Erro ao consultar status da etiqueta antes de cancelar: " + err.message);
@@ -817,15 +916,49 @@ function atualizarStatusPedido(orderId, novoStatus, dataPagamento) {
       }
 
       // Só tenta cancelar na API se o status logístico atual for cancelável (released, printed ou pending)
-      // Se for "pending" (Aguardando Emissão/Sem Saldo), sempre cancelamos independentemente do prazo
       const statusCancelaveis = ["released", "printed", "pending"];
-      const deveCancelarNaAPI = statusCancelaveis.includes(sfStatus) && (noPrazo || sfStatus === "pending");
+      const deveCancelarNaAPI = statusCancelaveis.includes(sfStatus) && noPrazo;
+
+      if (sfStatus === "pending" && !deveCancelarNaAPI) {
+        // Envia notificação ntfy informando o cancelamento do rascunho pendente (se não cancelado na API)
+        try {
+          const titulo = "❌ Etiqueta Cancelada (Pedido #" + orderId + ")";
+          const mensagem = "A etiqueta pendente de saldo do pedido #" + orderId + " foi cancelada e removida.";
+          enviarNotificacaoNtfy(titulo, mensagem, "shipping", "x,warning,package");
+        } catch (errNtfy) {
+          Logger.log("Erro ao enviar notificacao ntfy de cancelamento: " + errNtfy.message);
+        }
+      }
 
       if (deveCancelarNaAPI) {
         const cancelRes = cancelarEtiquetaSuperfrete(packageId);
         if (!cancelRes.success) {
-          // Se o cancelamento na API falhar por algum motivo de negócio, bloqueia a alteração
-          return { success: false, error: "Falha ao cancelar etiqueta na SuperFrete: " + cancelRes.error };
+          const errMsg = String(cancelRes.error).toLowerCase();
+          const isAcceptableError = errMsg.includes("não pode mais ser cancelado") || 
+                                    errMsg.includes("não encontrado") || 
+                                    errMsg.includes("inexistente") ||
+                                    errMsg.includes("conflito") ||
+                                    errMsg.includes("status") ||
+                                    errMsg.includes("not found") ||
+                                    errMsg.includes("conflict") ||
+                                    errMsg.includes("unauthorized") ||
+                                    errMsg.includes("bad request") ||
+                                    errMsg.includes("cannot be canceled") ||
+                                    errMsg.includes("erro desconhecido");
+          
+          if (!isAcceptableError) {
+            // Se o cancelamento na API falhar por algum outro motivo, bloqueia a alteração
+            return { success: false, error: "Falha ao cancelar etiqueta na SuperFrete: " + cancelRes.error };
+          }
+        }
+        
+        // Envia notificação ntfy informando o cancelamento
+        try {
+          const titulo = "❌ Etiqueta Cancelada (Pedido #" + orderId + ")";
+          const mensagem = "A etiqueta do pedido #" + orderId + " foi cancelada com sucesso na SuperFrete.";
+          enviarNotificacaoNtfy(titulo, mensagem, "shipping", "x,warning,package");
+        } catch (errNtfy) {
+          Logger.log("Erro ao enviar notificacao ntfy de cancelamento: " + errNtfy.message);
         }
       }
 
@@ -895,16 +1028,24 @@ function cancelarEtiquetaSuperfrete(packageId) {
     const response = UrlFetchApp.fetch(baseUrl + "/api/v0/order/cancel", options);
     const responseText = response.getContentText();
     const responseCode = response.getResponseCode();
-    const data = JSON.parse(responseText);
+    
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      data = {};
+    }
 
-    if (responseCode === 200 && data.success) {
+    const isCanceled = (data[packageId] && data[packageId].canceled) || data.success || data.canceled;
+    if (responseCode === 200 && (isCanceled || data.success === undefined)) {
       return { success: true };
     } else {
       let details = "";
       if (data.errors) {
         details = " Detalhes: " + JSON.stringify(data.errors);
       }
-      return { success: false, error: (data.message || "Erro desconhecido") + details };
+      const errorMsg = data.message || data.error || "Erro desconhecido";
+      return { success: false, error: errorMsg + details };
     }
   } catch (err) {
     return { success: false, error: err.message };
@@ -1075,6 +1216,9 @@ function emitirEtiquetaPedido(orderId) {
     pedido[header] = data[rowIdx - 1][index];
   });
 
+  const qty = parseInt(pedido.Qtd_Total) || 1;
+  const caixa = selecionarCaixaLogistica(ss, qty);
+
   const rastreioIndex = headers.indexOf("Codigo_Rastreio");
   const pdfIndex = headers.indexOf("Etiqueta_PDF_URL");
   const statusIndex = headers.indexOf("Status");
@@ -1160,11 +1304,11 @@ function emitirEtiquetaPedido(orderId) {
       }
     ],
     "volumes": {
-      "format": 3,
-      "height": Math.max(2, Math.ceil(1 + (parseInt(pedido.Qtd_Total) - 1) * 0.833)),
-      "width": PRODUCT_WIDTH_CM,
-      "length": PRODUCT_LENGTH_CM,
-      "weight": ((parseInt(pedido.Qtd_Total) || 1) * 0.03567) + 0.02133
+      "format": 1, // 1 = Caixa/Pacote (matching calculations from Grade_Caixas)
+      "height": caixa.altura,
+      "width": caixa.largura,
+      "length": caixa.comprimento,
+      "weight": (qty * 0.03567) + caixa.peso
     },
     "platform": "MemoBook14x9"
   };
@@ -1234,6 +1378,25 @@ function emitirEtiquetaPedido(orderId) {
       // O PDF deve ficar vazio de acordo com o pedido do usuário
       if (pdfIndex !== -1) sheet.getRange(rowIdx, pdfIndex + 1).setValue("");
       
+      // Envia notificação ntfy informando a falta de saldo com as tags de aviso
+      try {
+        const titulo = "⚠️ Etiqueta Pendente de Saldo (Pedido #" + orderId + ")";
+        const mensagem = "Tentativa de gerar etiqueta para o pedido #" + orderId + " falhou por falta de saldo.\n\n" +
+                         "O pedido foi agendado como PENDENTE no carrinho da SuperFrete.\n\n" +
+                         "• Adicione saldo no painel da SuperFrete para emitir.";
+        enviarNotificacaoNtfy(titulo, mensagem, "shipping", "warning,money_with_wings,package");
+      } catch (errNtfy) {
+        Logger.log("Erro ao enviar notificacao ntfy de falta de saldo: " + errNtfy.message);
+      }
+
+      // Aguarda 1.5 segundo e atualiza o rastreamento do pedido para preencher as novas colunas de dimensão e prazos
+      Utilities.sleep(1500);
+      try {
+        atualizarRastreamentoPedido(orderId);
+      } catch (err) {
+        Logger.log("Erro na auto-sincronização pós-emissão sem saldo: " + err.message);
+      }
+
       return { 
         success: true, 
         isPendingPayment: true, 
@@ -1320,6 +1483,18 @@ function emitirEtiquetaPedido(orderId) {
   if (fretePagoIndex !== -1) sheet.getRange(rowIdx, fretePagoIndex + 1).setValue(fretePagoReal);
   if (descontoFreteIndex !== -1) sheet.getRange(rowIdx, descontoFreteIndex + 1).setValue(descontoFreteReal);
   if (dataEmissaoIndex !== -1) sheet.getRange(rowIdx, dataEmissaoIndex + 1).setValue(dataHoraEmissao);
+
+  // Envia notificação ntfy de sucesso
+  try {
+    const titulo = "🎫 Etiqueta Gerada (Pedido #" + orderId + ")";
+    const mensagem = "Etiqueta gerada com sucesso para o pedido #" + orderId + "!\n\n" +
+                     "• Método Frete: " + (pedido.Frete_Metodo || "Não informado") + "\n" +
+                     "• Rastreamento: " + trackingCode + "\n" +
+                     "• PDF da Etiqueta: " + labelPdfUrl;
+    enviarNotificacaoNtfy(titulo, mensagem, "shipping");
+  } catch (errNtfy) {
+    Logger.log("Erro ao enviar notificacao ntfy de etiqueta gerada: " + errNtfy.message);
+  }
 
   // Aguarda 3 segundos e atualiza o rastreamento do pedido para preencher as novas colunas de dimensão e prazos
   Utilities.sleep(3000);
@@ -1680,11 +1855,21 @@ function atualizarRastreamentoPedido(orderId) {
     const responseText = response.getContentText();
     const responseCode = response.getResponseCode();
     
-    if (responseCode !== 200) {
+    let resData;
+    if (responseCode === 200) {
+      resData = JSON.parse(responseText);
+    } else if (responseCode === 404 || responseCode === 400) {
+      // Se o pacote não existe ou foi removido da SuperFrete, tratamos pacificamente como cancelado
+      resData = {
+        status: "canceled",
+        tracking: "",
+        delivery: "",
+        posted_at: "",
+        delivered_at: ""
+      };
+    } else {
       return { success: false, error: "Erro na API da SuperFrete (" + responseCode + "): " + responseText };
     }
-
-    const resData = JSON.parse(responseText);
     
     // Obter os índices das colunas no Sheets
     const trackingIndex = headers.indexOf("Codigo_Rastreio");
@@ -1709,65 +1894,68 @@ function atualizarRastreamentoPedido(orderId) {
     const avisoRecebimentoIndex = headers.indexOf("Superfrete_Aviso_Recebimento");
     const valorDeclaradoIndex = headers.indexOf("Superfrete_Valor_Declarado");
 
+    // Criamos uma cópia dos valores originais da linha para atualizar tudo em lote (otimização de performance)
+    const rowValues = data[rowIdx - 1].slice();
+
     // Salvar o packageId na planilha caso ele tenha sido obtido via fallback e não estivesse gravado
     if (packageIdIndex !== -1 && !pedido.Superfrete_Package_ID) {
-      sheet.getRange(rowIdx, packageIdIndex + 1).setValue(packageId);
+      rowValues[packageIdIndex] = packageId;
     }
 
     // Atualizar Código de Rastreamento se veio da API e estava vazio
     if (trackingIndex !== -1 && resData.tracking) {
-      sheet.getRange(rowIdx, trackingIndex + 1).setValue(resData.tracking);
+      rowValues[trackingIndex] = resData.tracking;
     }
 
     // Gravar os novos campos no Sheets
     const sfStatus = resData.status ? String(resData.status).toLowerCase().trim() : "";
     if (superfreteStatusIndex !== -1 && resData.status) {
-      sheet.getRange(rowIdx, superfreteStatusIndex + 1).setValue(resData.status);
+      rowValues[superfreteStatusIndex] = resData.status;
     }
     if (prazoIndex !== -1 && resData.delivery !== undefined) {
-      sheet.getRange(rowIdx, prazoIndex + 1).setValue(resData.delivery);
+      rowValues[prazoIndex] = resData.delivery;
     }
     
     // Gravar ou limpar datas de Postagem e Entrega de acordo com o status atual da SuperFrete
     if (postagemIndex !== -1) {
       if (resData.posted_at) {
-        sheet.getRange(rowIdx, postagemIndex + 1).setValue(resData.posted_at);
+        rowValues[postagemIndex] = resData.posted_at;
       } else if (sfStatus === "released" || sfStatus === "printed" || sfStatus === "canceled" || sfStatus === "cancelled" || sfStatus === "") {
-        sheet.getRange(rowIdx, postagemIndex + 1).setValue("");
+        rowValues[postagemIndex] = "";
       }
     }
     if (entregaIndex !== -1) {
       if (resData.delivered_at) {
-        sheet.getRange(rowIdx, entregaIndex + 1).setValue(resData.delivered_at);
+        rowValues[entregaIndex] = resData.delivered_at;
       } else if (sfStatus !== "delivered") {
-        sheet.getRange(rowIdx, entregaIndex + 1).setValue("");
+        rowValues[entregaIndex] = "";
       }
     }
 
     // Gravar dimensões físicas e opcionais recebidas da API
     if (formatoIndex !== -1 && resData.format !== undefined) {
-      sheet.getRange(rowIdx, formatoIndex + 1).setValue(resData.format);
+      rowValues[formatoIndex] = resData.format;
     }
     if (pesoIndex !== -1 && resData.weight !== undefined) {
-      sheet.getRange(rowIdx, pesoIndex + 1).setValue(resData.weight);
+      rowValues[pesoIndex] = resData.weight;
     }
     if (alturaIndex !== -1 && resData.height !== undefined) {
-      sheet.getRange(rowIdx, alturaIndex + 1).setValue(resData.height);
+      rowValues[alturaIndex] = resData.height;
     }
     if (larguraIndex !== -1 && resData.width !== undefined) {
-      sheet.getRange(rowIdx, larguraIndex + 1).setValue(resData.width);
+      rowValues[larguraIndex] = resData.width;
     }
     if (comprimentoIndex !== -1 && resData.length !== undefined) {
-      sheet.getRange(rowIdx, comprimentoIndex + 1).setValue(resData.length);
+      rowValues[comprimentoIndex] = resData.length;
     }
     if (maoPropriaIndex !== -1 && resData.own_hand !== undefined) {
-      sheet.getRange(rowIdx, maoPropriaIndex + 1).setValue(resData.own_hand);
+      rowValues[maoPropriaIndex] = resData.own_hand;
     }
     if (avisoRecebimentoIndex !== -1 && resData.receipt !== undefined) {
-      sheet.getRange(rowIdx, avisoRecebimentoIndex + 1).setValue(resData.receipt);
+      rowValues[avisoRecebimentoIndex] = resData.receipt;
     }
     if (valorDeclaradoIndex !== -1 && resData.insurance_value !== undefined) {
-      sheet.getRange(rowIdx, valorDeclaradoIndex + 1).setValue(resData.insurance_value);
+      rowValues[valorDeclaradoIndex] = resData.insurance_value;
     }
 
     // Regras de atualização de status do painel
@@ -1795,27 +1983,30 @@ function atualizarRastreamentoPedido(orderId) {
       
       // Apaga da planilha os valores das colunas de etiqueta e rastreamento
       if (trackingIndex !== -1) {
-        sheet.getRange(rowIdx, trackingIndex + 1).setValue("");
+        rowValues[trackingIndex] = "";
         resData.tracking = "";
       }
-      if (pdfIndex !== -1) sheet.getRange(rowIdx, pdfIndex + 1).setValue("");
-      if (dataEmissaoIndex !== -1) sheet.getRange(rowIdx, dataEmissaoIndex + 1).setValue("");
+      if (pdfIndex !== -1) rowValues[pdfIndex] = "";
+      if (dataEmissaoIndex !== -1) rowValues[dataEmissaoIndex] = "";
       
       // Limpa também o ID do pacote para permitir gerar uma nova etiqueta futuramente
-      if (packageIdIndex !== -1) sheet.getRange(rowIdx, packageIdIndex + 1).setValue("");
+      if (packageIdIndex !== -1) rowValues[packageIdIndex] = "";
       
       // Limpa dados de custos e prazos associados
       if (prazoIndex !== -1) {
-        sheet.getRange(rowIdx, prazoIndex + 1).setValue("");
+        rowValues[prazoIndex] = "";
         resData.delivery = "";
       }
-      if (fretePagoIndex !== -1) sheet.getRange(rowIdx, fretePagoIndex + 1).setValue("");
-      if (descontoFreteIndex !== -1) sheet.getRange(rowIdx, descontoFreteIndex + 1).setValue("");
+      if (fretePagoIndex !== -1) rowValues[fretePagoIndex] = "";
+      if (descontoFreteIndex !== -1) rowValues[descontoFreteIndex] = "";
     }
 
     if (newPanelStatus && statusIndex !== -1) {
-      sheet.getRange(rowIdx, statusIndex + 1).setValue(newPanelStatus);
+      rowValues[statusIndex] = newPanelStatus;
     }
+
+    // Salva todas as alterações na planilha de uma única vez em lote
+    sheet.getRange(rowIdx, 1, 1, rowValues.length).setValues([rowValues]);
 
     return { 
       success: true, 
@@ -2523,6 +2714,13 @@ function getCustosData() {
   const ficha = readSheetAsJSON(sheetFicha);
   const grade = readSheetAsJSON(sheetGrade);
   
+  // Limpa o cache da grade de caixas ao consultar dados de custos para forçar a atualização se houver edições diretas na planilha
+  try {
+    CacheService.getScriptCache().remove("GRADE_CAIXAS_CACHE");
+  } catch (e) {
+    Logger.log("Erro ao limpar cache GRADE_CAIXAS_CACHE: " + e.message);
+  }
+
   return {
     success: true,
     insumos: insumos,
@@ -2754,6 +2952,14 @@ function salvarCaixa(caixaData) {
   } else {
     sheet.appendRow(rowValues);
   }
+  
+  // Invalida o cache para que a alteração seja lida na próxima cotação/emissão
+  try {
+    CacheService.getScriptCache().remove("GRADE_CAIXAS_CACHE");
+  } catch (e) {
+    Logger.log("Erro ao limpar cache GRADE_CAIXAS_CACHE: " + e.message);
+  }
+
   return { success: true };
 }
 
@@ -2776,6 +2982,14 @@ function excluirCaixa(caixaId) {
   for (let i = 1; i < data.length; i++) {
     if (String(data[i][idIdx]).trim() === query) {
       sheet.deleteRow(i + 1);
+      
+      // Invalida o cache para que a alteração seja lida na próxima cotação/emissão
+      try {
+        CacheService.getScriptCache().remove("GRADE_CAIXAS_CACHE");
+      } catch (e) {
+        Logger.log("Erro ao limpar cache GRADE_CAIXAS_CACHE: " + e.message);
+      }
+
       return { success: true };
     }
   }
@@ -2855,12 +3069,30 @@ function processarWebhookSuperFreteDirect(payload) {
     
     if (res && res.success) {
       try {
-        const titulo = "📦 Atualização de Frete (Pedido #" + orderId + ")";
+        const sfStatus = String(res.superfreteStatus).toLowerCase().trim();
+        let titulo = "📦 Atualização de Frete (Pedido #" + orderId + ")";
+        let tags = "package,bell";
+        
+        if (sfStatus === "canceled" || sfStatus === "cancelled") {
+          titulo = "❌ Etiqueta Cancelada (Pedido #" + orderId + ")";
+          tags = "x,warning,package";
+        } else if (sfStatus === "pending") {
+          titulo = "⚠️ Etiqueta Pendente de Saldo (Pedido #" + orderId + ")";
+          tags = "warning,money_with_wings,package";
+        } else if (sfStatus === "posted") {
+          titulo = "🚚 Pedido Postado nos Correios (Pedido #" + orderId + ")";
+          tags = "truck,package,bell";
+        } else if (sfStatus === "delivered") {
+          titulo = "🎉 Pedido Entregue (Pedido #" + orderId + ")";
+          tags = "tada,white_check_mark,package";
+        }
+        
         const mensagem = "O status do pedido #" + orderId + " foi atualizado.\n\n" +
                          "• Status Interno: " + res.updatedPanelStatus + "\n" +
                          "• Status SuperFrete: " + res.superfreteStatus + "\n" +
                          "• Rastreamento: " + (res.tracking || "Pendente");
-        enviarNotificacaoNtfy(titulo, mensagem, "shipping");
+                         
+        enviarNotificacaoNtfy(titulo, mensagem, "shipping", tags);
       } catch (errNtfy) {
         Logger.log("Erro ao processar envio de notificacao ntfy: " + errNtfy.message);
       }
@@ -2971,29 +3203,47 @@ function registrarWebhookNoSuperFrete() {
 /**
  * Envia uma notificacao push para o ntfy.sh
  */
-function enviarNotificacaoNtfy(titulo, mensagem, tipo) {
+function enviarNotificacaoNtfy(titulo, mensagem, tipo, customTags = null) {
   let topic = "superfrete";
+  let serverUrl = "https://ntfy.sh";
+  let token = "";
+  
   try {
+    const scriptProps = PropertiesService.getScriptProperties();
+    serverUrl = scriptProps.getProperty("NTFY_SERVER_URL") || "https://ntfy.sh";
+    token = scriptProps.getProperty("NTFY_ACCESS_TOKEN") || "";
+    
     if (tipo === "sales") {
-      topic = PropertiesService.getScriptProperties().getProperty("NTFY_TOPIC_SALES") || "figtree-vendas";
+      topic = scriptProps.getProperty("NTFY_TOPIC_SALES") || "figtree-vendas";
     } else {
       // Mantém compatibilidade com a chave antiga NTFY_TOPIC ou usa o default "superfrete"
-      topic = PropertiesService.getScriptProperties().getProperty("NTFY_TOPIC_SHIPPING") || 
-              PropertiesService.getScriptProperties().getProperty("NTFY_TOPIC") || 
+      topic = scriptProps.getProperty("NTFY_TOPIC_SHIPPING") || 
+              scriptProps.getProperty("NTFY_TOPIC") || 
               "superfrete";
     }
   } catch (e) {
     Logger.log("Erro ao carregar propriedade do ntfy: " + e.message);
   }
 
-  const url = "https://ntfy.sh/" + topic.trim();
+  serverUrl = serverUrl.trim().replace(/\/$/, "");
+  const topicClean = topic.trim();
+  const url = topicClean.startsWith("http://") || topicClean.startsWith("https://")
+    ? topicClean
+    : serverUrl + "/" + topicClean;
+
+  const headers = {
+    "Title": titulo,
+    "Priority": tipo === "sales" ? "high" : "default", // Vendas com prioridade alta!
+    "Tags": customTags ? customTags : (tipo === "sales" ? "tada,shopping_bags,moneybag" : "package,truck,bell")
+  };
+
+  if (token) {
+    headers["Authorization"] = "Bearer " + token.trim();
+  }
+
   const options = {
     method: "post",
-    headers: {
-      "Title": titulo,
-      "Priority": tipo === "sales" ? "high" : "default", // Vendas com prioridade alta!
-      "Tags": tipo === "sales" ? "tada,shopping_bags,moneybag" : "package,truck,bell"
-    },
+    headers: headers,
     payload: mensagem,
     muteHttpExceptions: true
   };
@@ -3001,7 +3251,12 @@ function enviarNotificacaoNtfy(titulo, mensagem, tipo) {
   try {
     const response = UrlFetchApp.fetch(url, options);
     Logger.log("Ntfy.sh response code: " + response.getResponseCode());
+    return {
+      responseCode: response.getResponseCode(),
+      responseBody: response.getContentText()
+    };
   } catch (err) {
     Logger.log("Erro ao enviar notificacao para o ntfy.sh: " + err.message);
+    throw err;
   }
 }

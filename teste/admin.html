@@ -1256,12 +1256,22 @@
               Imprimir Etiqueta (${o.Codigo_Rastreio})
             </a>
           `;
-        } else if (!isLocalDelivery && o.Status === "Pronto para Envio") {
+        } else if (!isLocalDelivery && (o.Status === "Pronto para Envio" || o.Status === "Pago")) {
           actionBtnHtml = `
             <button class="btn-action btn-generate-label" data-id="${o.ID_Pedido}">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v16M2 10h20M6 4v16M18 4v16"/></svg>
               Gerar Etiqueta SuperFrete
             </button>
+          `;
+        } else if (!isLocalDelivery && o.Status === "Etiqueta Gerada" && !o.Etiqueta_PDF_URL) {
+          actionBtnHtml = `
+            <div style="text-align: center; color: #856404; font-size: 13.5px; font-weight: 700; padding: 8px; background: #fff3cd; border-radius: 8px; border: 1px dashed rgba(133, 100, 4, 0.25); display: flex; flex-direction: column; gap: 6px;">
+              <span>⚠️ Etiqueta Aguardando Saldo na SuperFrete</span>
+              <button class="btn-action btn-sync-single" style="width: 100%; margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 6px; background: #856404; color: white;">
+                <svg class="icon-sync-single" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                Atualizar Rastreio / Verificar Liberação
+              </button>
+            </div>
           `;
         } else if (isLocalDelivery) {
           actionBtnHtml = `
@@ -1399,16 +1409,16 @@
 
             <div class="actions-buttons">
               <select class="status-select" data-id="${o.ID_Pedido}">
-                <option value="Pendente de Pagamento" ${o.Status === "Pendente de Pagamento" || o.Status === "Pendente" ? "selected" : ""}>Pendente de Pagamento</option>
-                <option value="Pago" ${o.Status === "Pago" ? "selected" : ""}>Pago</option>
-                <option value="Em Produção" ${o.Status === "Em Produção" ? "selected" : ""}>Em Produção</option>
-                <option value="Pronto para Envio" ${o.Status === "Pronto para Envio" ? "selected" : ""}>Pronto para Envio</option>
+                <option value="Pendente de Pagamento" ${o.Status === "Pendente de Pagamento" || o.Status === "Pendente" ? "selected" : ""} ${isSemSaldo ? "disabled" : ""}>Pendente de Pagamento</option>
+                <option value="Pago" ${o.Status === "Pago" ? "selected" : ""} ${isSemSaldo ? "disabled" : ""}>Pago</option>
+                <option value="Em Produção" ${o.Status === "Em Produção" ? "selected" : ""} ${isSemSaldo ? "disabled" : ""}>Em Produção</option>
+                <option value="Pronto para Envio" ${o.Status === "Pronto para Envio" ? "selected" : ""} ${isSemSaldo ? "disabled" : ""}>Pronto para Envio</option>
                 ${!isLocalDelivery ? `
                   <option value="Etiqueta Gerada" ${o.Status === "Etiqueta Gerada" ? "selected" : ""}>Etiqueta Gerada</option>
-                  <option value="Enviado" ${o.Status === "Enviado" ? "selected" : ""}>Enviado</option>
-                  <option value="Em Transito" ${o.Status === "Em Transito" ? "selected" : ""}>Em Trânsito</option>
+                  <option value="Enviado" ${o.Status === "Enviado" ? "selected" : ""} ${isSemSaldo ? "disabled" : ""}>Enviado</option>
+                  <option value="Em Transito" ${o.Status === "Em Transito" ? "selected" : ""} ${isSemSaldo ? "disabled" : ""}>Em Trânsito</option>
                 ` : ""}
-                <option value="Recebido (Finalizado)" ${o.Status === "Recebido (Finalizado)" ? "selected" : ""}>Recebido (Finalizado)</option>
+                <option value="Recebido (Finalizado)" ${o.Status === "Recebido (Finalizado)" ? "selected" : ""} ${isSemSaldo ? "disabled" : ""}>Recebido (Finalizado)</option>
                 <option value="Cancelado (Desistência)" ${o.Status === "Cancelado (Desistência)" ? "selected" : ""}>Cancelado (Desistência)</option>
               </select>
               ${actionBtnHtml}
@@ -1428,6 +1438,12 @@
         
         select.addEventListener("change", async (event) => {
           const newStatus = event.target.value;
+          
+          if (isSemSaldo && newStatus !== "Cancelado (Desistência)") {
+            showAlert("Operação não permitida", "Não é permitido alterar o status de um pedido com etiqueta pendente de saldo no SuperFrete, exceto para 'Cancelado (Desistência)'.");
+            select.value = prevStatus;
+            return;
+          }
           
           // Se for "Etiqueta Gerada", mas o pedido ainda não tem etiqueta física emitida (não tem rastreio), barramos a alteração manual para esse status sem emitir
           if (newStatus === "Etiqueta Gerada" && !hasLabel) {
