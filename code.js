@@ -1534,6 +1534,13 @@ function emitirEtiquetaPedido(orderId) {
   if (descontoFreteIndex !== -1) sheet.getRange(rowIdx, descontoFreteIndex + 1).setValue(descontoFreteReal);
   if (dataEmissaoIndex !== -1) sheet.getRange(rowIdx, dataEmissaoIndex + 1).setValue(dataHoraEmissao);
 
+  // Cadastra no Seu Rastreio para alertas de trânsito em tempo real
+  try {
+    cadastrarNoSeuRastreio(pedido, trackingCode);
+  } catch (errSR) {
+    Logger.log("Erro ao cadastrar no Seu Rastreio: " + errSR.message);
+  }
+
   // Envia notificação Telegram de sucesso
   try {
     const titulo = "🎫 Etiqueta Gerada (Pedido #" + orderId + ")";
@@ -1986,7 +1993,15 @@ function atualizarRastreamentoPedido(orderId) {
 
     // Atualizar Código de Rastreamento se veio da API e estava vazio
     if (trackingIndex !== -1 && resData.tracking) {
+      const antigoRastreio = rowValues[trackingIndex];
       rowValues[trackingIndex] = resData.tracking;
+      if (!antigoRastreio) {
+        try {
+          cadastrarNoSeuRastreio(pedido, resData.tracking);
+        } catch (errSR) {
+          Logger.log("Erro ao cadastrar no Seu Rastreio na atualizacao: " + errSR.message);
+        }
+      }
     }
 
     // Gravar os novos campos no Sheets
@@ -3137,6 +3152,11 @@ function processarWebhookSuperFrete(e) {
 }
 
 function processarWebhookSuperFreteDirect(payload) {
+  // Intercepta e processa webhooks do Seu Rastreio de forma especializada
+  if (payload && payload.tracking && payload.tracking.codigo) {
+    return processarWebhookSeuRastreio(payload);
+  }
+
   try {
     const dataObj = payload.data || {};
     const packageId = dataObj.id ? String(dataObj.id).trim() : "";
@@ -3502,6 +3522,175 @@ function obterConfiguracaoSuperFrete() {
       baseUrl: "https://api.superfrete.com",
       isSandbox: false
     };
+  }
+}
+
+/**
+ * Cadastra o código de rastreio no Seu Rastreio para começar a receber as atualizações físicas de trânsito em tempo real.
+ */
+function cadastrarNoSeuRastreio(pedido, trackingCode) {
+  try {
+    if (!trackingCode) return;
+    
+    const apiKey = PropertiesService.getScriptProperties().getProperty("SEURASTREIO_API_KEY");
+    if (!apiKey) {
+      Logger.log("API Key do Seu Rastreio nao configurada.");
+      return;
+    }
+    
+    const cleanPhone = String(pedido.Whatsapp || "").replace(/\D/g, "");
+    
+    const payload = {
+      "externalId": String(pedido.ID_Pedido),
+      "orderNumber": "#" + pedido.ID_Pedido,
+      "trackingCode": String(trackingCode).trim(),
+      "trackingCarrier": "Correios",
+      "status": "shipped",
+      "customerName": String(pedido.Nome || "").trim(),
+      "phone": cleanPhone
+    };
+    
+    const options = {
+      "method": "post",
+      "contentType": "application/json",
+      "headers": {
+        "Authorization": "Bearer " + apiKey,
+        "Accept": "application/json"
+      },
+      "payload": JSON.stringify(payload),
+      "muteHttpExceptions": true
+    };
+    
+    Logger.log("Cadastrando pedido no Seu Rastreio: " + JSON.stringify(payload));
+    const response = UrlFetchApp.fetch("https://seurastreio.com.br/api/public/pedidos", options);
+    const responseText = response.getContentText();
+    const responseCode = response.getResponseCode();
+    
+    Logger.log("Response Seu Rastreio (" + responseCode + "): " + responseText);
+    
+  } catch (err) {
+    Logger.log("Erro ao cadastrar no Seu Rastreio: " + err.message);
+  }
+}
+
+/**
+ * Processa a notificação recebida por Webhook do Seu Rastreio informando o deslocamento físico detalhado.
+ */
+function processarWebhookSeuRastreio(payload) {
+  try {
+    const trackingCode = String(payload.tracking.codigo).trim();
+    const eventDescription = String(payload.tracking.lastEventDescription || "").trim();
+    const eventLocation = String(payload.tracking.lastEventLocation || "").trim();
+    const eventLabel = String(payload.eventLabel || "").trim();
+    
+    let orderId = payload.order ? payload.order.orderId : null;
+    
+    const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+    let ss = null;
+    try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
+    if (!ss) ss = SpreadsheetApp.openById(spreadsheetId);
+    
+    const sheet = ss.getSheetByName("Pedidos");
+    if (!sheet) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: "Planilha nao encontrada" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    const data = sheet.getDataRange().getValues();
+    const headers = data[0];
+    
+    const colIdPedido = headers.indexOf("ID_Pedido");
+    const colTracking = headers.indexOf("Codigo_Rastreio");
+    
+    if (colIdPedido === -1) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: "Coluna ID_Pedido nao encontrada" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    if (!orderId) {
+      // Busca na planilha pelo Código de Rastreio
+      for (let i = 1; i < data.length; i++) {
+        const rowTracking = colTracking !== -1 ? String(data[i][colTracking]).trim() : "";
+        if (trackingCode && rowTracking && (rowTracking === trackingCode)) {
+          orderId = data[i][colIdPedido];
+          break;
+        }
+      }
+    }
+    
+    if (!orderId) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: "Nenhum pedido correspondente encontrado na planilha para o rastreio " + trackingCode }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    // Atualiza a data de postagem ou entrega na planilha com base no status operacional
+    const statusOp = String(payload.order ? payload.order.operationalStatus : "").toLowerCase().trim();
+    const postagemIndex = headers.indexOf("Data_Postagem");
+    const entregaIndex = headers.indexOf("Data_Entrega");
+    const superfreteStatusIndex = headers.indexOf("Superfrete_Status");
+    const statusIndex = headers.indexOf("Status");
+    
+    let rowIdx = -1;
+    for (let i = 1; i < data.length; i++) {
+      if (parseInt(data[i][colIdPedido]) === parseInt(orderId)) {
+        rowIdx = i + 1;
+        break;
+      }
+    }
+    
+    if (rowIdx !== -1) {
+      const rowValues = data[rowIdx - 1].slice();
+      let alterou = false;
+      
+      if (statusOp === "nao_postado" || statusOp === "postado" || statusOp === "em_curso") {
+        if (superfreteStatusIndex !== -1 && rowValues[superfreteStatusIndex] !== "posted") {
+          rowValues[superfreteStatusIndex] = "posted";
+          alterou = true;
+        }
+        if (statusIndex !== -1 && rowValues[statusIndex] !== "Enviado") {
+          rowValues[statusIndex] = "Enviado";
+          alterou = true;
+        }
+        if (postagemIndex !== -1 && !rowValues[postagemIndex]) {
+          rowValues[postagemIndex] = payload.occurredAt || new Date();
+          alterou = true;
+        }
+      } else if (statusOp === "entregue") {
+        if (superfreteStatusIndex !== -1 && rowValues[superfreteStatusIndex] !== "delivered") {
+          rowValues[superfreteStatusIndex] = "delivered";
+          alterou = true;
+        }
+        if (statusIndex !== -1 && rowValues[statusIndex] !== "Recebido (Finalizado)") {
+          rowValues[statusIndex] = "Recebido (Finalizado)";
+          alterou = true;
+        }
+        if (entregaIndex !== -1 && !rowValues[entregaIndex]) {
+          rowValues[entregaIndex] = payload.occurredAt || new Date();
+          alterou = true;
+        }
+      }
+      
+      if (alterou) {
+        sheet.getRange(rowIdx, 1, 1, rowValues.length).setValues([rowValues]);
+      }
+    }
+    
+    // Dispara a notificação de deslocamento físico detalhado no Telegram
+    let localizacaoText = eventLocation ? " (" + eventLocation + ")" : "";
+    let titulo = "🚚 Movimentação: " + eventLabel + " (Pedido #" + orderId + ")";
+    let mensagem = "Nova atualização física no deslocamento do pacote:\n\n" +
+                     "• <b>Status:</b> " + eventDescription + localizacaoText + "\n" +
+                     "• <b>Rastreio:</b> <pre>" + trackingCode + "</pre>";
+                     
+    enviarNotificacaoTelegram(titulo, mensagem);
+    
+    return ContentService.createTextOutput(JSON.stringify({ success: true }))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    Logger.log("Erro ao processar webhook do Seu Rastreio: " + error.message);
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.message }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 }
 
