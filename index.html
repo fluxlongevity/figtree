@@ -3438,6 +3438,124 @@
       }
     });
 
+    async function calculateShipping(silent = false) {
+      const cepVal = cepInput.value.replace(/\D/g, "");
+      const totalQty = getTotalQuantity();
+
+      if (totalQty === 0) {
+        if (!silent) {
+          showCustomAlert("Carrinho vazio", "Adicione pelo menos um caderno ao pedido antes de calcular o frete.", null);
+        }
+        selectedShipping = null;
+        lastCalculatedServices = [];
+        shippingOptionsList.innerHTML = "";
+        shippingOptionsField.style.display = "none";
+        updateSummary();
+        return;
+      }
+
+      if (cepVal.length !== 8) {
+        if (!silent) {
+          showCustomAlert("CEP inválido", "Por favor, informe um CEP válido com 8 dígitos.", cepInput);
+        }
+        return;
+      }
+
+      if (!isCepValid) {
+        if (!silent) {
+          showCustomAlert("CEP inválido", "O CEP informado não é válido ou não foi encontrado. Por favor, corrija-o antes de calcular o frete.", cepInput);
+        }
+        return;
+      }
+
+      if (!deliveryNumero || !deliveryRua) {
+        if (!silent) {
+          const fallbackData = {
+            logradouro: deliveryRua,
+            bairro: deliveryBairro,
+            localidade: deliveryCidade,
+            uf: deliveryEstado
+          };
+          openAddressModal(cepVal, lastCepResponseData || fallbackData);
+          if (deliveryNumero) addressModalNum.value = deliveryNumero;
+          if (deliveryComplemento) addressModalComp.value = deliveryComplemento;
+          if (lastCepResponseData && !lastCepResponseData.logradouro) {
+            addressModalStreet.value = deliveryRua;
+            addressModalDistrict.value = deliveryBairro;
+          } else if (!lastCepResponseData) {
+            addressModalStreet.value = deliveryRua;
+            addressModalDistrict.value = deliveryBairro;
+          }
+        }
+        return;
+      }
+
+      if (checkIfLocalDelivery()) {
+        renderShippingOptions([
+          { id: "LOCAL_GRATIS", name: "Entrega Local (Grátis)", price: 0, discountPrice: 0, deliveryTime: 1 }
+        ]);
+        return;
+      }
+
+      if (!BACKEND_URL) {
+        if (!silent) {
+          showCustomAlert("Simulação de Frete", "O Backend URL ainda não foi configurado. Carregando opções simuladas para teste de layout.", null);
+        }
+        renderSimulatedShippingOptions();
+        return;
+      }
+
+      calcShippingBtn.disabled = true;
+      calcShippingBtn.textContent = "Calculando...";
+      shippingOptionsField.style.display = "block";
+      shippingOptionsList.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 24px; background: rgba(89, 54, 34, 0.03); border-radius: 10px; border: 1px dashed rgba(89, 54, 34, 0.15); color: var(--muted); font-size: 14.5px; font-weight: 600;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite; flex-shrink: 0;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+          Buscando opções de frete...
+        </div>
+      `;
+
+      selectedShipping = null;
+      updateSummary();
+
+      try {
+        const calcResult = calcularTotalProdutosCarrinho();
+        const productTotal = calcResult.productTotal;
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "calcular_frete",
+            cep_destino: cepVal,
+            quantidade: totalQty,
+            valor_produtos: Math.max(0, productTotal - (activeCoupon && activeCoupon.tipo_desconto !== "frete" ? couponDiscountValue : 0))
+          })
+        });
+
+        if (!response.ok) throw new Error("Falha na resposta do servidor.");
+        const data = await response.json();
+
+        if (data.success) {
+          renderShippingOptions(data.services);
+        } else {
+          if (!silent) {
+            showCustomAlert("Erro no cálculo", "Não foi possível calcular o frete: " + data.error, null);
+          }
+          shippingOptionsField.style.display = "none";
+          shippingOptionsList.innerHTML = "";
+          updateSummary();
+        }
+      } catch (err) {
+        console.error("Erro ao calcular frete:", err);
+        if (!silent) {
+          showCustomAlert("Erro de conexão", "Ocorreu um erro ao conectar ao servidor de frete. Carregando opções simuladas para testes.", null);
+        }
+        renderSimulatedShippingOptions();
+      } finally {
+        calcShippingBtn.disabled = false;
+        calcShippingBtn.textContent = "Calcular Frete";
+      }
+    }
+
     // Reabrir o modal de endereço ao clicar no campo de Entrega (que é readonly)
     const deliveryInput = document.getElementById("delivery");
     deliveryInput.addEventListener("click", () => {
@@ -3551,114 +3669,6 @@
     const shippingOptionsField = document.getElementById("shippingOptionsField");
     const shippingOptionsList = document.getElementById("shippingOptionsList");
 
-    async function calculateShipping(silent = false) {
-      const cepVal = cepInput.value.replace(/\D/g, "");
-      const totalQty = getTotalQuantity();
-
-      if (totalQty === 0) {
-        if (!silent) {
-          showCustomAlert("Carrinho vazio", "Adicione pelo menos um caderno ao pedido antes de calcular o frete.", null);
-        }
-        selectedShipping = null;
-        lastCalculatedServices = [];
-        shippingOptionsList.innerHTML = "";
-        shippingOptionsField.style.display = "none";
-        updateSummary();
-        return;
-      }
-
-      if (cepVal.length !== 8) {
-        if (!silent) {
-          showCustomAlert("CEP inválido", "Por favor, informe um CEP válido com 8 dígitos.", cepInput);
-        }
-        return;
-      }
-
-      if (!isCepValid) {
-        if (!silent) {
-          showCustomAlert("CEP inválido", "O CEP informado não é válido ou não foi encontrado. Por favor, corrija-o antes de calcular o frete.", cepInput);
-        }
-        return;
-      }
-
-      if (!deliveryNumero || !deliveryRua) {
-        if (!silent) {
-          const fallbackData = {
-            logradouro: deliveryRua,
-            bairro: deliveryBairro,
-            localidade: deliveryCidade,
-            uf: deliveryEstado
-          };
-          openAddressModal(cepVal, lastCepResponseData || fallbackData);
-          if (deliveryNumero) addressModalNum.value = deliveryNumero;
-          if (deliveryComplemento) addressModalComp.value = deliveryComplemento;
-          if (lastCepResponseData && !lastCepResponseData.logradouro) {
-            addressModalStreet.value = deliveryRua;
-            addressModalDistrict.value = deliveryBairro;
-          } else if (!lastCepResponseData) {
-            addressModalStreet.value = deliveryRua;
-            addressModalDistrict.value = deliveryBairro;
-          }
-        }
-        return;
-      }
-
-      if (!BACKEND_URL) {
-        if (!silent) {
-          showCustomAlert("Simulação de Frete", "O Backend URL ainda não foi configurado. Carregando opções simuladas para teste de layout.", null);
-        }
-        renderSimulatedShippingOptions();
-        return;
-      }
-
-      calcShippingBtn.disabled = true;
-      calcShippingBtn.textContent = "Calculando...";
-      shippingOptionsField.style.display = "block";
-      shippingOptionsList.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 24px; background: rgba(89, 54, 34, 0.03); border-radius: 10px; border: 1px dashed rgba(89, 54, 34, 0.15); color: var(--muted); font-size: 14.5px; font-weight: 600;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite; flex-shrink: 0;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
-          Buscando opções de frete...
-        </div>
-      `;
-
-      selectedShipping = null;
-      updateSummary();
-
-      try {
-        const response = await fetch(BACKEND_URL, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "calcular_frete",
-            cep_destino: cepVal,
-            quantidade: totalQty
-          })
-        });
-
-        if (!response.ok) throw new Error("Falha na resposta do servidor.");
-        const data = await response.json();
-
-        if (data.success) {
-          renderShippingOptions(data.services);
-        } else {
-          if (!silent) {
-            showCustomAlert("Erro no cálculo", "Não foi possível calcular o frete: " + data.error, null);
-          }
-          shippingOptionsField.style.display = "none";
-          shippingOptionsList.innerHTML = "";
-          updateSummary();
-        }
-      } catch (err) {
-        console.error("Erro ao calcular frete:", err);
-        if (!silent) {
-          showCustomAlert("Erro de conexão", "Ocorreu um erro ao conectar ao servidor de frete. Carregando opções simuladas para testes.", null);
-        }
-        renderSimulatedShippingOptions();
-      } finally {
-        calcShippingBtn.disabled = false;
-        calcShippingBtn.textContent = "Calcular Frete";
-      }
-    }
-
     calcShippingBtn.addEventListener("click", () => calculateShipping(false));
 
     function autoRecalculateShipping() {
@@ -3696,11 +3706,10 @@
       
       let displayServices = [...lastCalculatedServices];
       
-      // Se for entrega local (Grajaú ou Andaraí), adiciona a opção Grátis no início
+      // Se for entrega local (Grajaú ou Andaraí), força apenas a opção Grátis e descarta os outros fretes
       if (checkIfLocalDelivery()) {
         displayServices = [
-          { id: "LOCAL_GRATIS", name: "Entrega Local (Grátis)", price: 0, discountPrice: 0, deliveryTime: 1 },
-          ...displayServices
+          { id: "LOCAL_GRATIS", name: "Entrega Local (Grátis)", price: 0, discountPrice: 0, deliveryTime: 1 }
         ];
       }
       
@@ -3773,15 +3782,25 @@
     }
 
     function refreshShippingOptions() {
-      if (lastCalculatedServices && lastCalculatedServices.length > 0) {
-        const isCurrentlyLocal = checkIfLocalDelivery();
+      const isCurrentlyLocal = checkIfLocalDelivery();
+      
+      // Se mudou o status de local (entrou ou saiu do Grajaú/Andaraí), resetamos a seleção
+      if (isCurrentlyLocal !== wasLastLocal) {
+        selectedShipping = null;
+        wasLastLocal = isCurrentlyLocal;
         
-        // Se mudou o status de local (entrou ou saiu do Grajaú/Andaraí), resetamos a seleção
-        if (isCurrentlyLocal !== wasLastLocal) {
-          selectedShipping = null;
-          wasLastLocal = isCurrentlyLocal;
+        if (isCurrentlyLocal) {
+          renderShippingOptions([]);
+        } else {
+          lastCalculatedServices = [];
+          shippingOptionsList.innerHTML = "";
+          shippingOptionsField.style.display = "none";
+          updateSummary();
         }
-        
+        return;
+      }
+      
+      if (lastCalculatedServices && lastCalculatedServices.length > 0) {
         const prevSelectedId = selectedShipping ? selectedShipping.id : null;
         
         renderShippingOptions(lastCalculatedServices);

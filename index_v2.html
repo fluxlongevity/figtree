@@ -3912,6 +3912,13 @@
         return;
       }
 
+      if (checkIfLocalDelivery()) {
+        renderShippingOptions([
+          { id: "LOCAL_GRATIS", name: "Entrega Local (Grátis)", price: 0, discountPrice: 0, deliveryTime: 1 }
+        ]);
+        return;
+      }
+
       if (!BACKEND_URL) {
         if (!silent) {
           showCustomAlert("Simulação de Frete", "O Backend URL ainda não foi configurado. Carregando opções simuladas para teste de layout.", null);
@@ -3934,12 +3941,15 @@
       updateSummary();
 
       try {
+        const calcResult = calcularTotalProdutosCarrinho();
+        const productTotal = calcResult.productTotal;
         const response = await fetch(BACKEND_URL, {
           method: "POST",
           body: JSON.stringify({
             action: "calcular_frete",
             cep_destino: cepVal,
-            quantidade: totalQty
+            quantidade: totalQty,
+            valor_produtos: Math.max(0, productTotal - (activeCoupon && activeCoupon.tipo_desconto !== "frete" ? couponDiscountValue : 0))
           })
         });
 
@@ -4005,11 +4015,10 @@
       
       let displayServices = [...lastCalculatedServices];
       
-      // Se for entrega local (Grajaú ou Andaraí), adiciona a opção Grátis no início
+      // Se for entrega local (Grajaú ou Andaraí), força apenas a opção Grátis e descarta os outros fretes
       if (checkIfLocalDelivery()) {
         displayServices = [
-          { id: "LOCAL_GRATIS", name: "Entrega Local (Grátis)", price: 0, discountPrice: 0, deliveryTime: 1 },
-          ...displayServices
+          { id: "LOCAL_GRATIS", name: "Entrega Local (Grátis)", price: 0, discountPrice: 0, deliveryTime: 1 }
         ];
       }
       
@@ -4082,15 +4091,25 @@
     }
 
     function refreshShippingOptions() {
-      if (lastCalculatedServices && lastCalculatedServices.length > 0) {
-        const isCurrentlyLocal = checkIfLocalDelivery();
+      const isCurrentlyLocal = checkIfLocalDelivery();
+      
+      // Se mudou o status de local (entrou ou saiu do Grajaú/Andaraí), resetamos a seleção
+      if (isCurrentlyLocal !== wasLastLocal) {
+        selectedShipping = null;
+        wasLastLocal = isCurrentlyLocal;
         
-        // Se mudou o status de local (entrou ou saiu do Grajaú/Andaraí), resetamos a seleção
-        if (isCurrentlyLocal !== wasLastLocal) {
-          selectedShipping = null;
-          wasLastLocal = isCurrentlyLocal;
+        if (isCurrentlyLocal) {
+          renderShippingOptions([]);
+        } else {
+          lastCalculatedServices = [];
+          shippingOptionsList.innerHTML = "";
+          shippingOptionsField.style.display = "none";
+          updateSummary();
         }
-        
+        return;
+      }
+      
+      if (lastCalculatedServices && lastCalculatedServices.length > 0) {
         const prevSelectedId = selectedShipping ? selectedShipping.id : null;
         
         renderShippingOptions(lastCalculatedServices);

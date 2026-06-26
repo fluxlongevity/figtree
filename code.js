@@ -293,17 +293,32 @@ function calcularFrete(cepDestino, quantidade, extraParams = {}) {
   }
 
   // Filtrar serviços bem-sucedidos
+  let valorProdutos = parseFloat(extraParams.valor_produtos);
+  if (isNaN(valorProdutos) || valorProdutos <= 0) {
+    const kits = Math.floor(qty / 4);
+    const resto = qty % 4;
+    valorProdutos = kits * 45;
+    if (resto === 3) valorProdutos += 40;
+    else if (resto === 2) valorProdutos += 28;
+    else if (resto === 1) valorProdutos += 15;
+  }
+
+  const custos = obterCustosDynamic(ss, caixa, qty);
+  const lucroBruto = valorProdutos - (qty * custos.custoCadernoUnitario) - custos.custoCaixa - custos.custoExtras;
+
   const services = [];
   if (Array.isArray(responseData)) {
     responseData.forEach(service => {
       if (!service.error) {
         const finalPrice = parseFloat(service.price);
         const discountAmount = parseFloat(service.discount || 0);
+        const isEligibleFree = lucroBruto > 0 && finalPrice <= (0.30 * lucroBruto);
+        
         services.push({
           id: service.id,
-          name: service.name,
-          price: finalPrice + discountAmount,
-          discountPrice: finalPrice,
+          name: isEligibleFree ? (service.name + " (Grátis)") : service.name,
+          price: isEligibleFree ? 0 : (finalPrice + discountAmount),
+          discountPrice: isEligibleFree ? 0 : finalPrice,
           deliveryTime: service.delivery_time,
           error: null
         });
@@ -326,12 +341,76 @@ function calcularFrete(cepDestino, quantidade, extraParams = {}) {
   };
 }
 
+function obterCustosDynamic(ss, caixa, qty) {
+  const sheetInsumos = obterPlanilhaInsumos(ss);
+  const insumosData = readSheetAsJSON(sheetInsumos);
+  const insumosMap = {};
+  insumosData.forEach(i => {
+    insumosMap[i.ID_Insumo] = {
+      custo: parseFloat(i.Custo_Unitario_Atual) || 0,
+      unidade: String(i.Unidade_Medida).trim()
+    };
+  });
+  
+  // 1. Custo do caderno (Ficha Técnica)
+  const sheetFicha = obterPlanilhaFichaTecnica(ss);
+  const fichaData = readSheetAsJSON(sheetFicha);
+  let custoCadernoUnitario = 0;
+  fichaData.forEach(item => {
+    if (item.ID_Produto === "caderno_14x9") {
+      const insumo = insumosMap[item.ID_Insumo];
+      const insumoCost = insumo ? insumo.custo : 0;
+      custoCadernoUnitario += (parseFloat(item.Quantidade_Consumida) || 0) * insumoCost;
+    }
+  });
+  if (custoCadernoUnitario === 0) {
+    custoCadernoUnitario = 1.32; // Fallback de segurança
+  }
+  
+  // 2. Custo da caixa
+  let custoCaixa = 0;
+  if (caixa && caixa.idInsumo) {
+    const insumo = insumosMap[caixa.idInsumo];
+    custoCaixa = insumo ? insumo.custo : 0;
+  }
+  
+  // 3. Custos de fita e etiqueta (insumos extras)
+  let custoExtras = 0;
+  
+  // Fita kraft
+  const fitaKey = Object.keys(insumosMap).find(k => k.toLowerCase().indexOf("fita") !== -1);
+  if (fitaKey && caixa) {
+    const fitaObj = insumosMap[fitaKey];
+    if (fitaObj.unidade.toLowerCase() === "metro" || fitaObj.unidade.toLowerCase() === "m" || fitaObj.unidade.toLowerCase() === "metros") {
+      // Perímetro horizontal: 2 * (comprimento + largura) + 10 cm de sobra
+      const metrosFita = (2 * (parseFloat(caixa.comprimento) + parseFloat(caixa.largura)) + 10) / 100;
+      custoExtras += metrosFita * fitaObj.custo;
+    } else {
+      custoExtras += fitaObj.custo; // Custo fixo unitário
+    }
+  }
+  
+  // Etiqueta adesiva
+  const etiquetaKey = Object.keys(insumosMap).find(k => k.toLowerCase().indexOf("adesivo") !== -1 || k.toLowerCase().indexOf("etiqueta") !== -1);
+  if (etiquetaKey) {
+    const etiquetaObj = insumosMap[etiquetaKey];
+    custoExtras += etiquetaObj.custo;
+  }
+  
+  return {
+    custoCadernoUnitario: custoCadernoUnitario,
+    custoCaixa: custoCaixa,
+    custoExtras: custoExtras
+  };
+}
+
 function selecionarCaixaLogistica(ss, qty) {
   const sheetGrade = obterPlanilhaGradeCaixas(ss);
   const data = sheetGrade.getDataRange().getValues();
   const headers = data[0];
   
   const idIdx = headers.indexOf("ID_Caixa");
+  const insumoIdx = headers.indexOf("ID_Insumo");
   const capIdx = headers.indexOf("Capacidade_Max_Cadernos");
   const compIdx = headers.indexOf("Comprimento_CM");
   const largIdx = headers.indexOf("Largura_CM");
@@ -342,6 +421,7 @@ function selecionarCaixaLogistica(ss, qty) {
   for (let i = 1; i < data.length; i++) {
     caixas.push({
       id: data[i][idIdx],
+      idInsumo: insumoIdx !== -1 ? data[i][insumoIdx] : null,
       capacidade: parseInt(data[i][capIdx]) || 1,
       comprimento: parseFloat(data[i][compIdx]) || 0,
       largura: parseFloat(data[i][largIdx]) || 0,
@@ -500,6 +580,19 @@ function salvarPedido(pedido) {
     } catch (e) {
       Logger.log("Erro ao marcar cupom como usado: " + e.message);
     }
+  }
+
+  // Envia notificação push pelo ntfy.sh
+  try {
+    const titulo = "🛍️ Novo Pedido Recebido! (Pedido #" + nextId + ")";
+    const mensagem = "Um novo pedido de cadernos foi registrado na planilha.\n\n" +
+                     "• Cliente: " + (pedido.nome || "Não informado") + "\n" +
+                     "• Itens: " + (pedido.itens || "Não especificado") + "\n" +
+                     "• Total: R$ " + (pedido.total_geral || 0) + "\n" +
+                     "• Método Frete: " + (pedido.frete_metodo || "Não escolhido");
+    enviarNotificacaoNtfy(titulo, mensagem, "sales");
+  } catch (errNtfy) {
+    Logger.log("Erro ao enviar notificacao de novo pedido para ntfy: " + errNtfy.message);
   }
 
   return { success: true, orderId: nextId };
@@ -2356,7 +2449,7 @@ function obterPlanilhaGradeCaixas(ss) {
     // Insere as caixas P e M do usuário
     const defaultGrade = [
       ["caixa_p", "caixa_p", 5, 16, 11, 3, 0.05],
-      ["caixa_m", "caixa_m", 10, 16, 11, 6, 0.08]
+      ["caixa_m", "caixa_m", 10, 17, 12, 5, 0.08]
     ];
     defaultGrade.forEach(row => sheet.appendRow(row));
   }
@@ -2759,6 +2852,19 @@ function processarWebhookSuperFreteDirect(payload) {
     // Executa a sincronização oficial de rastreamento usando a função existente
     const res = atualizarRastreamentoPedido(orderId);
     
+    if (res && res.success) {
+      try {
+        const titulo = "📦 Atualização de Frete (Pedido #" + orderId + ")";
+        const mensagem = "O status do pedido #" + orderId + " foi atualizado.\n\n" +
+                         "• Status Interno: " + res.updatedPanelStatus + "\n" +
+                         "• Status SuperFrete: " + res.superfreteStatus + "\n" +
+                         "• Rastreamento: " + (res.tracking || "Pendente");
+        enviarNotificacaoNtfy(titulo, mensagem, "shipping");
+      } catch (errNtfy) {
+        Logger.log("Erro ao processar envio de notificacao ntfy: " + errNtfy.message);
+      }
+    }
+    
     return ContentService.createTextOutput(JSON.stringify(res))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
@@ -2780,11 +2886,14 @@ function registrarWebhookNoSuperFrete() {
   let webAppUrl = "";
   try {
     webAppUrl = ScriptApp.getService().getUrl();
+    if (webAppUrl) {
+      webAppUrl = webAppUrl.replace("/dev", "/exec");
+    }
   } catch (e) {
     Logger.log("Nao foi possivel detectar a URL do Web App automaticamente: " + e.message);
   }
 
-  if (!webAppUrl) {
+  if (!webAppUrl || webAppUrl.indexOf("/dev") !== -1) {
     webAppUrl = "https://script.google.com/macros/s/AKfycbycjYy2UiWKMJAQcrFEs9IFJ42LTKtSJMgUufCYErjlX9U80m6V7M1pHvRb0gbH5TSF/exec";
   }
 
@@ -2797,6 +2906,38 @@ function registrarWebhookNoSuperFrete() {
 
   const url = "https://api.superfrete.com/api/v0/webhook";
   
+  // Primeiro, lista e remove webhooks antigos para evitar duplicidade ou URLs desatualizadas (como /dev)
+  try {
+    const listOptions = {
+      method: "get",
+      headers: {
+        "Authorization": "Bearer " + token
+      },
+      muteHttpExceptions: true
+    };
+    const listResponse = UrlFetchApp.fetch(url, listOptions);
+    if (listResponse.getResponseCode() === 200) {
+      const existingWebhooks = JSON.parse(listResponse.getContentText());
+      const webhookList = Array.isArray(existingWebhooks) ? existingWebhooks : (existingWebhooks.results || existingWebhooks.data || []);
+      for (const webhook of webhookList) {
+        if (webhook.id) {
+          Logger.log("Removendo webhook antigo/invalido: " + webhook.id + " (" + webhook.url + ")");
+          const deleteUrl = url + "/" + webhook.id;
+          const deleteOptions = {
+            method: "delete",
+            headers: {
+              "Authorization": "Bearer " + token
+            },
+            muteHttpExceptions: true
+          };
+          UrlFetchApp.fetch(deleteUrl, deleteOptions);
+        }
+      }
+    }
+  } catch (e) {
+    Logger.log("Nao foi possivel limpar webhooks antigos: " + e.message);
+  }
+
   const payload = {
     name: "Notificacao Automatica FigTree",
     url: webAppUrl,
@@ -2824,4 +2965,42 @@ function registrarWebhookNoSuperFrete() {
     statusCode: responseCode,
     response: responseText
   };
+}
+
+/**
+ * Envia uma notificacao push para o ntfy.sh
+ */
+function enviarNotificacaoNtfy(titulo, mensagem, tipo) {
+  let topic = "superfrete";
+  try {
+    if (tipo === "sales") {
+      topic = PropertiesService.getScriptProperties().getProperty("NTFY_TOPIC_SALES") || "figtree-vendas";
+    } else {
+      // Mantém compatibilidade com a chave antiga NTFY_TOPIC ou usa o default "superfrete"
+      topic = PropertiesService.getScriptProperties().getProperty("NTFY_TOPIC_SHIPPING") || 
+              PropertiesService.getScriptProperties().getProperty("NTFY_TOPIC") || 
+              "superfrete";
+    }
+  } catch (e) {
+    Logger.log("Erro ao carregar propriedade do ntfy: " + e.message);
+  }
+
+  const url = "https://ntfy.sh/" + topic.trim();
+  const options = {
+    method: "post",
+    headers: {
+      "Title": titulo,
+      "Priority": tipo === "sales" ? "high" : "default", // Vendas com prioridade alta!
+      "Tags": tipo === "sales" ? "tada,shopping_bags,moneybag" : "package,truck,bell"
+    },
+    payload: mensagem,
+    muteHttpExceptions: true
+  };
+  
+  try {
+    const response = UrlFetchApp.fetch(url, options);
+    Logger.log("Ntfy.sh response code: " + response.getResponseCode());
+  } catch (err) {
+    Logger.log("Erro ao enviar notificacao para o ntfy.sh: " + err.message);
+  }
 }

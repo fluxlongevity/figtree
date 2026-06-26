@@ -1243,7 +1243,8 @@
         }
 
         // Botões de ação baseados no status e frete
-        const isFreeShipping = String(o.Frete_Metodo).toLowerCase().includes("grátis") || String(o.Frete_Metodo).toLowerCase().includes("local");
+        const isLocalDelivery = String(o.Frete_Metodo || "").toLowerCase().includes("local");
+        const isFreeForClient = parseFloat(o.Valor_Frete) === 0 || String(o.Frete_Metodo || "").toLowerCase().includes("grátis") || String(o.Frete_Metodo || "").toLowerCase().includes("gratis") || isLocalDelivery;
         const hasLabel = o.Codigo_Rastreio && o.Etiqueta_PDF_URL;
         
         let actionBtnHtml = "";
@@ -1255,14 +1256,14 @@
               Imprimir Etiqueta (${o.Codigo_Rastreio})
             </a>
           `;
-        } else if (!isFreeShipping && o.Status === "Pronto para Envio") {
+        } else if (!isLocalDelivery && o.Status === "Pronto para Envio") {
           actionBtnHtml = `
             <button class="btn-action btn-generate-label" data-id="${o.ID_Pedido}">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v16M2 10h20M6 4v16M18 4v16"/></svg>
               Gerar Etiqueta SuperFrete
             </button>
           `;
-        } else if (isFreeShipping) {
+        } else if (isLocalDelivery) {
           actionBtnHtml = `
             <div style="text-align: center; color: var(--status-pago); font-size: 13.5px; font-weight: 700; padding: 8px; background: var(--status-pago-bg); border-radius: 8px; border: 1px dashed rgba(40, 167, 69, 0.25);">
               📦 Entrega Local Grátis (Sem etiqueta)
@@ -1357,7 +1358,7 @@
               </div>
               <div class="price-row">
                 <span>Frete:</span>
-                <span>${isFreeShipping ? "Grátis" : currency.format(parseFloat(o.Valor_Frete) || 0)}</span>
+                <span>${isFreeForClient ? "Grátis" : currency.format(parseFloat(o.Valor_Frete) || 0)}</span>
               </div>
               ${o.Cupom_Codigo ? `
               <div class="price-row" style="color: var(--status-cancelado); font-weight: bold;">
@@ -1402,7 +1403,7 @@
                 <option value="Pago" ${o.Status === "Pago" ? "selected" : ""}>Pago</option>
                 <option value="Em Produção" ${o.Status === "Em Produção" ? "selected" : ""}>Em Produção</option>
                 <option value="Pronto para Envio" ${o.Status === "Pronto para Envio" ? "selected" : ""}>Pronto para Envio</option>
-                ${!isFreeShipping ? `
+                ${!isLocalDelivery ? `
                   <option value="Etiqueta Gerada" ${o.Status === "Etiqueta Gerada" ? "selected" : ""}>Etiqueta Gerada</option>
                   <option value="Enviado" ${o.Status === "Enviado" ? "selected" : ""}>Enviado</option>
                   <option value="Em Transito" ${o.Status === "Em Transito" ? "selected" : ""}>Em Trânsito</option>
@@ -1655,7 +1656,7 @@
     });
 
     function gerarFolhaProducao(order) {
-      const isFreeShipping = String(order.Frete_Metodo).toLowerCase().includes("grátis") || String(order.Frete_Metodo).toLowerCase().includes("local");
+      const isLocalDelivery = String(order.Frete_Metodo || "").toLowerCase().includes("local");
       const labelGenerated = !!(order.Codigo_Rastreio && order.Etiqueta_PDF_URL);
 
       const printWindow = window.open("", "_blank", "width=800,height=900");
@@ -2018,7 +2019,7 @@
                   <strong>Endereço de Entrega</strong>
                   <span>${formatarEndereco(order)} (CEP: ${order.Entrega_CEP})</span>
                 </div>
-                ${!isFreeShipping ? `
+                ${!isLocalDelivery ? `
                 <div class="info-item" style="grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; border-top: 1px dashed rgba(82, 48, 30, 0.2); padding-top: 10px; margin-top: 5px;">
                   <div>
                     <strong>Etiqueta de Envio</strong>
