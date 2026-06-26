@@ -2112,23 +2112,70 @@
       let totalDescontoPromocionais = 0;
       const promocoesAplicadasMap = {};
       
+      const itemsPorPromo = {}; // nomePromo -> { promoObj: p, items: [] }
+      const itemsNormais = [];
+      
       cart.forEach(item => {
         totalQty += item.qty;
-        const promoInfo = obterPrecoItem(item);
-        if (promoInfo) {
-          totalPromocionais += promoInfo.precoTotal;
-          totalDescontoPromocionais += promoInfo.descontoUnitario * item.qty;
-          const nomePromo = promoInfo.nome;
-          if (!promocoesAplicadasMap[nomePromo]) {
-            promocoesAplicadasMap[nomePromo] = 0;
+        let matched = false;
+        
+        if (promocoesAtivas.length > 0) {
+          const coverNameLower = item.coverName.trim().toLowerCase();
+          const interiorNameLower = item.interiorName.trim().toLowerCase();
+          
+          for (const p of promocoesAtivas) {
+            const pCapaLower = String(p.Capa || "Qualquer").trim().toLowerCase();
+            const pMioloLower = String(p.Miolo || "Qualquer").trim().toLowerCase();
+            
+            const capasElegiveis = pCapaLower.split(/\s*,\s*/);
+            const miolosElegiveis = pMioloLower.split(/\s*,\s*/);
+            
+            const capaMatch = pCapaLower === "qualquer" || capasElegiveis.some(c => c === coverNameLower);
+            const mioloMatch = pMioloLower === "qualquer" || miolosElegiveis.some(m => m === interiorNameLower);
+            
+            if (capaMatch && mioloMatch) {
+              const nome = p.Nome;
+              if (!itemsPorPromo[nome]) {
+                itemsPorPromo[nome] = {
+                  promoObj: p,
+                  items: []
+                };
+              }
+              itemsPorPromo[nome].items.push(item);
+              matched = true;
+              break;
+            }
           }
-          promocoesAplicadasMap[nomePromo] += promoInfo.descontoUnitario * item.qty;
-        } else {
-          totalQtyNormais += item.qty;
+        }
+        
+        if (!matched) {
+          itemsNormais.push(item);
         }
       });
       
+      totalQtyNormais = itemsNormais.reduce((acc, item) => acc + item.qty, 0);
       const productTotalNormais = calculateTotal(totalQtyNormais);
+      
+      Object.keys(itemsPorPromo).forEach(nomePromo => {
+        const promoInfo = itemsPorPromo[nomePromo];
+        const p = promoInfo.promoObj;
+        const matchingItems = promoInfo.items;
+        
+        const normalValue = matchingItems.reduce((acc, item) => acc + (15 * item.qty), 0);
+        const val = Number(p.Valor) || 0;
+        
+        let discount = 0;
+        if (String(p.Tipo_Valor).trim().toLowerCase() === "percentual") {
+          discount = normalValue * (val / 100);
+        } else if (String(p.Tipo_Valor).trim().toLowerCase() === "fixo") {
+          discount = Math.min(val, normalValue);
+        }
+        
+        promocoesAplicadasMap[nomePromo] = discount;
+        totalPromocionais += (normalValue - discount);
+        totalDescontoPromocionais += discount;
+      });
+      
       const productTotal = productTotalNormais + totalPromocionais;
       const precoCheio = totalQty * 15;
       const descontoValor = precoCheio - productTotal;
@@ -2480,7 +2527,7 @@
             if (String(promoObj.Tipo_Valor).trim().toLowerCase() === "percentual") {
               pctText = ` (${Math.round(val)}%)`;
             } else {
-              pctText = ` (${Math.round((val / 15) * 100)}%)`;
+              pctText = ` (${currency.format(val)})`;
             }
           }
           const promoLine = document.createElement("div");
@@ -3223,9 +3270,9 @@
     });
 
     reopenPixButton.addEventListener("click", () => {
-      const totalQty = getTotalQuantity();
-      const productTotal = calculateTotal(totalQty);
-      const grandTotal = productTotal + (selectedShipping ? selectedShipping.price : 0);
+      const calcResult = calcularTotalProdutosCarrinho();
+      const productTotal = calcResult.productTotal;
+      const grandTotal = Math.max(0, productTotal + (selectedShipping ? selectedShipping.price : 0) - couponDiscountValue);
       openPixModal(grandTotal);
     });
 
@@ -3934,9 +3981,9 @@
     whatsappButton.addEventListener("click", async () => {
       // Se o pedido já foi salvo com sucesso, apenas reabre o WhatsApp e o modal sem salvar duplicado no Sheets
       if (isOrderSaved) {
-        const totalQty = getTotalQuantity();
-        const productTotal = calculateTotal(totalQty);
-        const grandTotal = productTotal + (selectedShipping ? selectedShipping.price : 0);
+        const calcResult = calcularTotalProdutosCarrinho();
+        const productTotal = calcResult.productTotal;
+        const grandTotal = Math.max(0, productTotal + (selectedShipping ? selectedShipping.price : 0) - couponDiscountValue);
         const msg = getOrderMessage(lastOrderId);
         const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
         window.open(whatsappUrl, "_blank");
@@ -4039,8 +4086,9 @@
       const deliveryVal = document.getElementById("delivery").value.trim();
       const cepVal = document.getElementById("cep").value.trim();
       
-      const totalQty = getTotalQuantity();
-      const productTotal = calculateTotal(totalQty);
+      const calcResult = calcularTotalProdutosCarrinho();
+      const totalQty = calcResult.totalQty;
+      const productTotal = calcResult.productTotal;
       const grandTotal = Math.max(0, productTotal + selectedShipping.price - couponDiscountValue);
       const itemLines = cart.map(item => `${item.qty}x ${item.coverName} (${item.interiorName})`).join(", ");
 
