@@ -2733,6 +2733,10 @@
     }
 
     function closeAddressModal() {
+      const cepInput = document.getElementById("cep");
+      if (cepInput) {
+        cepInput.focus();
+      }
       addressModal.classList.remove("is-open");
       addressModal.setAttribute("aria-hidden", "true");
       currentCepData = null;
@@ -3825,7 +3829,7 @@
     renderInteriors();
     updateSummary();
     carregarPromocoes();
-    detectAssetsDynamically();
+    // detectAssetsDynamically();
   </script>
 </body>
 </html>

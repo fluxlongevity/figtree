@@ -17,7 +17,7 @@
       security_storage: "granted"
     });
   </script>
-  <!-- Start cookieyes banner --> <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/2e63681ea8f4966dc8bea655/script.js"></script> <!-- End cookieyes banner -->
+  <!-- Start cookieyes banner --> <!-- <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/2e63681ea8f4966dc8bea655/script.js"></script> --> <!-- End cookieyes banner -->
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YHF7XB164M"></script>
   <script>
@@ -3066,6 +3066,10 @@
     }
 
     function closeAddressModal() {
+      const cepInput = document.getElementById("cep");
+      if (cepInput) {
+        cepInput.focus();
+      }
       addressModal.classList.remove("is-open");
       addressModal.setAttribute("aria-hidden", "true");
       currentCepData = null;
@@ -4218,7 +4222,7 @@
     renderInteriors();
     updateSummary();
     carregarPromocoes();
-    detectAssetsDynamically();
+    // detectAssetsDynamically();
   </script>
 </body>
 </html>
