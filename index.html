@@ -2486,7 +2486,12 @@
         grandTotal += selectedShipping.price;
         document.getElementById("shippingSummaryLine").style.display = "flex";
         document.getElementById("shippingMethodName").textContent = selectedShipping.name;
-        document.getElementById("shippingSummaryPrice").textContent = currency.format(selectedShipping.price);
+        const shippingPriceEl = document.getElementById("shippingSummaryPrice");
+        if (selectedShipping.price === 0) {
+          shippingPriceEl.innerHTML = `<span style="color: #28a745; font-weight: 800;">Grátis</span>`;
+        } else {
+          shippingPriceEl.textContent = currency.format(selectedShipping.price);
+        }
       } else {
         document.getElementById("shippingSummaryLine").style.display = "none";
       }
@@ -3740,6 +3745,22 @@
         
         const isSelected = selectedShipping && selectedShipping.id === service.id;
         
+        const originalPrice = service.price;
+        const finalPrice = service.discountPrice !== undefined ? service.discountPrice : service.price;
+        
+        let priceHtml = "";
+        if (finalPrice === 0) {
+          if (originalPrice > 0) {
+            priceHtml = `<span style="text-decoration: line-through; color: var(--muted); font-size: 13px; font-weight: 400; margin-right: 6px;">${currency.format(originalPrice)}</span><span style="color: #28a745; font-weight: 800;">Grátis</span>`;
+          } else {
+            priceHtml = `<span style="color: #28a745; font-weight: 800;">Grátis</span>`;
+          }
+        } else if (finalPrice < originalPrice) {
+          priceHtml = `<span style="text-decoration: line-through; color: var(--muted); font-size: 13px; font-weight: 400; margin-right: 6px;">${currency.format(originalPrice)}</span><span>${currency.format(finalPrice)}</span>`;
+        } else {
+          priceHtml = `<span>${currency.format(finalPrice)}</span>`;
+        }
+        
         card.innerHTML = `
           <input type="radio" name="shipping_option" value="${service.id}" ${idx === 0 && !selectedShipping ? "checked" : isSelected ? "checked" : ""}>
           <div class="shipping-option-details">
@@ -3747,7 +3768,7 @@
               <span class="shipping-option-name">${service.name}</span>
               <span class="shipping-option-time" style="display: block; margin-top: 2px;">Prazo: ${service.deliveryTime} dia(s), após o envio.</span>
             </div>
-            <span class="shipping-option-price">${currency.format(service.discountPrice || service.price)}</span>
+            <span class="shipping-option-price">${priceHtml}</span>
           </div>
         `;
         
@@ -3757,7 +3778,7 @@
           selectedShipping = {
             id: service.id,
             name: service.name,
-            price: service.discountPrice || service.price,
+            price: finalPrice,
             deliveryTime: service.deliveryTime
           };
         }
@@ -3766,7 +3787,7 @@
           selectedShipping = {
             id: service.id,
             name: service.name,
-            price: service.discountPrice || service.price,
+            price: finalPrice,
             deliveryTime: service.deliveryTime
           };
           if (selectedShipping.id === "LOCAL_GRATIS") {
