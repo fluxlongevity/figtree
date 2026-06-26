@@ -2027,6 +2027,8 @@ function atualizarRastreamentoPedido(orderId) {
     if (postagemIndex !== -1) {
       if (resData.posted_at) {
         rowValues[postagemIndex] = resData.posted_at;
+      } else if ((sfStatus === "posted" || sfStatus === "delivered") && !rowValues[postagemIndex]) {
+        rowValues[postagemIndex] = resData.updated_at || new Date();
       } else if (sfStatus === "released" || sfStatus === "printed" || sfStatus === "canceled" || sfStatus === "cancelled" || sfStatus === "") {
         rowValues[postagemIndex] = "";
       }
@@ -2034,6 +2036,8 @@ function atualizarRastreamentoPedido(orderId) {
     if (entregaIndex !== -1) {
       if (resData.delivered_at) {
         rowValues[entregaIndex] = resData.delivered_at;
+      } else if (sfStatus === "delivered" && !rowValues[entregaIndex]) {
+        rowValues[entregaIndex] = resData.updated_at || new Date();
       } else if (sfStatus !== "delivered") {
         rowValues[entregaIndex] = "";
       }
