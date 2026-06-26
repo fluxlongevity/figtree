@@ -134,6 +134,17 @@ function doPost(e) {
       }
     }
 
+    if (action === "registrar_webhook") {
+      try {
+        const response = registrarWebhookNoSuperFrete();
+        return ContentService.createTextOutput(JSON.stringify({ success: true, response: response }))
+          .setMimeType(ContentService.MimeType.JSON);
+      } catch (err) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.message }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+
     if (action === "configurar_telegram") {
       try {
         const response = configurarTelegramChatId();
@@ -330,13 +341,14 @@ function calcularFrete(cepDestino, quantidade, extraParams = {}) {
 
   const finalServices = extraParams.custom_services !== undefined ? extraParams.custom_services : "1,2,3,4,17,31";
 
-  // Busca o Token de forma segura na configuração do Script
-  const token = PropertiesService.getScriptProperties().getProperty("SUPERFRETE_TOKEN");
+  // Busca o Token de forma segura de acordo com o ambiente (sandbox ou produção)
+  const sfConfig = obterConfiguracaoSuperFrete();
+  const token = sfConfig.token;
   if (!token) {
     throw new Error("Token da SuperFrete não configurado nas propriedades do script.");
   }
 
-  const url = "https://api.superfrete.com/api/v0/calculator";
+  const url = sfConfig.baseUrl + "/api/v0/calculator";
   
   const payload = {
     "from": {
@@ -886,8 +898,9 @@ function atualizarStatusPedido(orderId, novoStatus, dataPagamento) {
 
     if (packageId) {
       // 1. Consultar a API da SuperFrete para obter informações atuais do pacote
-      const token = PropertiesService.getScriptProperties().getProperty("SUPERFRETE_TOKEN");
-      const baseUrl = "https://api.superfrete.com";
+      const sfConfig = obterConfiguracaoSuperFrete();
+      const token = sfConfig.token;
+      const baseUrl = sfConfig.baseUrl;
       let sfStatus = "";
       
       if (token) {
@@ -1031,8 +1044,9 @@ function atualizarStatusPedido(orderId, novoStatus, dataPagamento) {
 }
 
 function cancelarEtiquetaSuperfrete(packageId) {
-  const token = PropertiesService.getScriptProperties().getProperty("SUPERFRETE_TOKEN");
-  const baseUrl = "https://api.superfrete.com";
+  const sfConfig = obterConfiguracaoSuperFrete();
+  const token = sfConfig.token;
+  const baseUrl = sfConfig.baseUrl;
   
   if (!token) {
     return { success: false, error: "Token da SuperFrete não configurado nas propriedades do script." };
@@ -1293,9 +1307,10 @@ function emitirEtiquetaPedido(orderId) {
     dest.complement = String(pedido.Entrega_Complemento).trim();
   }
 
-  // Le o token de produção e define a URL base de produção
-  const token = PropertiesService.getScriptProperties().getProperty("SUPERFRETE_TOKEN");
-  const baseUrl = "https://api.superfrete.com";
+  // Obtém as credenciais e URL base de acordo com o ambiente (sandbox ou produção)
+  const sfConfig = obterConfiguracaoSuperFrete();
+  const token = sfConfig.token;
+  const baseUrl = sfConfig.baseUrl;
   
   if (!token) {
     return { success: false, error: "Token de Produção da SuperFrete não configurado nas propriedades do script." };
@@ -1894,9 +1909,10 @@ function atualizarRastreamentoPedido(orderId) {
     return { success: false, error: "Este pedido não possui ID de pacote (Superfrete_Package_ID) nem URL de etiqueta decodificável." };
   }
 
-  // Lemos o token de produção e definimos a URL de produção
-  const token = PropertiesService.getScriptProperties().getProperty("SUPERFRETE_TOKEN");
-  const baseUrl = "https://api.superfrete.com";
+  // Obtém as credenciais e URL base de acordo com o ambiente (sandbox ou produção)
+  const sfConfig = obterConfiguracaoSuperFrete();
+  const token = sfConfig.token;
+  const baseUrl = sfConfig.baseUrl;
 
   if (!token) {
     return { success: false, error: "Token de Produção da SuperFrete não configurado." };
@@ -3229,9 +3245,10 @@ function processarWebhookSuperFreteDirect(payload) {
  * Pode ser executada diretamente do editor do Google Apps Script.
  */
 function registrarWebhookNoSuperFrete() {
-  const token = PropertiesService.getScriptProperties().getProperty("SUPERFRETE_TOKEN");
+  const sfConfig = obterConfiguracaoSuperFrete();
+  const token = sfConfig.token;
   if (!token) {
-    throw new Error("Token da SuperFrete nao configurado nas propriedades do script (SUPERFRETE_TOKEN).");
+    throw new Error("Token da SuperFrete nao configurado nas propriedades do script.");
   }
 
   let webAppUrl = "";
@@ -3255,7 +3272,7 @@ function registrarWebhookNoSuperFrete() {
     webAppUrl += "&source=superfrete";
   }
 
-  const url = "https://api.superfrete.com/api/v0/webhook";
+  const url = sfConfig.baseUrl + "/api/v0/webhook";
   
   // Primeiro, lista e remove webhooks antigos para evitar duplicidade ou URLs desatualizadas (como /dev)
   try {
@@ -3292,7 +3309,15 @@ function registrarWebhookNoSuperFrete() {
   const payload = {
     name: "Notificacao Automatica FigTree",
     url: webAppUrl,
-    events: ["order.posted", "order.delivered", "order.cancelled"]
+    events: [
+      "order.posted",
+      "order.delivered",
+      "order.cancelled",
+      "order.released",
+      "order.printed",
+      "order.paid",
+      "order.pending"
+    ]
   };
   
   const options = {
@@ -3457,3 +3482,26 @@ function configurarTelegramChatId() {
     return { success: false, error: err.message };
   }
 }
+
+/**
+ * Retorna as credenciais e URL base corretas para a API da SuperFrete de acordo com o ambiente configurado (sandbox ou production).
+ */
+function obterConfiguracaoSuperFrete() {
+  const scriptProps = PropertiesService.getScriptProperties();
+  const env = String(scriptProps.getProperty("SUPERFRETE_ENVIRONMENT") || "production").toLowerCase().trim();
+  
+  if (env === "sandbox") {
+    return {
+      token: scriptProps.getProperty("SUPERFRETE_SANDBOX_TOKEN"),
+      baseUrl: "https://sandbox.superfrete.com",
+      isSandbox: true
+    };
+  } else {
+    return {
+      token: scriptProps.getProperty("SUPERFRETE_TOKEN"),
+      baseUrl: "https://api.superfrete.com",
+      isSandbox: false
+    };
+  }
+}
+
