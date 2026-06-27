@@ -1,0 +1,3643 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FigTree — Caderninhos de Bolso Artesanais (9x14 cm)</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📓</text></svg>">
+  
+  <!-- Fontes do Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       1. VARIÁVEIS CSS E DESIGN SYSTEM (ESTILO DAPPER NOTES)
+       ========================================================================== */
+    :root {
+      /* Cores Premium e Naturais */
+      --bg-site: #fdfcf9;       /* Creme de papel marfim muito claro */
+      --bg-card: #f6f4ee;       /* Creme de papel kraft ligeiramente mais escuro */
+      --bg-dark: #1a110f;       /* Marrom-preto tinta muito profundo */
+      --text: #2a1f1d;          /* Tinta marrom escuro para texto confortável */
+      --muted: #6e5e5b;         /* Marrom cinzento para subtítulos e dados secundários */
+      --sage: #697c64;          /* Verde sálvia do Dapper Notes */
+      --sage-light: #f1efea;    /* Fundo sálvia sutil */
+      --terracotta: #be5e30;    /* Terracota / Ferrugem acentuador */
+      --terracotta-hover: #9c4a22;
+      --border-dark: #2a1f1d;
+      --border-light: rgba(42, 31, 29, 0.1);
+      
+      /* Tipografia */
+      --serif: "Cormorant Garamond", Georgia, serif;
+      --sans: "Inter", Arial, Helvetica, sans-serif;
+      
+      /* Layout e Bordas */
+      --border-width: 1px;
+      --border-thick: 2px;
+      --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Reset Geral */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100%;
+      overflow-x: hidden;
+      font-family: var(--sans);
+      color: var(--text);
+      background-color: var(--bg-site);
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      transition: var(--transition);
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+      transition: var(--transition);
+    }
+
+    /* Utilitários */
+    .container {
+      width: min(1140px, 100% - 32px);
+      margin: 0 auto;
+    }
+    
+    @media (min-width: 769px) {
+      .container {
+        width: min(1140px, 100% - 64px);
+      }
+    }
+
+    /* Botão Editorial Dapper Notes */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 24px;
+      border: var(--border-width) solid var(--border-dark);
+      font-family: var(--serif);
+      font-size: 16px;
+      font-weight: 600;
+      text-transform: capitalize;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background-color: var(--bg-dark);
+      color: #ffffff;
+      border-color: var(--bg-dark);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--terracotta);
+      border-color: var(--terracotta);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--text);
+      border-color: var(--border-dark);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--bg-dark);
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+
+    .btn-terracotta {
+      background-color: var(--terracotta);
+      color: #ffffff;
+      border-color: var(--terracotta);
+    }
+
+    .btn-terracotta:hover {
+      background-color: var(--terracotta-hover);
+      border-color: var(--terracotta-hover);
+      transform: translateY(-2px);
+    }
+
+    .section-padding {
+      padding: 60px 0;
+      border-bottom: var(--border-width) solid var(--border-light);
+    }
+
+    @media (min-width: 769px) {
+      .section-padding {
+        padding: 90px 0;
+      }
+    }
+
+    .section-header {
+      margin-bottom: 40px;
+      max-width: 700px;
+    }
+
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(32px, 4.5vw, 44px);
+      font-weight: 500;
+      line-height: 1.1;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .section-subtitle {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    /* ==========================================================================
+       2. CABEÇALHO EDITORIAL
+       ========================================================================== */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: rgba(253, 252, 249, 0.96);
+      border-bottom: var(--border-width) solid var(--border-dark);
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 70px;
+    }
+
+    .logo-wrapper img {
+      height: 36px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .nav-menu {
+      display: none;
+    }
+
+    .cart-trigger {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border: var(--border-width) solid var(--border-dark);
+      color: var(--text);
+    }
+
+    .cart-trigger:hover {
+      background-color: var(--bg-card);
+      transform: scale(1.03);
+    }
+
+    .cart-trigger svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background-color: var(--terracotta);
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 800;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pop 0.3s ease;
+    }
+
+    @media (min-width: 769px) {
+      .topbar-container {
+        height: 75px;
+      }
+      .nav-menu {
+        display: flex;
+        align-items: center;
+        gap: 36px;
+      }
+      .nav-link {
+        font-family: var(--serif);
+        font-size: 17px;
+        font-weight: 500;
+        color: var(--muted);
+      }
+      .nav-link:hover {
+        color: var(--text);
+      }
+    }
+
+    /* ==========================================================================
+       3. HERO SECTION (TIPO FOLHETO DAPPER NOTES)
+       ========================================================================== */
+    .hero {
+      padding: 60px 0;
+      border-bottom: var(--border-width) solid var(--border-dark);
+      background-color: var(--bg-site);
+      position: relative;
+    }
+
+    .hero-grid {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 36px;
+      align-items: center;
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .hero-tag {
+      font-family: var(--serif);
+      font-size: 16px;
+      font-style: italic;
+      color: var(--terracotta);
+      border-bottom: var(--border-width) solid var(--terracotta);
+      padding-bottom: 2px;
+      letter-spacing: 0.5px;
+    }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(38px, 6vw, 60px);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -1px;
+    }
+
+    .hero-desc {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--muted);
+      max-width: 520px;
+      font-weight: 300;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .hero-visual {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hero-image-frame {
+      width: 100%;
+      max-width: 480px;
+      border: var(--border-width) solid var(--border-dark);
+      padding: 12px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 12px rgba(42,31,29,0.03);
+    }
+
+    .hero-image-frame img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: var(--border-width) solid var(--border-dark);
+    }
+
+    @media (min-width: 769px) {
+      .hero {
+        padding: 90px 0;
+      }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+      }
+    }
+
+    /* ==========================================================================
+       4. ESPECIFICAÇÕES TÉCNICAS ("THE SPECS" - DAPPER STYLE)
+       ========================================================================== */
+    .specs-section {
+      background-color: var(--bg-card);
+    }
+
+    .specs-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .specs-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .specs-row {
+      border-bottom: var(--border-width) solid var(--border-light);
+    }
+
+    .specs-row:first-child {
+      border-top: var(--border-width) solid var(--border-dark);
+    }
+
+    .specs-row:last-child {
+      border-bottom: var(--border-width) solid var(--border-dark);
+    }
+
+    .specs-label {
+      padding: 16px 8px;
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      width: 30%;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .specs-value {
+      padding: 16px 8px;
+      color: var(--muted);
+      line-height: 1.6;
+      width: 70%;
+    }
+
+    .specs-value strong {
+      color: var(--text);
+    }
+
+    @media (min-width: 769px) {
+      .specs-layout {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 80px;
+        align-items: flex-start;
+      }
+    }
+
+    /* ==========================================================================
+       5. ÁREA DE VÍDEO EM LOOP ("A IMAGEM SE MEXENDO")
+       ========================================================================== */
+    .video-block {
+      border: var(--border-width) solid var(--border-dark);
+      padding: 12px;
+      background-color: #ffffff;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+      border: var(--border-width) solid var(--border-dark);
+      background-color: var(--bg-card);
+    }
+
+    .video-wrapper video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .video-caption {
+      margin-top: 10px;
+      font-size: 13.5px;
+      color: var(--muted);
+      text-align: center;
+      font-style: italic;
+    }
+
+    /* ==========================================================================
+       6. SEÇÃO STORYTELLING DETALHADA
+       ========================================================================== */
+    .story-section {
+      background-color: var(--bg-site);
+    }
+
+    .story-grid-editorial {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+
+    .story-image-frame {
+      border: var(--border-width) solid var(--border-dark);
+      padding: 12px;
+      background-color: #ffffff;
+    }
+
+    .story-image-frame img {
+      width: 100%;
+      height: auto;
+      border: var(--border-width) solid var(--border-dark);
+    }
+
+    .story-content-box {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .story-label {
+      font-family: var(--serif);
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--terracotta);
+      font-weight: 600;
+    }
+
+    .story-title-editorial {
+      font-family: var(--serif);
+      font-size: clamp(28px, 4vw, 36px);
+      font-weight: 500;
+      line-height: 1.15;
+    }
+
+    .story-text-editorial {
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    .story-text-editorial strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    @media (min-width: 769px) {
+      .story-grid-editorial {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+      }
+      .story-grid-editorial.reverse {
+        direction: rtl;
+      }
+      .story-grid-editorial.reverse .story-content-box {
+        direction: ltr;
+      }
+    }
+
+    /* ==========================================================================
+       7. MOSTRUÁRIO DE FOTOS DE PERTO (SHOWCASE)
+       ========================================================================== */
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    @media (min-width: 769px) {
+      .showcase-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+      }
+    }
+
+    .showcase-card {
+      border: var(--border-width) solid var(--border-dark);
+      padding: 8px;
+      background-color: #ffffff;
+      transition: var(--transition);
+    }
+
+    .showcase-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .showcase-photo {
+      border: var(--border-width) solid var(--border-dark);
+      overflow: hidden;
+      aspect-ratio: 1/1;
+    }
+
+    .showcase-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .showcase-caption {
+      margin-top: 8px;
+      font-family: var(--serif);
+      font-size: 15px;
+      font-weight: 600;
+      text-align: center;
+      color: var(--text);
+    }
+
+    /* ==========================================================================
+       8. SELETOR DE COMPRA DE KITS (NOVO FLUXO E UX PREMIUM)
+       ========================================================================== */
+    .selector-section {
+      background-color: var(--bg-card);
+    }
+
+    .kits-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    @media (min-width: 600px) {
+      .kits-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 900px) {
+      .kits-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+
+    .kit-card {
+      background-color: #ffffff;
+      border: var(--border-width) solid var(--border-dark);
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 180px;
+    }
+
+    .kit-card.is-active {
+      background-color: var(--bg-dark);
+      color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(42,31,29,0.1);
+    }
+
+    .kit-tag {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--terracotta);
+      color: #ffffff;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border: var(--border-width) solid var(--border-dark);
+      white-space: nowrap;
+    }
+
+    .kit-qty {
+      font-family: var(--serif);
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .kit-price-total {
+      font-size: 18px;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    .kit-price-unit {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .kit-card.is-active .kit-price-unit {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Abas do Customizador (Configurar Caderno N) */
+    .configurator-block {
+      border: var(--border-width) solid var(--border-dark);
+      background-color: #ffffff;
+      padding: 24px;
+      margin-top: 24px;
+    }
+
+    .configurator-title {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      border-bottom: var(--border-width) solid var(--border-dark);
+      padding-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .configurator-title span {
+      font-size: 13.5px;
+      font-family: var(--sans);
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .tabs-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 24px;
+      border-bottom: var(--border-width) solid var(--border-light);
+      padding-bottom: 12px;
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      border: var(--border-width) solid var(--border-light);
+      font-family: var(--serif);
+      font-size: 15px;
+      font-weight: 600;
+      background-color: var(--bg-card);
+      color: var(--text);
+    }
+
+    .tab-btn.is-active {
+      background-color: var(--bg-dark);
+      color: #ffffff;
+      border-color: var(--bg-dark);
+    }
+
+    /* Flex Layout para Escolhas */
+    .config-selectors {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    @media (min-width: 769px) {
+      .config-selectors {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+      }
+    }
+
+    .selector-group-title {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .selector-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: var(--border-dark);
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    /* Rola de Capas horizontal */
+    .covers-horizontal-list {
+      display: flex;
+      overflow-x: auto;
+      gap: 12px;
+      padding: 8px 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-dark) var(--bg-card);
+    }
+
+    .cover-item-card {
+      flex: 0 0 100px;
+      background-color: var(--bg-site);
+      border: var(--border-width) solid var(--border-light);
+      padding: 6px;
+      cursor: pointer;
+      text-align: center;
+      position: relative;
+    }
+
+    .cover-item-card.is-active {
+      border-color: var(--border-dark);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .cover-item-card.is-active::after {
+      content: "✓";
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background-color: var(--border-dark);
+      color: #ffffff;
+      font-size: 9px;
+      font-weight: 800;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cover-item-photo {
+      aspect-ratio: 9/14;
+      background-color: var(--bg-card);
+      overflow: hidden;
+      margin-bottom: 6px;
+      position: relative;
+    }
+
+    .cover-item-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cover-item-name {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cover-zoom-trigger {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      background-color: rgba(255,255,255,0.9);
+      width: 22px;
+      height: 22px;
+      border: var(--border-width) solid var(--border-dark);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      opacity: 0.8;
+    }
+
+    .cover-zoom-trigger:hover {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+
+    .cover-zoom-trigger svg {
+      width: 10px;
+      height: 10px;
+      stroke-width: 2.5;
+    }
+
+    /* Grade de Miolos Compacta */
+    .interiors-list-compact {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 240px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .interior-item-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      background-color: var(--bg-site);
+      border: var(--border-width) solid var(--border-light);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .interior-item-row.is-active {
+      border-color: var(--border-dark);
+      background-color: var(--sage-light);
+    }
+
+    .interior-item-row.is-active::after {
+      content: "✓";
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      background-color: var(--border-dark);
+      color: #ffffff;
+      font-size: 9px;
+      font-weight: 800;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .interior-item-thumb {
+      width: 44px;
+      height: 30px;
+      background-color: #ffffff;
+      border: var(--border-width) solid var(--border-light);
+      overflow: hidden;
+    }
+
+    .interior-item-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .interior-item-text {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .interior-item-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .interior-item-desc {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* Caixa Resumo do Customizador */
+    .configurator-footer {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: var(--border-width) solid var(--border-dark);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    @media (min-width: 769px) {
+      .configurator-footer {
+        flex-direction: row;
+      }
+    }
+
+    .config-prices {
+      text-align: center;
+    }
+
+    @media (min-width: 769px) {
+      .config-prices {
+        text-align: left;
+      }
+    }
+
+    .config-prices-kit {
+      font-family: var(--serif);
+      font-size: 26px;
+      font-weight: 600;
+    }
+
+    .config-prices-sub {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .config-action-btn {
+      width: 100%;
+      max-width: 320px;
+      height: 50px;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ==========================================================================
+       9. DRAWER DO CARRINHO (CHECKOUT LATERAL SLIDE-IN)
+       ========================================================================== */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(42, 31, 29, 0.4);
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition);
+      backdrop-filter: blur(2px);
+    }
+
+    .drawer-overlay.is-active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(480px, 100%);
+      background-color: var(--bg-site);
+      z-index: 1001;
+      border-left: var(--border-width) solid var(--border-dark);
+      transform: translateX(100%);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer.is-active {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 20px 24px;
+      border-bottom: var(--border-width) solid var(--border-dark);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #ffffff;
+    }
+
+    .drawer-title {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .drawer-close {
+      font-size: 26px;
+      color: var(--muted);
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: var(--border-width) solid var(--border-light);
+    }
+
+    .drawer-close:hover {
+      background-color: var(--bg-card);
+      color: var(--text);
+      border-color: var(--border-dark);
+    }
+
+    .drawer-body {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .cart-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .empty-cart {
+      text-align: center;
+      font-size: 13.5px;
+      color: var(--muted);
+      padding: 40px 0;
+      line-height: 1.5;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      border: var(--border-width) solid var(--border-dark);
+      padding: 10px;
+      gap: 12px;
+      position: relative;
+    }
+
+    .cart-item-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-grow: 1;
+      cursor: pointer;
+    }
+
+    .cart-item-thumb {
+      width: 42px;
+      aspect-ratio: 9/14;
+      border: var(--border-width) solid var(--border-light);
+      overflow: hidden;
+      background-color: var(--bg-card);
+    }
+
+    .cart-item-details {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .cart-item-details strong {
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .cart-item-details span {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .cart-item-qty {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--terracotta);
+      margin-top: 2px;
+    }
+
+    .remove-item {
+      font-size: 24px;
+      color: var(--muted);
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: var(--border-width) solid var(--border-light);
+    }
+
+    .remove-item:hover {
+      background-color: var(--bg-card);
+      color: var(--terracotta);
+      border-color: var(--border-dark);
+    }
+
+    /* Formulários no Drawer */
+    .drawer-form-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      border-top: var(--border-width) solid var(--border-light);
+      padding-top: 24px;
+    }
+
+    .drawer-section-title {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-group label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+    }
+
+    .form-control {
+      height: 44px;
+      border: var(--border-width) solid var(--border-dark);
+      padding: 0 14px;
+      font-size: 13.5px;
+      color: var(--text);
+      background-color: #ffffff;
+      outline: none;
+      transition: var(--transition);
+      width: 100%;
+    }
+
+    .form-control:focus {
+      border-color: var(--terracotta);
+      box-shadow: 0 0 0 2px rgba(190, 94, 48, 0.05);
+    }
+
+    .form-control[readonly] {
+      background-color: var(--bg-card);
+      cursor: pointer;
+    }
+
+    /* Frete */
+    .shipping-box {
+      background-color: #ffffff;
+      border: var(--border-width) solid var(--border-dark);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .shipping-option-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: var(--border-width) solid var(--border-light);
+      padding: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .shipping-option-card:has(input:checked) {
+      border-color: var(--border-dark);
+      background-color: var(--sage-light);
+    }
+
+    .shipping-option-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-grow: 1;
+      gap: 10px;
+    }
+
+    .shipping-option-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .shipping-option-time {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .shipping-option-price {
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    /* Cupom */
+    .coupon-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .coupon-btn {
+      height: 44px;
+      padding: 0 20px;
+      background-color: var(--bg-dark);
+      color: #ffffff;
+      border: var(--border-width) solid var(--bg-dark);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .coupon-btn:hover {
+      background-color: var(--terracotta);
+      border-color: var(--terracotta);
+    }
+
+    .coupon-feedback {
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    /* Resumo e Botão Final */
+    .drawer-footer {
+      padding: 20px 24px;
+      border-top: var(--border-width) solid var(--border-dark);
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .summary-box {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13.5px;
+      color: var(--muted);
+    }
+
+    .summary-line.total {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      border-top: var(--border-width) solid var(--border-dark);
+      padding-top: 12px;
+      margin-top: 4px;
+    }
+
+    .discount-note {
+      background-color: rgba(190, 94, 48, 0.04);
+      border: var(--border-width) solid rgba(190, 94, 48, 0.15);
+      padding: 10px 12px;
+      font-size: 11.5px;
+      color: var(--text);
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .whatsapp-btn-main {
+      height: 52px;
+      width: 100%;
+      background-color: #25d366; /* Verde do WhatsApp */
+      color: #ffffff;
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: var(--border-width) solid #25d366;
+    }
+
+    .whatsapp-btn-main:hover {
+      background-color: #20ba5a;
+      border-color: #20ba5a;
+      transform: translateY(-1px);
+    }
+
+    .whatsapp-btn-main.is-disabled {
+      background-color: var(--bg-card);
+      color: var(--muted);
+      border-color: var(--border-light);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* ==========================================================================
+       10. MODAIS CUSTOMIZADOS (QRCODE PIX, ALERTA E CONFIRMAÇÃO)
+       ========================================================================== */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(42, 31, 29, 0.5);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      backdrop-filter: blur(2px);
+    }
+
+    .modal.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background-color: var(--bg-site);
+      width: min(440px, 100%);
+      transform: scale(0.95);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      border: var(--border-width) solid var(--border-dark);
+      padding: 24px;
+    }
+
+    .modal.is-open .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      border-bottom: var(--border-width) solid var(--border-dark);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .modal-close {
+      font-size: 26px;
+      color: var(--muted);
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      color: var(--text);
+    }
+
+    .modal-body {
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .modal-body strong {
+      color: var(--text);
+    }
+
+    .modal-footer {
+      border-top: var(--border-width) solid var(--border-light);
+      padding-top: 16px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    /* Customizações do Modal do PIX */
+    .pix-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .qrcode-container {
+      background-color: #ffffff;
+      padding: 12px;
+      border: var(--border-width) solid var(--border-dark);
+    }
+
+    .pix-input-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .pix-code-text {
+      width: 100%;
+      height: 70px;
+      border: var(--border-width) solid var(--border-dark);
+      padding: 10px;
+      font-size: 11px;
+      font-family: monospace;
+      color: var(--muted);
+      background-color: var(--bg-card);
+      resize: none;
+      outline: none;
+    }
+
+    /* Modal do Endereço */
+    .address-summary {
+      background-color: rgba(190, 94, 48, 0.04);
+      border: var(--border-width) solid rgba(190, 94, 48, 0.15);
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* Carousel de Zoom */
+    .preview-carousel-container {
+      display: flex;
+      align-items: center;
+      position: relative;
+      width: 100%;
+      height: 380px;
+    }
+
+    .preview-carousel {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .preview-carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .preview-slide {
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      scroll-snap-align: start;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+    }
+
+    .preview-cover-large {
+      height: 100%;
+      aspect-ratio: 9/14;
+      overflow: hidden;
+      border: var(--border-width) solid var(--border-dark);
+      background-color: var(--bg-card);
+      padding: 8px;
+    }
+
+    .preview-cover-large img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: var(--border-width) solid var(--border-dark);
+    }
+
+    .preview-interior-large {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+      border: var(--border-width) solid var(--border-dark);
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border: var(--border-width) solid var(--border-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      z-index: 10;
+    }
+
+    .carousel-btn:hover {
+      background-color: #ffffff;
+      transform: translateY(-50%) scale(1.05);
+    }
+
+    .carousel-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2;
+    }
+
+    .prev-btn { left: 10px; }
+    .next-btn { right: 10px; }
+
+    /* ==========================================================================
+       11. RODAPÉ EDITORIAL
+       ========================================================================== */
+    .footer {
+      background-color: var(--bg-dark);
+      color: #ffffff;
+      padding: 60px 0 40px;
+      border-top: var(--border-width) solid var(--border-dark);
+    }
+
+    .footer-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      border-bottom: var(--border-width) solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 40px;
+      margin-bottom: 30px;
+    }
+
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .footer-logo img {
+      height: 40px;
+      width: auto;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+    }
+
+    .footer-tagline {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.5;
+      max-width: 320px;
+      font-weight: 300;
+    }
+
+    .footer-links {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .footer-links-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links-col h4 {
+      font-family: var(--serif);
+      font-size: 16px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .footer-link {
+      font-size: 13.5px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .footer-link:hover {
+      color: #ffffff;
+      transform: translateX(2px);
+    }
+
+    .footer-quote {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-style: italic;
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.5;
+      max-width: 280px;
+    }
+
+    .footer-bottom {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+      text-align: center;
+      font-size: 12.5px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    @media (min-width: 769px) {
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 1fr;
+        gap: 80px;
+      }
+      .footer-links {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .footer-bottom {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+      }
+    }
+
+    /* Animações */
+    @keyframes pop {
+      0% { transform: scale(0.6); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       CABEÇALHO & TOPBAR
+       ========================================================================== */
+  <header class="topbar">
+    <div class="container topbar-container">
+      <a href="#" class="logo-wrapper" title="FigTree Home">
+        <img src="assets/logo_color_tranparent_horizontal.png" alt="FigTree Logo">
+      </a>
+      <nav class="nav-menu">
+        <a href="#customizer" class="nav-link">Escolher Kit</a>
+        <a href="#story" class="nav-link">Sobre o Produto</a>
+        <a href="#specs" class="nav-link">Especificações</a>
+        <a href="#testimonials" class="nav-link">Depoimentos</a>
+      </nav>
+      <button class="cart-trigger" id="cartTrigger" type="button" aria-label="Abrir resumo do pedido">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span class="cart-badge" id="cartBadge" style="display: none;">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       HERO SECTION
+       ========================================================================== */
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <span class="hero-tag">FigTree Memo Books</span>
+        <h1 class="hero-title">O caderno de bolso, refinado.</h1>
+        <p class="hero-desc">Fabricados de forma manual com capas em Kraft de alta gramatura e miolo em papel pólen suave. A companhia perfeita para notas diárias, desenhos e rascunhos rápidos.</p>
+        <div class="hero-cta-group">
+          <a href="#customizer" class="btn btn-primary">Monte Seu Kit</a>
+          <a href="#story" class="btn btn-secondary">Saiba Mais</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-image-frame">
+          <img src="assets/leque-cadernos-a6-capas.webp" alt="Leque de cadernos FigTree">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       SEÇÃO VÍDEO EM LOOP ("A IMAGEM SE MEXENDO" - PROCESS DE PROD)
+       ========================================================================== */
+  <section class="section-padding">
+    <div class="container">
+      <div class="section-header" style="text-align: center; margin: 0 auto 36px;">
+        <h2 class="section-title">A Arte da Produção Manual</h2>
+        <p class="section-subtitle" style="max-width: 580px; margin: 8px auto 0;">Assista a uma pequena amostra de como montamos e acabamos cada caderno em nossa oficina.</p>
+      </div>
+      
+      <div class="video-block">
+        <div class="video-wrapper">
+          <video autoplay loop muted playsinline poster="assets/lifestyle_desk.png">
+            <source src="assets/processo.mp4" type="video/mp4">
+            Seu navegador não suporta a tag de vídeo.
+          </video>
+        </div>
+        <div class="video-caption">Corte, vinco preciso, dobra e grampos de aço de ponta a ponta.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       SEÇÃO STORYTELLING 1 (LIFESTYLE)
+       ========================================================================== */
+  <section class="section-padding story-section" id="story">
+    <div class="container story-grid-editorial">
+      <div class="story-image-frame">
+        <img src="assets/lifestyle_desk.png" alt="Caderno FigTree sobre escrivaninha de madeira">
+      </div>
+      <div class="story-content-box">
+        <span class="story-label">Manufatura Rústica</span>
+        <h2 class="story-title-editorial">Vincado e Dobrado à Mão</h2>
+        <p class="story-text-editorial">Diferente de grandes lotes industriais sem personalidade, cada caderno <strong>FigTree</strong> é dobrado e vincado manualmente por um artesão. Isso garante que a lombada tenha flexibilidade, assente de forma natural no seu bolso e dure muito mais tempo sem quebrar.</p>
+        <p class="story-text-editorial">A escolha da costura em <strong>grampos de aço reforçados (saddle-stitch)</strong> permite que o caderno abra plano em 180°. Excelente para escrever sem precisar lutar contra a curva do papel ou perder espaço nas margens.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       ESPECIFICAÇÕES TÉCNICAS ("THE SPECS" - DAPPER STYLE)
+       ========================================================================== */
+  <section class="section-padding specs-section" id="specs">
+    <div class="container specs-layout">
+      <div class="story-content-box">
+        <span class="story-label">Ficha Técnica</span>
+        <h2 class="story-title-editorial">Os Detalhes do Produto</h2>
+        <p class="story-text-editorial" style="margin-bottom: 12px;">Nossos cadernos de bolso são projetados para durabilidade no uso diário. Detalhamos abaixo as especificações exatas de cada caderno para ajudar você a entender a qualidade envolvida.</p>
+        
+        <div class="story-image-frame" style="max-width: 380px;">
+          <img src="assets/stapled_detail.png" alt="Close-up do miolo com grampos FigTree">
+        </div>
+      </div>
+      
+      <div>
+        <table class="specs-table">
+          <tbody>
+            <tr class="specs-row">
+              <th class="specs-label">Tamanho</th>
+              <td class="specs-value"><strong>9 cm × 14 cm</strong> (Tamanho de bolso ideal para acompanhar você em qualquer lugar, semelhante ao formato clássico Pocket).</td>
+            </tr>
+            <tr class="specs-row">
+              <th class="specs-label">Capa</th>
+              <td class="specs-value">Papel Kraft natural robusto de <strong>240 g/m²</strong>. Resistência contra rasgos e um visual vintage texturizado com line art elegante.</td>
+            </tr>
+            <tr class="specs-row">
+              <th class="specs-label">Miolo</th>
+              <td class="specs-value"><strong>60 páginas</strong> em papel <strong>Pólen Bold 90 g/m²</strong>. Papel de tonalidade amarelada agradável aos olhos, muito macio e com ótima absorção de tinta (fountain pen friendly).</td>
+            </tr>
+            <tr class="specs-row">
+              <th class="specs-label">Acabamento</th>
+              <td class="specs-value">Encadernação por <strong>grampos metálicos de aço</strong> centrais. Cantos arredondados um a um para evitar pontas amassadas e rasgos no tecido dos bolsos.</td>
+            </tr>
+            <tr class="specs-row">
+              <th class="specs-label">Fabricação</th>
+              <td class="specs-value">Produzido, montado e embalado artesanalmente no Rio de Janeiro, Brasil 🇧🇷.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       GALERIA DE FOTOS DE PERTO (SHOWCASE DE PRODUTOS)
+       ========================================================================== */
+  <section class="section-padding">
+    <div class="container">
+      <div class="section-header" style="text-align: center; margin: 0 auto 40px;">
+        <h2 class="section-title">Galeria de Detalhes</h2>
+        <p class="section-subtitle">Confira fotos reais do caderno em uso e detalhes do miolo.</p>
+      </div>
+      
+      <div class="showcase-grid">
+        <div class="showcase-card">
+          <div class="showcase-photo">
+            <img src="assets/mockup-produto-fechado.webp" alt="Caderno FigTree fechado">
+          </div>
+          <div class="showcase-caption">Caderno Fechado</div>
+        </div>
+        <div class="showcase-card">
+          <div class="showcase-photo">
+            <img src="assets/miolo-pautado-com-data-dias-01.webp" alt="Miolo pautado FigTree aberto">
+          </div>
+          <div class="showcase-caption">Miolo com Pauta e Data</div>
+        </div>
+        <div class="showcase-card">
+          <div class="showcase-photo">
+            <img src="assets/mockup-produto-frente-verso.webp" alt="Frente e verso da capa">
+          </div>
+          <div class="showcase-caption">Frente & Verso da Capa</div>
+        </div>
+        <div class="showcase-card">
+          <div class="showcase-photo">
+            <img src="assets/mockup-produto-tamanho-bolso.webp" alt="Tamanho de bolso comparado a celular">
+          </div>
+          <div class="showcase-caption">Tamanho no Bolso</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       SEÇÃO CUSTOMIZADOR DE KITS (NOVO FLUXO DE COMPRA E UX DE SELEÇÃO)
+       ========================================================================== */
+  <section class="section-padding selector-section" id="customizer">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Selecione Seu Kit & Combine</h2>
+        <p class="section-subtitle">Escolha o tamanho do kit para obter descontos progressivos. Em seguida, selecione individualmente a capa e o miolo para cada um dos cadernos do seu kit!</p>
+      </div>
+
+      <!-- Passo 1: Grade de Seleção do Kit (Quantidade) -->
+      <div class="kits-grid">
+        <div class="kit-card" data-qty="1">
+          <div class="kit-qty">1 Caderno</div>
+          <div>
+            <div class="kit-price-total">R$ 15,00</div>
+            <div class="kit-price-unit">R$ 15,00 cada</div>
+          </div>
+        </div>
+        <div class="kit-card" data-qty="2">
+          <div class="kit-qty">Kit com 2</div>
+          <div>
+            <div class="kit-price-total">R$ 28,00</div>
+            <div class="kit-price-unit">R$ 14,00 cada</div>
+          </div>
+        </div>
+        <div class="kit-card is-active" data-qty="4">
+          <span class="kit-tag">Mais Popular</span>
+          <div class="kit-qty">Kit com 4</div>
+          <div>
+            <div class="kit-price-total">R$ 45,00</div>
+            <div class="kit-price-unit">R$ 11,25 cada (Leve 4 Pague 3)</div>
+          </div>
+        </div>
+        <div class="kit-card" data-qty="8">
+          <div class="kit-qty">Kit com 8</div>
+          <div>
+            <div class="kit-price-total">R$ 79,00</div>
+            <div class="kit-price-unit">R$ 9,88 cada</div>
+          </div>
+        </div>
+        <div class="kit-card" data-qty="12">
+          <span class="kit-tag">Melhor Preço</span>
+          <div class="kit-qty">Kit com 12</div>
+          <div>
+            <div class="kit-price-total">R$ 109,00</div>
+            <div class="kit-price-unit">R$ 9,08 cada</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Passo 2: Configuração dos itens do Kit selecionado -->
+      <div class="configurator-block" id="configuratorBlock">
+        <div class="configurator-title">
+          <span>Configurando Seu Kit</span>
+          <span id="configSummaryText">Kit Selecionado: 4 cadernos</span>
+        </div>
+
+        <!-- Abas horizontais dos cadernos (Caderno 1, Caderno 2...) -->
+        <div class="tabs-nav" id="tabsNav">
+          <!-- Renderizado dinamicamente via JS -->
+        </div>
+
+        <!-- Conteúdo do caderno ativo na aba -->
+        <div class="config-selectors">
+          <!-- Bloco A: Escolher a Capa -->
+          <div>
+            <div class="selector-group-title">
+              <span class="selector-num">A</span>
+              <span>Escolha a Capa</span>
+            </div>
+            
+            <div class="covers-horizontal-list" id="coversList">
+              <!-- Renderizado dinamicamente via JS -->
+            </div>
+          </div>
+
+          <!-- Bloco B: Escolher o Miolo -->
+          <div>
+            <div class="selector-group-title">
+              <span class="selector-num">B</span>
+              <span>Escolha o Miolo</span>
+            </div>
+            
+            <div class="interiors-list-compact" id="interiorsList">
+              <!-- Renderizado dinamicamente via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Rodapé do Bloco de Compra com os Preços e Ação -->
+        <div class="configurator-footer">
+          <div class="config-prices">
+            <div class="config-prices-kit" id="configTotalText">R$ 45,00</div>
+            <div class="config-prices-sub" id="configSubText">Composição do seu kit configurada com sucesso.</div>
+          </div>
+          <button class="btn btn-terracotta config-action-btn" id="addKitToCartBtn" type="button">
+            Adicionar Kit ao Carrinho
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       SEÇÃO AVALIAÇÕES (DEPOIMENTOS)
+       ========================================================================== -->
+  <section class="section-padding testimonials" id="testimonials">
+    <div class="container">
+      <div class="section-header" style="text-align: center; margin: 0 auto 40px;">
+        <h2 class="section-title">Opiniões de quem Usa</h2>
+        <p class="section-subtitle">Relatos de escritores, desenhistas e criativos que carregam a FigTree no dia a dia.</p>
+      </div>
+      <div class="showcase-grid" style="grid-template-columns: 1fr; gap: 24px;">
+        <div class="showcase-card" style="padding: 24px; min-height: 180px; display: flex; flex-direction: column; justify-content: space-between;">
+          <p style="font-size: 14.5px; font-style: italic; color: var(--text); line-height: 1.6;">"A gramatura do papel pólen bold é espetacular. Uso caneta nanquim e esferográficas pesadas, e a absorção é excelente sem sangrar para a folha de trás. O tamanho de bolso cabe perfeito no bolso da calça sem deformar."</p>
+          <strong style="display: block; margin-top: 16px; font-family: var(--serif); font-size: 15px; color: var(--terracotta);">— Ricardo M., Ilustrador</strong>
+        </div>
+        <div class="showcase-card" style="padding: 24px; min-height: 180px; display: flex; flex-direction: column; justify-content: space-between;">
+          <p style="font-size: 14.5px; font-style: italic; color: var(--text); line-height: 1.6;">"Eu adoro a flexibilidade da dobra e o vinco prensado. O fato de abrir em 180 graus facilita muito as minhas anotações rápidas durante o trajeto. O kit de 4 cadernos tem um custo-benefício incrível."</p>
+          <strong style="display: block; margin-top: 16px; font-family: var(--serif); font-size: 15px; color: var(--terracotta);">— Helena F., Jornalista</strong>
+        </div>
+        <div class="showcase-card" style="padding: 24px; min-height: 180px; display: flex; flex-direction: column; justify-content: space-between;">
+          <p style="font-size: 14.5px; font-style: italic; color: var(--text); line-height: 1.6;">"Gostei muito da capa de Kraft rustico e do line art. Dá uma presença muito bacana para o caderno, foge do visual artificial de plástico de papelarias comuns. Atendimento excelente pelo WhatsApp."</p>
+          <strong style="display: block; margin-top: 16px; font-family: var(--serif); font-size: 15px; color: var(--terracotta);">— Bruno L., Designer</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       RODAPÉ EDITORIAL
+       ========================================================================== */
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="footer-logo">
+            <img src="assets/logo_white_tranparent_vazado.png" alt="FigTree Logo">
+          </a>
+          <p class="footer-tagline">Objetos de escrita e papelaria de bolso, pensados para resistirem ao tempo e valorizarem as suas ideias cotidianas.</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-links-col">
+            <h4>FigTree</h4>
+            <a href="#customizer" class="footer-link">Escolher Kit</a>
+            <a href="#story" class="footer-link">Sobre o Produto</a>
+            <a href="#specs" class="footer-link">Especificações</a>
+          </div>
+          <div class="footer-links-col">
+            <h4>Suporte</h4>
+            <a href="https://wa.me/5521969467886" class="footer-link" target="_blank">Fale no WhatsApp</a>
+            <a href="#" class="footer-link">Informações de Envio</a>
+            <a href="#" class="footer-link">Dúvidas Frequentes</a>
+          </div>
+        </div>
+        <div>
+          <p class="footer-quote">“Tudo o que vale a pena fazer, vale a pena registrar em papel.”</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 FigTree Papelaria. Todos os direitos reservados.</p>
+        <p>Montado à mão no Rio de Janeiro 🇧🇷</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       DRAWER DO CARRINHO (CHECKOUT LATERAL SLIDE-IN)
+       ========================================================================== -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <div class="drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+    <div class="drawer-header">
+      <h3 class="drawer-title" id="drawerTitle">Seu Carrinho</h3>
+      <button class="drawer-close" id="drawerClose" type="button" aria-label="Fechar resumo">×</button>
+    </div>
+    
+    <div class="drawer-body">
+      <!-- Lista de Itens no Carrinho -->
+      <div class="cart-list" id="cartList">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+
+      <!-- Formulários de Checkout -->
+      <div class="drawer-form-section" id="checkoutForm">
+        <h4 class="drawer-section-title">Dados de Entrega</h4>
+        
+        <div class="form-group">
+          <label for="name">Nome Completo</label>
+          <input class="form-control" id="name" type="text" placeholder="Nome e Sobrenome" required>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">WhatsApp</label>
+            <input class="form-control" id="phone" type="tel" placeholder="(00) 00000-0000" required>
+          </div>
+          <div class="form-group">
+            <label for="cep">CEP</label>
+            <input class="form-control" id="cep" type="text" placeholder="00000-000" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="delivery">Endereço de Entrega</label>
+          <input class="form-control" id="delivery" type="text" placeholder="Clique após digitar o CEP" readonly required>
+        </div>
+
+        <button class="btn btn-secondary" id="calcShipping" type="button" style="height: 44px; font-size: 14px; font-family: var(--serif);">Calcular Frete</button>
+
+        <!-- Opções de Frete (Carregadas dinamicamente) -->
+        <div class="form-group" id="shippingOptionsField" style="display: none;">
+          <label>Opções de Envio</label>
+          <div class="shipping-box" id="shippingOptionsList">
+            <!-- Rádios renderizados dinamicamente via JS -->
+          </div>
+        </div>
+
+        <!-- Observações -->
+        <div class="form-group">
+          <label for="notes">Observações do Pedido</label>
+          <input class="form-control" id="notes" type="text" placeholder="Ex: Capa para presente ou instruções de entrega">
+        </div>
+
+        <!-- Cupom de Desconto -->
+        <div class="form-group">
+          <label for="couponInput">Cupom de Desconto</label>
+          <div class="coupon-group">
+            <input class="form-control" id="couponInput" type="text" placeholder="CÓDIGO">
+            <button class="coupon-btn" id="applyCouponBtn" type="button">Aplicar</button>
+          </div>
+          <div class="coupon-feedback" id="couponFeedback" style="display: none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rodapé do Drawer com Resumo e WhatsApp -->
+    <div class="drawer-footer">
+      <div class="summary-box">
+        <div class="summary-line" id="fullPriceLine" style="display: none;">
+          <span>Preço Cheio:</span>
+          <span id="summaryFullPrice">R$ 0,00</span>
+        </div>
+        <div class="summary-line" id="kitDiscountLine" style="display: none;">
+          <span>Desconto de Volume (Kits <span id="kitDiscountPercent">0%</span>):</span>
+          <strong id="summaryKitDiscount" style="color: #28a745;">-R$ 0,00</strong>
+        </div>
+        <div id="autoPromotionsContainer"></div>
+        <div class="summary-line" id="shippingSummaryLine" style="display: none;">
+          <span>Frete (<span id="shippingMethodName">PAC</span>):</span>
+          <span id="summaryShippingPrice">R$ 0,00</span>
+        </div>
+        <div class="summary-line" id="couponSummaryLine" style="display: none;">
+          <span>Cupom (<span id="couponSummaryCode">CUPOM</span>):</span>
+          <strong id="couponSummaryDiscount" style="color: #28a745;">-R$ 0,00</strong>
+        </div>
+        <div class="summary-line total">
+          <span>Total Geral:</span>
+          <span id="summaryTotal">R$ 0,00</span>
+        </div>
+      </div>
+
+      <div class="discount-note" id="discountNote">
+        Carregando informações promocionais...
+      </div>
+
+      <button class="whatsapp-btn-main is-disabled" id="whatsappButton" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+        <span>Configure o seu Kit</span>
+      </button>
+
+      <button class="btn btn-secondary" id="reopenPixButton" type="button" style="display: none; height: 44px; font-size: 13px; margin-top: -8px;">Mostrar QR Code PIX</button>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAIS CUSTOMIZADOS
+       ========================================================================== */
+  
+  <!-- 1. Modal de Confirmação (Item Adicionado) -->
+  <div class="modal" id="confirmModal" role="dialog" aria-hidden="true" aria-labelledby="confirmTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="confirmTitle">Kit Configurado!</h4>
+        <button class="modal-close" id="confirmClose" type="button" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-body">
+        O seu kit promocional de cadernos foi adicionado ao carrinho com sucesso! Deseja preencher os dados de frete e realizar o pagamento?
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="confirmYes" type="button" style="padding: 10px 20px; font-size: 13.5px;">Revisar Escolhas</button>
+        <button class="btn btn-primary" id="confirmNo" type="button" style="padding: 10px 20px; font-size: 13.5px;">Fechar e Pagar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Modal de Confirmação de Exclusão -->
+  <div class="modal" id="deleteConfirmModal" role="dialog" aria-hidden="true" aria-labelledby="deleteTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="deleteTitle">Limpar carrinho?</h4>
+        <button class="modal-close" id="deleteConfirmClose" type="button" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-body">
+        Você tem certeza que deseja remover o seu kit configurado do carrinho?
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="deleteConfirmNo" type="button" style="padding: 10px 20px; font-size: 13.5px;">Cancelar</button>
+        <button class="btn btn-primary" id="deleteConfirmYes" type="button" style="padding: 10px 20px; font-size: 13.5px; background-color: #dc3545; border-color: #dc3545; color: #ffffff;">Limpar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Modal de Alerta Customizado -->
+  <div class="modal" id="alertModal" role="dialog" aria-hidden="true" aria-labelledby="alertTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="alertTitle">Aviso</h4>
+        <button class="modal-close" id="alertClose" type="button" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-body" id="alertMessage">
+        Mensagem de aviso.
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="alertOk" type="button" style="padding: 10px 20px; font-size: 13.5px;">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Modal de Preenchimento de Número/Complemento -->
+  <div class="modal" id="addressModal" role="dialog" aria-hidden="true" aria-labelledby="addressTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="addressTitle">Dados de Endereço</h4>
+        <button class="modal-close" id="addressClose" type="button" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="address-summary" id="addressModalSummary">
+          Buscando CEP...
+        </div>
+        
+        <!-- Campos manuais se o ViaCEP não trouxer logradouro -->
+        <div id="addressModalManualFields" style="display: none; flex-direction: column; gap: 12px; margin-bottom: 12px;">
+          <div class="form-group">
+            <label for="addressModalStreet">Logradouro / Rua</label>
+            <input class="form-control" id="addressModalStreet" type="text" placeholder="Nome da rua">
+          </div>
+          <div class="form-group">
+            <label for="addressModalDistrict">Bairro</label>
+            <input class="form-control" id="addressModalDistrict" type="text" placeholder="Nome do bairro">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="addressModalNum">Número</label>
+            <input class="form-control" id="addressModalNum" type="text" placeholder="Nº" required>
+          </div>
+          <div class="form-group">
+            <label for="addressModalComp">Complemento</label>
+            <input class="form-control" id="addressModalComp" type="text" placeholder="Apto, bloco, etc.">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="addressModalCancel" type="button" style="padding: 10px 20px; font-size: 13.5px;">Cancelar</button>
+        <button class="btn btn-primary" id="addressModalConfirm" type="button" style="padding: 10px 20px; font-size: 13.5px;">Confirmar Endereço</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Modal do Pix Copia e Cola -->
+  <div class="modal" id="pixModal" role="dialog" aria-hidden="true" aria-labelledby="pixTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="pixTitle">Pagamento Pix</h4>
+        <button class="modal-close" id="pixClose" type="button" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-body pix-box">
+        <p style="text-align: center; font-size: 13.5px;">Aponte a câmera do banco no QR Code ou copie o código Pix abaixo para realizar o pagamento:</p>
+        
+        <div class="qrcode-container" id="qrcode">
+          <!-- Gerado dinamicamente -->
+        </div>
+
+        <div class="pix-input-wrapper">
+          <label for="pixCodeText">Pix Copia e Cola</label>
+          <textarea class="pix-code-text" id="pixCodeText" readonly></textarea>
+        </div>
+      </div>
+      <div class="modal-footer" style="flex-direction: column; align-items: stretch; gap: 8px; border-top: none; padding-top: 0;">
+        <button class="btn btn-primary" id="copyPixCodeBtn" type="button" style="width: 100%; height: 44px; font-size: 14px; background-color: #32BCAD; border-color: #32BCAD;">Copiar Código Pix</button>
+        <button class="btn btn-secondary" id="pixCloseBtn" type="button" style="width: 100%; height: 44px; font-size: 14px;">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Modal de Zoom de Imagens (Carousel) -->
+  <div class="modal" id="previewModal" role="dialog" aria-hidden="true" aria-labelledby="previewTitle" style="background-color: rgba(42, 31, 29, 0.95);">
+    <div class="modal-content" style="background: none; border: none; box-shadow: none; width: min(560px, 100%); padding: 0;">
+      <div class="modal-header" style="background: none; border-bottom: none; padding-bottom: 0; color: #ffffff;">
+        <h4 class="modal-title" id="previewTitle" style="color: #ffffff; font-family: var(--serif); font-size: 24px;">Zoom</h4>
+        <button class="modal-close" id="previewClose" type="button" style="color: #ffffff; width: 34px; height: 34px;">×</button>
+      </div>
+      <div class="modal-body" id="previewBody" style="padding: 10px; display: flex; align-items: center; justify-content: center; position: relative;">
+        <!-- Injetado dinamicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Modal de Solicitação de CPF (Obrigatório para emissão de etiquetas pelo SuperFrete) -->
+  <div class="modal" id="cpfModal" role="dialog" aria-hidden="true" aria-labelledby="cpfTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="cpfTitle">Identificação</h4>
+        <button class="modal-close" id="cpfClose" type="button" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-body">
+        Como o frete será enviado via transportadora, a Receita Federal exige o preenchimento do CPF do destinatário para a emissão da etiqueta de envio da SuperFrete.
+        
+        <div class="form-group" style="margin-top: 16px;">
+          <label for="cpfInputModal">CPF do Destinatário</label>
+          <input class="form-control" id="cpfInputModal" type="text" placeholder="000.000.000-00" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cpfModalCancel" type="button" style="padding: 10px 20px; font-size: 13.5px;">Cancelar</button>
+        <button class="btn btn-primary" id="cpfModalConfirm" type="button" style="padding: 10px 20px; font-size: 13.5px;">Confirmar e Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Biblioteca QRCode.js para gerar os QRCodes -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- ==========================================================================
+       LÓGICA JAVASCRIPT INTEGRADA
+       ========================================================================== -->
+  <script>
+    // Configurações Globais
+    const SELLER_WHATSAPP = "5521969467886";
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbycjYy2UiWKMJAQcrFEs9IFJ42LTKtSJMgUufCYErjlX9U80m6V7M1pHvRb0gbH5TSF/exec"; 
+
+    // Estados e variáveis globais
+    let selectedShipping = null;
+    let deliveryRua = "";
+    let deliveryNumero = "";
+    let deliveryComplemento = "";
+    let deliveryBairro = "";
+    let deliveryCidade = "";
+    let deliveryEstado = "";
+    let lastCalculatedServices = [];
+    let isCepValid = false;
+    let lastOrderId = null;
+    let isOrderSaved = false;
+    let lastSavedOrderKey = "";
+    let lastCepResponseData = null;
+    let activeCoupon = null;
+    let couponDiscountValue = 0;
+    let promocoesAtivas = [];
+
+    // Arrays de Capas e Miolos
+    const covers = [
+      ...Array.from({ length: 12 }, (_, index) => {
+        const number = String(index + 1).padStart(2, "0");
+        return {
+          name: `Capa ${index + 1}`,
+          src: `assets/capa-${number}n.webp`,
+          thumbSrc: `assets/capa-${number}.webp`
+        };
+      }),
+      { name: "Capa 13", src: "assets/capa-13n.webp", thumbSrc: "assets/capa-13n.webp" },
+      { name: "Capa 14", src: "assets/capa-14n.webp", thumbSrc: "assets/capa-14n.webp" },
+      { name: "Capa lisa", src: "assets/mockup-capa-lisa.webp", thumbSrc: "assets/mockup-capa-lisa.webp" }
+    ];
+
+    const interiors = [
+      { name: "Pautado simples", detail: "Linhas sem data e sem dias.", src: "assets/miolo-pautado-sem-data-dias.webp" },
+      { name: "Pautado com data", detail: "Com dias da semana, quadrinhos e data.", src: "assets/miolo-pautado-com-data-dias-01.webp" },
+      { name: "Sem pauta com data", detail: "Sem linhas, com dias da semana e data.", src: "assets/miolo-liso-com-data-dias.webp" },
+      { name: "Sem pauta liso", detail: "Páginas totalmente livres.", src: "assets/miolo-liso-sem-data-dias.webp" },
+      { name: "Pontilhado simples", detail: "Grade de pontos sem data.", src: "assets/miolo-pontilhado-sem-data.webp" },
+      { name: "Pontilhado com data", detail: "Grade de pontos com dias da semana e data.", src: "assets/miolo-pontilhado-com-data.webp" },
+      { name: "Quadriculado simples", detail: "Grade quadriculada sem data.", src: "assets/miolo-quadriculado-sem-data.webp" },
+      { name: "Quadriculado com data", detail: "Grade quadriculada com dias da semana e data.", src: "assets/miolo-quadriculado-com-data.webp" }
+    ];
+
+    // Estrutura do Kit selecionado atualmente
+    let currentKitSize = 4; // Tamanho inicial (Kit com 4)
+    let currentKitComposition = []; // Array de objetos { coverName, coverThumb, coverSrc, interiorName, interiorSrc }
+    let currentActiveTabIdx = 0; // Índice da aba ativa para configuração
+
+    // Carrinho real (cart) unificado
+    const cart = [];
+    const state = { cpf: "" };
+
+    // Elementos DOM
+    const tabsNav = document.getElementById("tabsNav");
+    const coversList = document.getElementById("coversList");
+    const interiorsList = document.getElementById("interiorsList");
+    const configTotalText = document.getElementById("configTotalText");
+    const configSummaryText = document.getElementById("configSummaryText");
+    const addKitToCartBtn = document.getElementById("addKitToCartBtn");
+    
+    const cartList = document.getElementById("cartList");
+    const summaryTotal = document.getElementById("summaryTotal");
+    const discountNote = document.getElementById("discountNote");
+    const whatsappButton = document.getElementById("whatsappButton");
+    const cartBadge = document.getElementById("cartBadge");
+
+    const cartDrawer = document.getElementById("cartDrawer");
+    const drawerOverlay = document.getElementById("drawerOverlay");
+    const cartTrigger = document.getElementById("cartTrigger");
+    const drawerClose = document.getElementById("drawerClose");
+
+    const currency = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+
+    const zoomIcon = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="6"></circle>
+        <path d="m16 16 4 4"></path>
+      </svg>
+    `;
+
+    // ==========================================================================
+    // LÓGICA DO SELETOR DE KITS E CONFIGURAÇÃO DINÂMICA
+    // ==========================================================================
+    
+    function initKitComposition(size) {
+      currentKitSize = size;
+      currentKitComposition = Array.from({ length: size }, () => ({
+        coverName: covers[0].name,
+        coverThumb: covers[0].thumbSrc,
+        coverSrc: covers[0].src,
+        interiorName: interiors[0].name,
+        interiorSrc: interiors[0].src
+      }));
+      currentActiveTabIdx = 0;
+      
+      renderTabs();
+      renderActiveItemSelector();
+      updateConfigPrices();
+    }
+
+    function renderTabs() {
+      tabsNav.innerHTML = "";
+      for (let i = 0; i < currentKitSize; i++) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `tab-btn${i === currentActiveTabIdx ? " is-active" : ""}`;
+        btn.textContent = `Notebook ${i + 1}`;
+        btn.addEventListener("click", () => {
+          currentActiveTabIdx = i;
+          renderTabs();
+          renderActiveItemSelector();
+        });
+        tabsNav.appendChild(btn);
+      }
+      configSummaryText.textContent = `Configurando: Notebook ${currentActiveTabIdx + 1} de ${currentKitSize}`;
+    }
+
+    function renderActiveItemSelector() {
+      const activeItem = currentKitComposition[currentActiveTabIdx];
+      
+      // Renderizar Capas horizontalmente
+      coversList.innerHTML = "";
+      covers.forEach((cover, idx) => {
+        const item = document.createElement("div");
+        item.className = `cover-item-card${cover.name === activeItem.coverName ? " is-active" : ""}`;
+        item.innerHTML = `
+          <div class="cover-item-photo">
+            <img src="${cover.thumbSrc}" alt="${cover.name}">
+            <button class="cover-zoom-trigger" type="button" title="Ampliar">${zoomIcon}</button>
+          </div>
+          <div class="cover-item-name">${cover.name}</div>
+        `;
+        
+        item.addEventListener("click", (e) => {
+          if (e.target.closest(".cover-zoom-trigger")) return;
+          activeItem.coverName = cover.name;
+          activeItem.coverThumb = cover.thumbSrc;
+          activeItem.coverSrc = cover.src;
+          renderActiveItemSelector();
+        });
+
+        item.querySelector(".cover-zoom-trigger").addEventListener("click", (e) => {
+          e.stopPropagation();
+          openZoomCarousel("covers", idx);
+        });
+
+        coversList.appendChild(item);
+      });
+
+      // Scrollar horizontalmente para a capa selecionada
+      const activeCoverCard = coversList.querySelector(".cover-item-card.is-active");
+      if (activeCoverCard) {
+        coversList.scrollLeft = activeCoverCard.offsetLeft - 12;
+      }
+
+      // Renderizar Miolos verticalmente compacto
+      interiorsList.innerHTML = "";
+      interiors.forEach((interior, idx) => {
+        const row = document.createElement("div");
+        row.className = `interior-item-row${interior.name === activeItem.interiorName ? " is-active" : ""}`;
+        row.innerHTML = `
+          <div class="interior-item-thumb">
+            <img src="${interior.src}" alt="${interior.name}">
+          </div>
+          <div class="interior-item-text">
+            <span class="interior-item-name">${interior.name}</span>
+            <span class="interior-item-desc">${interior.detail}</span>
+          </div>
+        `;
+
+        row.addEventListener("click", () => {
+          activeItem.interiorName = interior.name;
+          activeItem.interiorSrc = interior.src;
+          renderActiveItemSelector();
+        });
+
+        interiorsList.appendChild(row);
+      });
+    }
+
+    function calculateTotal(qty) {
+      if (qty <= 0) return 0;
+      const fixedPrices = {
+        1: 15, 2: 28, 3: 45, 4: 45, 5: 60, 6: 75, 7: 90, 8: 79, 9: 94, 10: 109, 11: 124, 12: 109
+      };
+      if (qty <= 12) return fixedPrices[qty];
+      const kits12 = Math.floor(qty / 12);
+      const remainder = qty % 12;
+      return kits12 * 109 + (remainder > 0 ? fixedPrices[remainder] : 0);
+    }
+
+    function updateConfigPrices() {
+      const price = calculateTotal(currentKitSize);
+      configTotalText.textContent = currency.format(price);
+    }
+
+    // Clique nos cards de Kit
+    document.querySelectorAll(".kit-card").forEach(card => {
+      card.addEventListener("click", () => {
+        document.querySelectorAll(".kit-card").forEach(k => k.classList.remove("is-active"));
+        card.classList.add("is-active");
+        const qty = Number(card.dataset.qty);
+        initKitComposition(qty);
+      });
+    });
+
+    // Adicionar Kit ao Carrinho
+    addKitToCartBtn.addEventListener("click", () => {
+      // Limpa carrinho anterior para substituir pelo Kit atual selecionado
+      cart.length = 0;
+      
+      // Agrupa itens repetidos
+      currentKitComposition.forEach(item => {
+        const existing = cart.find(x => x.coverName === item.coverName && x.interiorName === item.interiorName);
+        if (existing) {
+          existing.qty += 1;
+        } else {
+          cart.push({
+            coverName: item.coverName,
+            coverThumb: item.coverThumb,
+            interiorName: item.interiorName,
+            qty: 1
+          });
+        }
+      });
+
+      updateSummary();
+      autoRecalculateShipping();
+      openDrawer();
+
+      confirmModal.classList.add("is-open");
+    });
+
+    // ==========================================================================
+    // CONTROLE DO CARRINHO E DRAWERS
+    // ==========================================================================
+    
+    function openDrawer() {
+      cartDrawer.classList.add("is-active");
+      drawerOverlay.classList.add("is-active");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeDrawer() {
+      cartDrawer.classList.remove("is-active");
+      drawerOverlay.classList.remove("is-active");
+      document.body.style.overflow = "";
+    }
+
+    cartTrigger.addEventListener("click", openDrawer);
+    drawerClose.addEventListener("click", closeDrawer);
+    drawerOverlay.addEventListener("click", closeDrawer);
+
+    function getTotalQuantity() {
+      return cart.reduce((sum, item) => sum + item.qty, 0);
+    }
+
+    function renderCart() {
+      cartList.innerHTML = "";
+
+      if (cart.length === 0) {
+        cartBadge.style.display = "none";
+        cartBadge.textContent = "0";
+        const empty = document.createElement("p");
+        empty.className = "empty-cart";
+        empty.textContent = "Carrinho vazio. Escolha um kit acima e clique em “Adicionar Kit ao Carrinho”.";
+        cartList.appendChild(empty);
+      } else {
+        const totalItems = getTotalQuantity();
+        cartBadge.style.display = "flex";
+        cartBadge.textContent = totalItems;
+
+        cart.forEach((item, index) => {
+          const row = document.createElement("div");
+          row.className = "cart-item";
+          row.innerHTML = `
+            <div class="cart-item-info" role="button" tabindex="0" title="Ampliar capa">
+              <div class="cart-item-thumb">
+                <img src="${item.coverThumb}" alt="${item.coverName}">
+              </div>
+              <div class="cart-item-details">
+                <strong>${item.coverName}</strong>
+                <span>Miolo: ${item.interiorName}</span>
+                <span class="cart-item-qty">Qtd: ${item.qty}</span>
+              </div>
+            </div>
+            <button class="remove-item" type="button" aria-label="Remover">×</button>
+          `;
+
+          row.querySelector(".cart-item-info").addEventListener("click", () => {
+            const cover = covers.find(c => c.name === item.coverName);
+            if (cover) openZoomSingleImage(cover.src, cover.name);
+          });
+
+          row.querySelector(".remove-item").addEventListener("click", () => {
+            if (isOrderSaved) return;
+            openDeleteConfirm(index);
+          });
+
+          cartList.appendChild(row);
+        });
+      }
+    }
+
+    // ==========================================================================
+    // PREÇOS E CÁLCULOS DO CARRINHO (PROMOÇÕES)
+    // ==========================================================================
+    
+    function calcularTotalProdutosCarrinho() {
+      let totalQty = 0;
+      let totalQtyNormais = 0;
+      let totalPromocionais = 0;
+      let totalDescontoPromocionais = 0;
+      const promocoesAplicadasMap = {};
+      const itemsPorPromo = {};
+      const itemsNormais = [];
+      
+      cart.forEach(item => {
+        totalQty += item.qty;
+        let matched = false;
+        
+        if (promocoesAtivas.length > 0) {
+          const coverNameLower = item.coverName.trim().toLowerCase();
+          const interiorNameLower = item.interiorName.trim().toLowerCase();
+          
+          for (const p of promocoesAtivas) {
+            const pCapaLower = String(p.Capa || "Qualquer").trim().toLowerCase();
+            const pMioloLower = String(p.Miolo || "Qualquer").trim().toLowerCase();
+            const capasElegiveis = pCapaLower.split(/\s*,\s*/);
+            const miolosElegiveis = pMioloLower.split(/\s*,\s*/);
+            
+            const capaMatch = pCapaLower === "qualquer" || capasElegiveis.some(c => c === coverNameLower);
+            const mioloMatch = pMioloLower === "qualquer" || miolosElegiveis.some(m => m === interiorNameLower);
+            
+            if (capaMatch && mioloMatch) {
+              const nome = p.Nome;
+              if (!itemsPorPromo[nome]) {
+                itemsPorPromo[nome] = { promoObj: p, items: [] };
+              }
+              itemsPorPromo[nome].items.push(item);
+              matched = true;
+              break;
+            }
+          }
+        }
+        if (!matched) itemsNormais.push(item);
+      });
+      
+      totalQtyNormais = itemsNormais.reduce((acc, item) => acc + item.qty, 0);
+      const productTotalNormais = calculateTotal(totalQtyNormais);
+      
+      Object.keys(itemsPorPromo).forEach(nomePromo => {
+        const promoInfo = itemsPorPromo[nomePromo];
+        const p = promoInfo.promoObj;
+        const matchingItems = promoInfo.items;
+        const normalValue = matchingItems.reduce((acc, item) => acc + (15 * item.qty), 0);
+        const val = Number(p.Valor) || 0;
+        
+        let discount = 0;
+        if (String(p.Tipo_Valor).trim().toLowerCase() === "percentual") {
+          discount = normalValue * (val / 100);
+        } else {
+          discount = Math.min(val, normalValue);
+        }
+        
+        promocoesAplicadasMap[nomePromo] = discount;
+        totalPromocionais += (normalValue - discount);
+        totalDescontoPromocionais += discount;
+      });
+      
+      const productTotal = productTotalNormais + totalPromocionais;
+      const precoCheio = totalQty * 15;
+      const descontoValor = precoCheio - productTotal;
+      const descontoPercentual = precoCheio > 0 ? Math.round((descontoValor / precoCheio) * 100) : 0;
+      const descontoKitNormais = (totalQtyNormais * 15) - productTotalNormais;
+      
+      return {
+        totalQty, totalQtyNormais, productTotalNormais, totalPromocionais, totalDescontoPromocionais,
+        promocoesAplicadasMap, productTotal, precoCheio, descontoValor, descontoPercentual, descontoKitNormais
+      };
+    }
+
+    // ==========================================================================
+    // FRETE E INTEGRACÃO DE CEP
+    // ==========================================================================
+    const cepInput = document.getElementById("cep");
+    const calcShippingBtn = document.getElementById("calcShipping");
+    const shippingOptionsField = document.getElementById("shippingOptionsField");
+    const shippingOptionsList = document.getElementById("shippingOptionsList");
+
+    function formatCep(val) {
+      let digits = val.replace(/\D/g, "").substring(0, 8);
+      if (digits.length <= 5) return digits;
+      return digits.substring(0, 5) + "-" + digits.substring(5);
+    }
+
+    cepInput.addEventListener("input", async () => {
+      const formatted = formatCep(cepInput.value);
+      cepInput.value = formatted;
+
+      isCepValid = false;
+      selectedShipping = null;
+      state.cpf = "";
+      lastCalculatedServices = [];
+      lastCepResponseData = null;
+      shippingOptionsList.innerHTML = "";
+      shippingOptionsField.style.display = "none";
+      updateSummary();
+
+      const cleanCep = formatted.replace(/\D/g, "");
+      if (cleanCep.length === 8) {
+        await lookupCep(cleanCep);
+      }
+    });
+
+    async function lookupCep(cep) {
+      try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        if (!response.ok) {
+          isCepValid = true;
+          return;
+        }
+        const data = await response.json();
+        if (data.erro) {
+          showCustomAlert("CEP não encontrado", "O CEP informado não foi localizado. Verifique e tente novamente.", cepInput);
+          isCepValid = false;
+          updateSummary();
+          return;
+        }
+
+        lastCepResponseData = data;
+        isCepValid = true;
+        updateSummary();
+        openAddressModal(cep, data);
+      } catch (e) {
+        console.error("Erro no ViaCEP:", e);
+        isCepValid = true;
+        updateSummary();
+      }
+    }
+
+    async function calculateShipping(silent = false) {
+      const cepVal = cepInput.value.replace(/\D/g, "");
+      const totalQty = getTotalQuantity();
+
+      if (totalQty === 0) {
+        if (!silent) showCustomAlert("Carrinho Vazio", "Monte um kit antes de calcular o frete.", null);
+        return;
+      }
+
+      if (cepVal.length !== 8 || !isCepValid) {
+        if (!silent) showCustomAlert("CEP Necessário", "Informe um CEP válido para continuar.", cepInput);
+        return;
+      }
+
+      if (!deliveryNumero || !deliveryRua) {
+        if (!silent) openAddressModal(cepVal, lastCepResponseData || {});
+        return;
+      }
+
+      if (checkIfLocalDelivery()) {
+        renderShippingOptions([
+          { id: "LOCAL_GRATIS", name: "Entrega Local (Grátis)", price: 0, discountPrice: 0, deliveryTime: 1 }
+        ]);
+        return;
+      }
+
+      if (!BACKEND_URL) {
+        if (!silent) showCustomAlert("Modo de Teste", "Utilizando taxas de frete simuladas para o desenvolvimento.", null);
+        renderSimulatedShippingOptions();
+        return;
+      }
+
+      calcShippingBtn.disabled = true;
+      calcShippingBtn.textContent = "Calculando...";
+      shippingOptionsField.style.display = "block";
+      shippingOptionsList.innerHTML = `<div style="text-align: center; padding: 12px; font-size: 13px; color: var(--muted);">Calculando opções de frete...</div>`;
+
+      selectedShipping = null;
+      updateSummary();
+
+      try {
+        const calcResult = calcularTotalProdutosCarrinho();
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "calcular_frete",
+            cep_destino: cepVal,
+            quantidade: totalQty,
+            valor_produtos: Math.max(0, calcResult.productTotal - (activeCoupon && activeCoupon.tipo_desconto !== "frete" ? couponDiscountValue : 0))
+          })
+        });
+
+        if (!response.ok) throw new Error("Erro no servidor.");
+        const data = await response.json();
+
+        if (data.success) {
+          renderShippingOptions(data.services);
+        } else {
+          if (!silent) showCustomAlert("Erro de Cálculo", data.error, null);
+          shippingOptionsField.style.display = "none";
+        }
+      } catch (err) {
+        console.error("Erro frete:", err);
+        renderSimulatedShippingOptions();
+      } finally {
+        calcShippingBtn.disabled = false;
+        calcShippingBtn.textContent = "Calcular Frete";
+      }
+    }
+
+    calcShippingBtn.addEventListener("click", () => calculateShipping(false));
+
+    function autoRecalculateShipping() {
+      const cepVal = cepInput.value.replace(/\D/g, "");
+      if (isCepValid && cepVal.length === 8 && lastCalculatedServices.length > 0) {
+        calculateShipping(true);
+      }
+    }
+
+    function isLocalDeliveryNeighborhood(bairro) {
+      if (!bairro) return false;
+      const normalized = bairro.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return normalized === "grajau" || normalized === "andarai";
+    }
+
+    function checkIfLocalDelivery() {
+      if (isLocalDeliveryNeighborhood(deliveryBairro)) return true;
+      const deliveryVal = document.getElementById("delivery").value;
+      if (deliveryVal) {
+        const cleanVal = deliveryVal.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        if (cleanVal.includes("grajau") || cleanVal.includes("andarai")) return true;
+      }
+      return false;
+    }
+
+    function renderShippingOptions(services) {
+      lastCalculatedServices = services.filter(s => s.id !== "LOCAL_GRATIS");
+      shippingOptionsList.innerHTML = "";
+      
+      let displayServices = [...lastCalculatedServices];
+      if (checkIfLocalDelivery()) {
+        displayServices = [
+          { id: "LOCAL_GRATIS", name: "Entrega Local (Grátis)", price: 0, discountPrice: 0, deliveryTime: 1 }
+        ];
+      }
+      
+      displayServices.sort((a, b) => {
+        const priceA = a.discountPrice !== undefined ? a.discountPrice : a.price;
+        const priceB = b.discountPrice !== undefined ? b.discountPrice : b.price;
+        return priceA - priceB;
+      });
+
+      if (displayServices.length === 0) {
+        shippingOptionsList.innerHTML = `<p style="font-size: 13px; color: var(--muted);">Região não atendida pelas opções normais.</p>`;
+        return;
+      }
+
+      displayServices.forEach((service, idx) => {
+        const card = document.createElement("label");
+        card.className = "shipping-option-card";
+        const isSelected = selectedShipping && selectedShipping.id === service.id;
+        const finalPrice = service.discountPrice !== undefined ? service.discountPrice : service.price;
+        
+        let priceHtml = finalPrice === 0 
+          ? `<span style="color: var(--sage); font-weight: 800;">Grátis</span>` 
+          : `<span>${currency.format(finalPrice)}</span>`;
+
+        card.innerHTML = `
+          <input type="radio" name="shipping_option" value="${service.id}" ${idx === 0 && !selectedShipping ? "checked" : isSelected ? "checked" : ""}>
+          <div class="shipping-option-details">
+            <div>
+              <span class="shipping-option-name">${service.name}</span>
+              <span class="shipping-option-time" style="display: block;">Prazo estimado: ${service.deliveryTime} dia(s)</span>
+            </div>
+            <span class="shipping-option-price">${priceHtml}</span>
+          </div>
+        `;
+        
+        if (idx === 0 && !selectedShipping) {
+          selectedShipping = { id: service.id, name: service.name, price: finalPrice, deliveryTime: service.deliveryTime };
+        }
+
+        card.querySelector('input').addEventListener("change", () => {
+          selectedShipping = { id: service.id, name: service.name, price: finalPrice, deliveryTime: service.deliveryTime };
+          if (selectedShipping.id === "LOCAL_GRATIS") state.cpf = "";
+          updateSummary();
+        });
+
+        shippingOptionsList.appendChild(card);
+      });
+
+      shippingOptionsField.style.display = "block";
+      updateSummary();
+    }
+
+    function renderSimulatedShippingOptions() {
+      renderShippingOptions([
+        { id: "PAC", name: "PAC Correios (SuperFrete)", price: 14.90, discountPrice: 14.90, deliveryTime: 7 },
+        { id: "SEDEX", name: "SEDEX Correios (SuperFrete)", price: 23.50, discountPrice: 23.50, deliveryTime: 2 }
+      ]);
+    }
+
+    document.getElementById("delivery").addEventListener("click", () => {
+      if (isOrderSaved) return;
+      const cepVal = cepInput.value.replace(/\D/g, "");
+      if (cepVal.length === 8 && isCepValid) {
+        openAddressModal(cepVal, lastCepResponseData || {});
+        if (deliveryNumero) addressModalNum.value = deliveryNumero;
+        if (deliveryComplemento) addressModalComp.value = deliveryComplemento;
+      } else {
+        showCustomAlert("CEP Necessário", "Informe o CEP antes de preencher o endereço.", cepInput);
+      }
+    });
+
+    // ==========================================================================
+    // ATUALIZAÇÃO DO RESUMO E VALIDAÇÃO GERAL
+    // ==========================================================================
+    
+    function updateSummary() {
+      renderCart();
+
+      const calcResult = calcularTotalProdutosCarrinho();
+      const totalQty = calcResult.totalQty;
+      const productTotal = calcResult.productTotal;
+      const precoCheio = calcResult.precoCheio;
+      const descontoValor = calcResult.descontoValor;
+      const descontoKitNormais = calcResult.descontoKitNormais;
+
+      const fullPriceLine = document.getElementById("fullPriceLine");
+      const kitDiscountLine = document.getElementById("kitDiscountLine");
+      const summaryFullPrice = document.getElementById("summaryFullPrice");
+      const summaryKitDiscount = document.getElementById("summaryKitDiscount");
+      const kitDiscountPercent = document.getElementById("kitDiscountPercent");
+
+      if (descontoValor > 0) {
+        fullPriceLine.style.display = "flex";
+        summaryFullPrice.textContent = currency.format(precoCheio);
+      } else {
+        fullPriceLine.style.display = "none";
+      }
+
+      if (descontoKitNormais > 0) {
+        kitDiscountLine.style.display = "flex";
+        summaryKitDiscount.textContent = "-" + currency.format(descontoKitNormais);
+        const percentKit = Math.round(descontoKitNormais / (calcResult.totalQtyNormais * 15) * 100);
+        kitDiscountPercent.textContent = `${percentKit}%`;
+      } else {
+        kitDiscountLine.style.display = "none";
+      }
+
+      const autoPromosContainer = document.getElementById("autoPromotionsContainer");
+      autoPromosContainer.innerHTML = "";
+      Object.keys(calcResult.promocoesAplicadasMap).forEach(nomePromo => {
+        const descVal = calcResult.promocoesAplicadasMap[nomePromo];
+        if (descVal > 0) {
+          const promoLine = document.createElement("div");
+          promoLine.className = "summary-line";
+          promoLine.style.cssText = "display: flex; justify-content: space-between; padding: 6px 0; color: #28a745; font-weight: 600;";
+          promoLine.innerHTML = `<span>Desconto: ${nomePromo}</span><strong>-${currency.format(descVal)}</strong>`;
+          autoPromosContainer.appendChild(promoLine);
+        }
+      });
+
+      let grandTotal = productTotal;
+      const shippingSummaryLine = document.getElementById("shippingSummaryLine");
+      if (selectedShipping) {
+        grandTotal += selectedShipping.price;
+        shippingSummaryLine.style.display = "flex";
+        document.getElementById("shippingMethodName").textContent = selectedShipping.name;
+        document.getElementById("summaryShippingPrice").textContent = selectedShipping.price === 0 ? "Grátis" : currency.format(selectedShipping.price);
+      } else {
+        shippingSummaryLine.style.display = "none";
+      }
+
+      couponDiscountValue = 0;
+      const couponSummaryLine = document.getElementById("couponSummaryLine");
+      if (activeCoupon) {
+        const type = activeCoupon.tipo_desconto;
+        const valType = activeCoupon.tipo_valor;
+        const val = activeCoupon.valor;
+        let valorElegivel = type === "frete" && selectedShipping ? selectedShipping.price : productTotal;
+
+        if (valType === "percentual") {
+          couponDiscountValue = valorElegivel * (val / 100);
+        } else {
+          couponDiscountValue = Math.min(val, valorElegivel);
+        }
+
+        couponDiscountValue = Math.max(0, Math.min(couponDiscountValue, grandTotal));
+        grandTotal -= couponDiscountValue;
+
+        couponSummaryLine.style.display = "flex";
+        document.getElementById("couponSummaryCode").textContent = activeCoupon.codigo;
+        document.getElementById("couponSummaryDiscount").textContent = "-" + currency.format(couponDiscountValue);
+      } else {
+        couponSummaryLine.style.display = "none";
+      }
+
+      summaryTotal.textContent = currency.format(grandTotal);
+
+      // Storytelling do Cupom/Economia no Drawer
+      let noteText = "";
+      const totalQtyNormais = calcResult.totalQtyNormais;
+      if (totalQtyNormais === 0) {
+        noteText = "Selecione seu kit na página principal para ativar as promoções progressivas.";
+      } else if (totalQtyNormais === 1) {
+        noteText = "Adicione mais 1 caderno na página principal e leve o Kit com 2 por R$ 28.";
+      } else if (totalQtyNormais === 2) {
+        noteText = "Kit 2 active! Adicione mais 2 cadernos para o Kit com 4 por R$ 45 (Leve 4 Pague 3).";
+      } else if (totalQtyNormais === 3) {
+        noteText = "Leve 4 cadernos pelo mesmo valor do Kit de 3 (R$ 45)!";
+      } else if (totalQtyNormais >= 4 && totalQtyNormais < 8) {
+        noteText = `Adicione mais ${8 - totalQtyNormais} caderno(s) para atingir o Kit de 8 por R$ 79 (R$ 9,88/un).`;
+      } else if (totalQtyNormais >= 8 && totalQtyNormais < 12) {
+        noteText = `Faltam apenas ${12 - totalQtyNormais} caderno(s) para o Kit Máximo com 12 por R$ 109 (R$ 9,08/un).`;
+      } else {
+        noteText = "Desconto de Kit progressivo máximo ativo! Excelente escolha.";
+      }
+      discountNote.textContent = noteText;
+
+      // Validação de inputs
+      const nameVal = document.getElementById("name").value.trim();
+      const deliveryVal = document.getElementById("delivery").value.trim();
+      const cepVal = document.getElementById("cep").value.trim();
+      const isCartEmpty = cart.length === 0;
+      const isNameIncomplete = nameVal.split(/\s+/).length < 2;
+      const isDeliveryIncomplete = deliveryVal.length === 0 || /,\s*(nº\s*)?$/i.test(deliveryVal);
+      const isShippingEmpty = !selectedShipping;
+
+      const isDisabled = isCartEmpty || !nameVal || isNameIncomplete || isDeliveryIncomplete || !cepVal || !isCepValid || isShippingEmpty;
+      whatsappButton.classList.toggle("is-disabled", isDisabled);
+
+      if (isCartEmpty) whatsappButton.innerHTML = "<span>Adicione um Kit ao carrinho</span>";
+      else if (!nameVal) whatsappButton.innerHTML = "<span>Preencha seu Nome</span>";
+      else if (isNameIncomplete) whatsappButton.innerHTML = "<span>Preencha Nome e Sobrenome</span>";
+      else if (!cepVal) whatsappButton.innerHTML = "<span>Preencha o CEP</span>";
+      else if (!isCepValid) whatsappButton.innerHTML = "<span>CEP inválido</span>";
+      else if (isShippingEmpty) whatsappButton.innerHTML = "<span>Selecione a opção de Frete</span>";
+      else if (isDeliveryIncomplete) whatsappButton.innerHTML = "<span>Informe o Número da Casa</span>";
+      else whatsappButton.innerHTML = isOrderSaved ? "<span>Reenviar pelo WhatsApp</span>" : "<span>Enviar pedido pelo WhatsApp</span>";
+      
+      updateDisabledState();
+    }
+
+    function updateDisabledState() {
+      const elements = ["name", "phone", "cep", "calcShipping", "notes", "couponInput", "applyCouponBtn"];
+      elements.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = isOrderSaved;
+      });
+    }
+
+    // ==========================================================================
+    // ENVIO DO PEDIDO (WHATSAPP E PIX)
+    // ==========================================================================
+    
+    function getOrderKey() {
+      const nameVal = document.getElementById("name").value.trim();
+      const phoneVal = document.getElementById("phone").value.trim();
+      const deliveryVal = document.getElementById("delivery").value.trim();
+      const cepVal = document.getElementById("cep").value.trim();
+      const notesVal = document.getElementById("notes").value.trim();
+      const shippingId = selectedShipping ? selectedShipping.id : null;
+      const cartItems = cart.map(item => `${item.coverName}-${item.interiorName}-${item.qty}`).join("|");
+      return `${nameVal};${phoneVal};${deliveryVal};${cepVal};${notesVal};${shippingId};${cartItems};${state.cpf}`;
+    }
+
+    whatsappButton.addEventListener("click", async () => {
+      if (isOrderSaved) {
+        const calcResult = calcularTotalProdutosCarrinho();
+        const grandTotal = Math.max(0, calcResult.productTotal + (selectedShipping ? selectedShipping.price : 0) - couponDiscountValue);
+        const msg = getOrderMessage(lastOrderId);
+        window.open(`https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+        openPixModal(grandTotal);
+        return;
+      }
+
+      const nameVal = document.getElementById("name").value.trim();
+      const phoneVal = document.getElementById("phone").value.trim();
+      const deliveryVal = document.getElementById("delivery").value.trim();
+      const cepVal = document.getElementById("cep").value.trim();
+
+      if (cart.length === 0) return;
+      if (!nameVal || nameVal.split(/\s+/).length < 2) {
+        showCustomAlert("Identificação", "Por favor, informe seu nome e sobrenome completos.", document.getElementById("name"));
+        return;
+      }
+      if (phoneVal.replace(/\D/g, "").length < 10) {
+        showCustomAlert("WhatsApp", "Informe o celular com DDD.", document.getElementById("phone"));
+        return;
+      }
+      if (cepVal.replace(/\D/g, "").length !== 8 || !isCepValid) {
+        showCustomAlert("CEP", "Preencha o CEP de forma correta.", document.getElementById("cep"));
+        return;
+      }
+      if (!selectedShipping) {
+        showCustomAlert("Frete", "Selecione uma modalidade de frete para continuar.", document.getElementById("calcShipping"));
+        return;
+      }
+      if (deliveryVal.length === 0 || /,\s*(nº\s*)?$/i.test(deliveryVal) || !deliveryVal.includes(",") || !deliveryVal.includes("-")) {
+        showCustomAlert("Endereço Incompleto", "Certifique-se de registrar o número da entrega no endereço.", document.getElementById("delivery"));
+        return;
+      }
+
+      // CPF para transportadoras nacionais
+      if (selectedShipping.id !== "LOCAL_GRATIS" && !state.cpf) {
+        openCpfModal();
+        return;
+      }
+
+      await processOrderSubmission();
+    });
+
+    async function processOrderSubmission() {
+      const nameVal = document.getElementById("name").value.trim();
+      const phoneVal = document.getElementById("phone").value.trim();
+      const deliveryVal = document.getElementById("delivery").value.trim();
+      const cepVal = document.getElementById("cep").value.trim();
+      
+      const calcResult = calcularTotalProdutosCarrinho();
+      const grandTotal = Math.max(0, calcResult.productTotal + selectedShipping.price - couponDiscountValue);
+      const itemLines = cart.map(item => `${item.qty}x ${item.coverName} (${item.interiorName})`).join(", ");
+
+      const pedido = {
+        nome: nameVal,
+        whatsapp: phoneVal,
+        cpf: state.cpf ? formatCpf(state.cpf) : "",
+        cep: cepVal.replace(/\D/g, ""),
+        entrega_rua: deliveryRua || deliveryVal,
+        entrega_numero: deliveryNumero || "S/N",
+        entrega_complemento: deliveryComplemento || "",
+        entrega_bairro: deliveryBairro || "",
+        entrega_cidade: deliveryCidade || "",
+        entrega_estado: deliveryEstado || "",
+        itens: itemLines,
+        qtd_total: calcResult.totalQty,
+        valor_produtos: calcResult.productTotal,
+        frete_metodo: selectedShipping.name,
+        valor_frete: selectedShipping.price,
+        total_geral: grandTotal,
+        observacoes: document.getElementById("notes").value.trim(),
+        pix_payload: generatePixCopiaCola(grandTotal),
+        cupom_codigo: activeCoupon ? activeCoupon.codigo : "",
+        cupom_desconto_valor: couponDiscountValue
+      };
+
+      if (!BACKEND_URL) {
+        showCustomAlert("Desenvolvimento", "Gravando pedido de simulação local. Direcionando ao WhatsApp.", null);
+        const msg = getOrderMessage();
+        window.open(`https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+        isOrderSaved = true;
+        lastSavedOrderKey = getOrderKey();
+        openPixModal(grandTotal);
+        return;
+      }
+
+      whatsappButton.disabled = true;
+      whatsappButton.textContent = "Gravando Pedido...";
+
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "salvar_pedido", pedido: pedido })
+        });
+        const data = await response.json();
+        if (data.success) {
+          lastOrderId = data.orderId;
+          isOrderSaved = true;
+          lastSavedOrderKey = getOrderKey();
+          
+          const msg = getOrderMessage(data.orderId);
+          window.open(`https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+          openPixModal(grandTotal);
+        } else {
+          showCustomAlert("Gravação", "Erro ao gravar na planilha: " + data.error, null);
+        }
+      } catch (err) {
+        console.error("Erro salvamento:", err);
+        showCustomAlert("Conexão", "Erro ao conectar com servidor. Direcionando direto para o WhatsApp.", null);
+        const msg = getOrderMessage();
+        window.open(`https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+        isOrderSaved = true;
+        lastSavedOrderKey = getOrderKey();
+        openPixModal(grandTotal);
+      } finally {
+        whatsappButton.disabled = false;
+        updateSummary();
+      }
+    }
+
+    function getOrderMessage(orderId) {
+      const calcResult = calcularTotalProdutosCarrinho();
+      const grandTotal = Math.max(0, calcResult.productTotal + (selectedShipping ? selectedShipping.price : 0) - couponDiscountValue);
+      const header = orderId ? `Novo pedido FigTree (Pedido #${orderId})` : `Novo pedido FigTree`;
+      
+      const lines = [
+        header,
+        "",
+        `Nome: ${document.getElementById("name").value.trim()}`,
+        `WhatsApp: ${document.getElementById("phone").value.trim()}`
+      ];
+      
+      if (state.cpf) lines.push(`CPF: ${formatCpf(state.cpf)}`);
+      
+      lines.push(
+        "",
+        "Itens do Kit:",
+        ...cart.map((item, idx) => `${idx + 1}. ${item.qty}x ${item.coverName} - Miolo: ${item.interiorName}`),
+        "",
+        `Total de Caderninhos: ${calcResult.totalQty}`,
+        `Subtotal: ${currency.format(calcResult.precoCheio)}`
+      );
+
+      if (selectedShipping) lines.push(`Frete: ${selectedShipping.name} (${currency.format(selectedShipping.price)})`);
+      if (calcResult.descontoKitNormais > 0) lines.push(`Desconto Kit: -${currency.format(calcResult.descontoKitNormais)}`);
+      if (activeCoupon) lines.push(`Cupom: ${activeCoupon.codigo} (-${currency.format(couponDiscountValue)})`);
+      
+      lines.push(
+        `Total Geral: ${currency.format(grandTotal)}`,
+        "",
+        `Entrega: ${document.getElementById("delivery").value.trim()}`,
+        `Obs: ${document.getElementById("notes").value.trim() || "Nenhuma"}`,
+        "",
+        "Código Pix Copia e Cola para pagamento:",
+        "",
+        generatePixCopiaCola(grandTotal, orderId)
+      );
+
+      return lines.join("\n");
+    }
+
+    // CRC16 e Payload Pix
+    function crc16(data) {
+      let crc = 0xFFFF;
+      for (let i = 0; i < data.length; i++) {
+        crc ^= data.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
+          if ((crc & 0x8000) !== 0) crc = ((crc << 1) ^ 0x1021) & 0xFFFF;
+          else crc = (crc << 1) & 0xFFFF;
+        }
+      }
+      return crc.toString(16).toUpperCase().padStart(4, "0");
+    }
+
+    function generateMerchantAccountInfo(orderId) {
+      const ddi = "0014BR.GOV.BCB.PIX";
+      const key = "0136ba2d7d8e-3a98-4379-8a26-0f97f45375c9";
+      let desc = "0208Cadernos";
+      if (orderId) {
+        const descText = `Pedido${orderId}`;
+        desc = `02${String(descText.length).padStart(2, "0")}${descText}`;
+      }
+      return `26${String((ddi + key + desc).length).padStart(2, "0")}${ddi + key + desc}`;
+    }
+
+    function generatePixCopiaCola(amount, orderId) {
+      const part1 = "000201" + generateMerchantAccountInfo(orderId) + "520400005303986";
+      let amountField = amount > 0 ? `54${String(amount.toFixed(2).length).padStart(2, "0")}${amount.toFixed(2)}` : "";
+      const part2 = "5802BR5922ANDRE MARTINS FIGUEIRA6009Sao Paulo62070503***6304";
+      const combined = part1 + amountField + part2;
+      return combined + crc16(combined);
+    }
+
+    // ==========================================================================
+    // CUPONS
+    // ==========================================================================
+    const couponInput = document.getElementById("couponInput");
+    const applyCouponBtn = document.getElementById("applyCouponBtn");
+    const couponFeedback = document.getElementById("couponFeedback");
+
+    async function handleCouponAction() {
+      if (activeCoupon) {
+        activeCoupon = null;
+        couponDiscountValue = 0;
+        couponInput.value = "";
+        couponInput.disabled = false;
+        applyCouponBtn.textContent = "Aplicar";
+        applyCouponBtn.style.background = "var(--bg-dark)";
+        couponFeedback.style.display = "none";
+        updateSummary();
+        return;
+      }
+
+      const code = couponInput.value.trim().toUpperCase();
+      if (!code) return;
+
+      applyCouponBtn.disabled = true;
+      couponInput.disabled = true;
+      applyCouponBtn.textContent = "...";
+
+      try {
+        if (!BACKEND_URL) throw new Error();
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "validar_cupom", cupom: code })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+          activeCoupon = data.cupom;
+          applyCouponBtn.textContent = "Remover";
+          applyCouponBtn.style.background = "#dc3545";
+          couponFeedback.style.display = "block";
+          couponFeedback.style.color = "#28a745";
+          couponFeedback.textContent = `Cupom "${activeCoupon.codigo}" ativado!`;
+        } else {
+          showCouponError(data.error || "Cupom expirado.");
+        }
+      } catch (err) {
+        showCouponError("Cupom inválido no momento.");
+      } finally {
+        applyCouponBtn.disabled = false;
+        updateSummary();
+      }
+    }
+
+    function showCouponError(msg) {
+      activeCoupon = null;
+      couponInput.disabled = false;
+      applyCouponBtn.textContent = "Aplicar";
+      couponFeedback.style.display = "block";
+      couponFeedback.style.color = "#dc3545";
+      couponFeedback.textContent = msg;
+    }
+
+    applyCouponBtn.addEventListener("click", handleCouponAction);
+
+    // ==========================================================================
+    // MODAIS E CAROUSEL ZOOM
+    // ==========================================================================
+    const confirmModal = document.getElementById("confirmModal");
+    const confirmClose = document.getElementById("confirmClose");
+    const confirmYes = document.getElementById("confirmYes");
+    const confirmNo = document.getElementById("confirmNo");
+
+    confirmClose.addEventListener("click", () => confirmModal.classList.remove("is-open"));
+    confirmYes.addEventListener("click", () => {
+      confirmModal.classList.remove("is-open");
+      closeDrawer();
+      document.getElementById("customizer").scrollIntoView({ behavior: "smooth" });
+    });
+    confirmNo.addEventListener("click", () => {
+      confirmModal.classList.remove("is-open");
+      openDrawer();
+    });
+
+    const deleteConfirmModal = document.getElementById("deleteConfirmModal");
+    const deleteConfirmClose = document.getElementById("deleteConfirmClose");
+    const deleteConfirmNo = document.getElementById("deleteConfirmNo");
+    const deleteConfirmYes = document.getElementById("deleteConfirmYes");
+
+    function openDeleteConfirm() {
+      deleteConfirmModal.classList.add("is-open");
+    }
+
+    deleteConfirmClose.addEventListener("click", () => deleteConfirmModal.classList.remove("is-open"));
+    deleteConfirmNo.addEventListener("click", () => deleteConfirmModal.classList.remove("is-open"));
+    deleteConfirmYes.addEventListener("click", () => {
+      cart.length = 0;
+      updateSummary();
+      selectedShipping = null;
+      shippingOptionsField.style.display = "none";
+      deleteConfirmModal.classList.remove("is-open");
+    });
+
+    // Alerta
+    const alertModal = document.getElementById("alertModal");
+    const alertClose = document.getElementById("alertClose");
+    const alertOk = document.getElementById("alertOk");
+    const alertMessage = document.getElementById("alertMessage");
+
+    function showCustomAlert(title, message, focusElement) {
+      document.getElementById("alertTitle").textContent = title;
+      alertMessage.innerHTML = message;
+      alertModal.classList.add("is-open");
+      alertOk.focus();
+      alertOk.onclick = () => {
+        alertModal.classList.remove("is-open");
+        if (focusElement) {
+          focusElement.scrollIntoView({ behavior: "smooth", block: "center" });
+          focusElement.focus();
+        }
+      };
+    }
+    alertClose.addEventListener("click", () => alertModal.classList.remove("is-open"));
+
+    // Modal Endereço
+    const addressModal = document.getElementById("addressModal");
+    const addressClose = document.getElementById("addressClose");
+    const addressModalSummary = document.getElementById("addressModalSummary");
+    const addressModalNum = document.getElementById("addressModalNum");
+    const addressModalComp = document.getElementById("addressModalComp");
+    const addressModalConfirm = document.getElementById("addressModalConfirm");
+    const addressModalCancel = document.getElementById("addressModalCancel");
+
+    function openAddressModal(cep, data) {
+      addressModalNum.value = "";
+      addressModalComp.value = "";
+      if (data.logradouro) {
+        addressModalSummary.innerHTML = `<strong>CEP ${cep}:</strong> ${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}`;
+      } else {
+        addressModalSummary.innerHTML = `<strong>CEP ${cep}:</strong> Geral para ${data.localidade}/${data.uf}`;
+      }
+      addressModal.classList.add("is-open");
+      setTimeout(() => addressModalNum.focus(), 80);
+    }
+
+    addressClose.addEventListener("click", () => addressModal.classList.remove("is-open"));
+    addressModalCancel.addEventListener("click", () => addressModal.classList.remove("is-open"));
+    addressModalConfirm.addEventListener("click", () => {
+      const num = addressModalNum.value.trim();
+      const comp = addressModalComp.value.trim();
+      if (!num) {
+        showCustomAlert("Endereço", "Por favor, insira o número residencial.", addressModalNum);
+        return;
+      }
+      
+      let rua = (lastCepResponseData.logradouro || "").trim();
+      let bairro = (lastCepResponseData.bairro || "").trim();
+      let localidade = (lastCepResponseData.localidade || "").trim();
+      let uf = (lastCepResponseData.uf || "").trim();
+
+      deliveryRua = rua;
+      deliveryNumero = num;
+      deliveryComplemento = comp;
+      deliveryBairro = bairro;
+      deliveryCidade = localidade;
+      deliveryEstado = uf;
+
+      let addressText = `${rua}, Nº ${num}`;
+      if (comp) addressText += ` - ${comp}`;
+      addressText += ` - ${bairro} - ${localidade}/${uf}`;
+
+      document.getElementById("delivery").value = addressText;
+      addressModal.classList.remove("is-open");
+      updateSummary();
+    });
+
+    // Pix Modal
+    const pixModal = document.getElementById("pixModal");
+    const pixClose = document.getElementById("pixClose");
+    const pixCloseBtn = document.getElementById("pixCloseBtn");
+    const copyPixCodeBtn = document.getElementById("copyPixCodeBtn");
+    const pixCodeText = document.getElementById("pixCodeText");
+    const reopenPixButton = document.getElementById("reopenPixButton");
+
+    function openPixModal(amount) {
+      const payload = generatePixCopiaCola(amount, lastOrderId);
+      pixCodeText.value = payload;
+      
+      if (typeof QRCode !== "undefined") {
+        document.getElementById("qrcode").innerHTML = "";
+        new QRCode(document.getElementById("qrcode"), {
+          text: payload,
+          width: 140,
+          height: 140,
+          colorDark: "#1a110f",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      }
+      
+      pixModal.classList.add("is-open");
+      reopenPixButton.style.display = "inline-flex";
+    }
+
+    pixClose.addEventListener("click", () => pixModal.classList.remove("is-open"));
+    pixCloseBtn.addEventListener("click", () => pixModal.classList.remove("is-open"));
+    copyPixCodeBtn.addEventListener("click", () => {
+      pixCodeText.select();
+      navigator.clipboard.writeText(pixCodeText.value).then(() => {
+        copyPixCodeBtn.textContent = "Pix Copiado!";
+        copyPixCodeBtn.style.background = "#28a745";
+        setTimeout(() => {
+          copyPixCodeBtn.textContent = "Copiar Código Pix";
+          copyPixCodeBtn.style.background = "#32BCAD";
+        }, 1500);
+      });
+    });
+
+    reopenPixButton.addEventListener("click", () => {
+      const calcResult = calcularTotalProdutosCarrinho();
+      const grandTotal = Math.max(0, calcResult.productTotal + (selectedShipping ? selectedShipping.price : 0) - couponDiscountValue);
+      openPixModal(grandTotal);
+    });
+
+    // CPF Modal
+    const cpfModal = document.getElementById("cpfModal");
+    const cpfClose = document.getElementById("cpfClose");
+    const cpfInputModal = document.getElementById("cpfInputModal");
+    const cpfModalConfirm = document.getElementById("cpfModalConfirm");
+    const cpfModalCancel = document.getElementById("cpfModalCancel");
+
+    function openCpfModal() {
+      cpfInputModal.value = state.cpf ? formatCpf(state.cpf) : "";
+      cpfModal.classList.add("is-open");
+      setTimeout(() => cpfInputModal.focus(), 80);
+    }
+
+    cpfClose.addEventListener("click", () => cpfModal.classList.remove("is-open"));
+    cpfModalCancel.addEventListener("click", () => cpfModal.classList.remove("is-open"));
+    
+    function formatCpf(val) {
+      let digits = val.replace(/\D/g, "").substring(0, 11);
+      if (digits.length <= 3) return digits;
+      if (digits.length <= 6) return digits.substring(0, 3) + "." + digits.substring(3);
+      if (digits.length <= 9) return digits.substring(0, 3) + "." + digits.substring(3, 6) + "." + digits.substring(6);
+      return digits.substring(0, 3) + "." + digits.substring(3, 6) + "." + digits.substring(6, 9) + "-" + digits.substring(9);
+    }
+
+    cpfInputModal.addEventListener("input", () => {
+      cpfInputModal.value = formatCpf(cpfInputModal.value);
+    });
+
+    function validateCpf(cpf) {
+      const clean = cpf.replace(/\D/g, "");
+      if (clean.length !== 11 || /^(\d)\1{10}$/.test(clean)) return false;
+      let sum = 0, rem;
+      for (let i = 1; i <= 9; i++) sum += parseInt(clean.substring(i-1, i)) * (11 - i);
+      rem = (sum * 10) % 11;
+      if (rem === 10 || rem === 11) rem = 0;
+      if (rem !== parseInt(clean.substring(9, 10))) return false;
+      sum = 0;
+      for (let i = 1; i <= 10; i++) sum += parseInt(clean.substring(i-1, i)) * (12 - i);
+      rem = (sum * 10) % 11;
+      if (rem === 10 || rem === 11) rem = 0;
+      return rem === parseInt(clean.substring(10, 11));
+    }
+
+    cpfModalConfirm.addEventListener("click", async () => {
+      const val = cpfInputModal.value.trim();
+      if (!val || !validateCpf(val)) {
+        showCustomAlert("Identificação", "Por favor, digite um número de CPF válido.", cpfInputModal);
+        return;
+      }
+      state.cpf = val.replace(/\D/g, "");
+      cpfModal.classList.remove("is-open");
+      await processOrderSubmission();
+    });
+
+    // Zoom Modal Carousel
+    let zoomItems = [];
+    function openZoomCarousel(type, startIndex) {
+      zoomItems = type === "covers" ? covers : interiors;
+      previewTitle.textContent = zoomItems[startIndex].name;
+
+      let html = `
+        <button class="carousel-btn prev-btn" id="carouselPrev" type="button" aria-label="Anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <div class="preview-carousel" id="previewCarousel">
+      `;
+
+      zoomItems.forEach((item, idx) => {
+        html += `<div class="preview-slide" data-index="${idx}">`;
+        if (type === "covers") {
+          html += `<div class="preview-cover-large"><img src="${item.src}" alt="${item.name}"></div>`;
+        } else {
+          html += `<img class="preview-interior-large" src="${item.src}" alt="${item.name}">`;
+        }
+        html += `</div>`;
+      });
+
+      html += `
+        </div>
+        <button class="carousel-btn next-btn" id="carouselNext" type="button" aria-label="Próximo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      `;
+
+      previewBody.innerHTML = html;
+      previewModal.classList.add("is-open");
+
+      const carousel = document.getElementById("previewCarousel");
+      const prev = document.getElementById("carouselPrev");
+      const next = document.getElementById("carouselNext");
+
+      const scrollToActive = () => {
+        const slide = carousel.querySelector(`.preview-slide[data-index="${startIndex}"]`);
+        if (slide) carousel.scrollLeft = slide.offsetLeft;
+      };
+      scrollToActive();
+
+      const updateButtons = (idx) => {
+        prev.style.display = idx === 0 ? "none" : "flex";
+        next.style.display = idx === zoomItems.length - 1 ? "none" : "flex";
+      };
+      updateButtons(startIndex);
+
+      carousel.addEventListener("scroll", () => {
+        const idx = Math.round(carousel.scrollLeft / carousel.clientWidth);
+        if (idx >= 0 && idx < zoomItems.length) {
+          updateButtons(idx);
+          previewTitle.textContent = zoomItems[idx].name;
+        }
+      });
+
+      prev.addEventListener("click", () => {
+        const idx = Math.round(carousel.scrollLeft / carousel.clientWidth);
+        if (idx > 0) carousel.scrollLeft = (idx - 1) * carousel.clientWidth;
+      });
+
+      next.addEventListener("click", () => {
+        const idx = Math.round(carousel.scrollLeft / carousel.clientWidth);
+        if (idx < zoomItems.length - 1) carousel.scrollLeft = (idx + 1) * carousel.clientWidth;
+      });
+    }
+
+    function openZoomSingleImage(src, title) {
+      previewTitle.textContent = title;
+      previewBody.innerHTML = `
+        <div style="padding: 10px; display: flex; justify-content: center; align-items: center; height: 380px;">
+          <div class="preview-cover-large">
+            <img src="${src}" alt="${title}">
+          </div>
+        </div>
+      `;
+      previewModal.classList.add("is-open");
+    }
+
+    previewClose.addEventListener("click", () => previewModal.classList.remove("is-open"));
+
+    // WhatsApp Phone Mask
+    function formatPhone(val) {
+      let digits = val.replace(/\D/g, "").substring(0, 11);
+      if (digits.length <= 2) return digits.length > 0 ? "(" + digits : "";
+      if (digits.length <= 6) return "(" + digits.substring(0, 2) + ") " + digits.substring(2);
+      if (digits.length <= 10) return "(" + digits.substring(0, 2) + ") " + digits.substring(2, 6) + "-" + digits.substring(6);
+      return "(" + digits.substring(0, 2) + ") " + digits.substring(2, 7) + "-" + digits.substring(7, 11);
+    }
+    const phoneInput = document.getElementById("phone");
+    phoneInput.addEventListener("input", () => {
+      phoneInput.value = formatPhone(phoneInput.value);
+    });
+
+    ["name", "notes", "phone"].forEach(id => {
+      document.getElementById(id).addEventListener("input", () => {
+        updateSummary();
+      });
+    });
+
+    async function carregarPromocoes() {
+      if (!BACKEND_URL) return;
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "get_promocoes" })
+        });
+        const data = await response.json();
+        if (data.success && data.promocoes) {
+          promocoesAtivas = data.promocoes.filter(p => String(p.Ativa).trim().toLowerCase() === "sim");
+          updateSummary();
+        }
+      } catch (e) {
+        console.error("Erro promoções:", e);
+      }
+    }
+
+    // ==========================================================================
+    // INICIALIZAÇÃO
+    // ==========================================================================
+    initKitComposition(4); // Inicializa com o Kit de 4 cadernos padrão
+    updateSummary();
+    carregarPromocoes();
+  </script>
+</body>
+</html>
