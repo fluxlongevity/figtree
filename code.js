@@ -6,8 +6,8 @@ const PRODUCT_WIDTH_CM = 13;
 const PRODUCT_LENGTH_CM = 18;
 
 function doPost(e) {
-  // Intercepta chamadas de Webhook do Superfrete / Seu Rastreio via query parameter
-  if (e.parameter && (e.parameter.source === "superfrete" || e.parameter.source === "seurastreio")) {
+  // Intercepta chamadas de Webhook do Superfrete via query parameter
+  if (e.parameter && e.parameter.source === "superfrete") {
     return processarWebhookSuperFrete(e);
   }
 
@@ -87,6 +87,12 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
+    if (action === "configurar_acionador_sincronizacao") {
+      const response = configurarAcionadorSincronizacao();
+      return ContentService.createTextOutput(JSON.stringify(response))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
     if (action === "configurar_ambiente") {
       PropertiesService.getScriptProperties().setProperty("SUPERFRETE_ENVIRONMENT", requestData.ambiente);
       return ContentService.createTextOutput(JSON.stringify({ success: true, ambiente: requestData.ambiente }))
@@ -96,6 +102,49 @@ function doPost(e) {
     if (action === "reordenar_colunas") {
       reordenarColunasPlanilha();
       return ContentService.createTextOutput(JSON.stringify({ success: true }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    if (action === "test_clear_tracking") {
+      const orderId = requestData.orderId;
+      const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+      let ss = null;
+      try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
+      if (!ss) ss = SpreadsheetApp.openById(spreadsheetId);
+      const sheet = ss.getSheetByName("Pedidos");
+      if (sheet) {
+        const data = sheet.getDataRange().getValues();
+        const headers = data[0];
+        const colIdPedido = headers.indexOf("ID_Pedido");
+        const colUltimoStatusFisico = headers.indexOf("Ultimo_Status_Fisico");
+        const colUltimaMovimentacaoDesc = headers.indexOf("Ultima_Movimentacao_Desc");
+        const colUltimaMovimentacaoUnidade = headers.indexOf("Ultima_Movimentacao_Unidade");
+        const colUltimaMovimentacaoData = headers.indexOf("Ultima_Movimentacao_Data");
+        
+        let rowIdx = -1;
+        for (let i = 1; i < data.length; i++) {
+          if (parseInt(data[i][colIdPedido]) === parseInt(orderId)) {
+            rowIdx = i + 1;
+            break;
+          }
+        }
+        if (rowIdx !== -1) {
+          if (colUltimoStatusFisico !== -1) sheet.getRange(rowIdx, colUltimoStatusFisico + 1).setValue("");
+          if (colUltimaMovimentacaoDesc !== -1) sheet.getRange(rowIdx, colUltimaMovimentacaoDesc + 1).setValue("");
+          if (colUltimaMovimentacaoUnidade !== -1) sheet.getRange(rowIdx, colUltimaMovimentacaoUnidade + 1).setValue("");
+          if (colUltimaMovimentacaoData !== -1) sheet.getRange(rowIdx, colUltimaMovimentacaoData + 1).setValue("");
+          
+          // E também voltamos o status para Enviado se for Recebido para ele rodar o teste
+          const colStatus = headers.indexOf("Status");
+          if (colStatus !== -1) sheet.getRange(rowIdx, colStatus + 1).setValue("Enviado");
+          
+          SpreadsheetApp.flush();
+          
+          return ContentService.createTextOutput(JSON.stringify({ success: true }))
+            .setMimeType(ContentService.MimeType.JSON);
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: "Pedido nao encontrado ou planilha inacessivel" }))
         .setMimeType(ContentService.MimeType.JSON);
     }
 
@@ -110,6 +159,7 @@ function doPost(e) {
       return ContentService.createTextOutput(JSON.stringify({ success: true }))
         .setMimeType(ContentService.MimeType.JSON);
     }
+
 
     if (action === "get_properties") {
       const props = PropertiesService.getScriptProperties().getProperties();
@@ -612,9 +662,10 @@ function salvarPedido(pedido) {
     "Itens", "Qtd_Total", "Valor_Produtos", "Cupom_Codigo", "Cupom_Desconto_Valor", "Frete_Metodo", "Valor_Frete", "Total_Geral", "Observacoes", "Pix_Payload",
     "Superfrete_Package_ID", "Superfrete_Status", "Codigo_Rastreio", "Etiqueta_PDF_URL", "Data_Emissao_Etiqueta", "Valor_Frete_Pago", "Desconto_Frete",
     "Superfrete_Custo_Estimado", "Superfrete_Desconto_Estimado",
-    "Superfrete_Prazo_Entrega", "Data_Postagem", "Data_Entrega",
+    "Superfrete_Prazo_Entrega", "Superfrete_Previsao_Entrega", "Data_Postagem", "Data_Entrega",
     "Superfrete_Formato", "Superfrete_Peso", "Superfrete_Altura", "Superfrete_Largura", "Superfrete_Comprimento",
-    "Superfrete_Mao_Propria", "Superfrete_Aviso_Recebimento", "Superfrete_Valor_Declarado"
+    "Superfrete_Mao_Propria", "Superfrete_Aviso_Recebimento", "Superfrete_Valor_Declarado",
+    "Ultimo_Status_Fisico", "Ultima_Movimentacao_Desc", "Ultima_Movimentacao_Unidade", "Ultima_Movimentacao_Data"
   ];
 
   // Se a planilha estiver vazia, cria os cabeçalhos automaticamente
@@ -1534,12 +1585,7 @@ function emitirEtiquetaPedido(orderId) {
   if (descontoFreteIndex !== -1) sheet.getRange(rowIdx, descontoFreteIndex + 1).setValue(descontoFreteReal);
   if (dataEmissaoIndex !== -1) sheet.getRange(rowIdx, dataEmissaoIndex + 1).setValue(dataHoraEmissao);
 
-  // Cadastra no Seu Rastreio para alertas de trânsito em tempo real
-  try {
-    cadastrarNoSeuRastreio(pedido, trackingCode);
-  } catch (errSR) {
-    Logger.log("Erro ao cadastrar no Seu Rastreio: " + errSR.message);
-  }
+
 
   // Envia notificação Telegram de sucesso
   try {
@@ -1796,9 +1842,10 @@ function reordenarColunasPlanilha() {
     "Itens", "Qtd_Total", "Valor_Produtos", "Cupom_Codigo", "Cupom_Desconto_Valor", "Frete_Metodo", "Valor_Frete", "Total_Geral", "Observacoes", "Pix_Payload",
     "Superfrete_Package_ID", "Superfrete_Status", "Codigo_Rastreio", "Etiqueta_PDF_URL", "Data_Emissao_Etiqueta", "Valor_Frete_Pago", "Desconto_Frete",
     "Superfrete_Custo_Estimado", "Superfrete_Desconto_Estimado",
-    "Superfrete_Prazo_Entrega", "Data_Postagem", "Data_Entrega",
+    "Superfrete_Prazo_Entrega", "Superfrete_Previsao_Entrega", "Data_Postagem", "Data_Entrega",
     "Superfrete_Formato", "Superfrete_Peso", "Superfrete_Altura", "Superfrete_Largura", "Superfrete_Comprimento",
-    "Superfrete_Mao_Propria", "Superfrete_Aviso_Recebimento", "Superfrete_Valor_Declarado"
+    "Superfrete_Mao_Propria", "Superfrete_Aviso_Recebimento", "Superfrete_Valor_Declarado",
+    "Ultimo_Status_Fisico", "Ultima_Movimentacao_Desc", "Ultima_Movimentacao_Unidade", "Ultima_Movimentacao_Data"
   ];
 
   const rawData = sheet.getDataRange().getValues();
@@ -1858,86 +1905,98 @@ function reordenarColunasPlanilha() {
   return { success: true };
 }
 
-function atualizarRastreamentoPedido(orderId) {
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
-  let ss = null;
-  try {
-    ss = SpreadsheetApp.getActiveSpreadsheet();
-  } catch (e) {}
-  if (!ss) {
-    ss = SpreadsheetApp.openById(spreadsheetId);
-  }
-  let sheet = ss.getSheetByName("Pedidos");
-  if (!sheet) {
-    return { success: false, error: "Planilha não encontrada" };
-  }
-
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  
-  let rowIdx = -1;
-  for (let i = 1; i < data.length; i++) {
-    if (parseInt(data[i][0]) === parseInt(orderId)) {
-      rowIdx = i + 1;
-      break;
-    }
-  }
-
-  if (rowIdx === -1) {
-    return { success: false, error: "Pedido não encontrado" };
-  }
-
-  // Mapeia os dados da linha para um objeto
-  const pedido = {};
-  headers.forEach((header, index) => {
-    pedido[header] = data[rowIdx - 1][index];
-  });
-
-  let packageId = pedido.Superfrete_Package_ID;
-  
-  // Fallback: tentar extrair o packageId de Etiqueta_PDF_URL
-  if (!packageId && pedido.Etiqueta_PDF_URL) {
+function atualizarRastreamentoPedido(orderId, skipLock) {
+  let hasLock = false;
+  const lock = LockService.getScriptLock();
+  if (!skipLock) {
     try {
-      const pdfUrl = String(pedido.Etiqueta_PDF_URL);
-      const match = pdfUrl.match(/_etiqueta\/pdf\/([^?]+)/);
-      if (match) {
-        const decoded = Utilities.newBlob(Utilities.base64Decode(match[1])).getDataAsString();
-        const parsed = JSON.parse(decoded);
-        if (parsed && parsed.order_id) {
-          packageId = parsed.order_id;
-        }
-      }
+      lock.waitLock(20000);
+      hasLock = true;
     } catch (e) {
-      Logger.log("Erro ao decodificar ID da URL PDF: " + e.message);
+      Logger.log("Nao foi possivel obter trava em atualizarRastreamentoPedido: " + e.message);
+      return { success: false, error: "Recurso ocupado por outra execucao" };
     }
   }
 
-  if (!packageId) {
-    return { success: false, error: "Este pedido não possui ID de pacote (Superfrete_Package_ID) nem URL de etiqueta decodificável." };
-  }
-
-  // Obtém as credenciais e URL base de acordo com o ambiente (sandbox ou produção)
-  const sfConfig = obterConfiguracaoSuperFrete();
-  const token = sfConfig.token;
-  const baseUrl = sfConfig.baseUrl;
-
-  if (!token) {
-    return { success: false, error: "Token de Produção da SuperFrete não configurado." };
-  }
-
-  const apiHeaders = {
-    "Authorization": "Bearer " + token,
-    "Accept": "application/json",
-    "User-Agent": "FigTree (andre.figueira@gmail.com)"
-  };
-
-  const options = {
-    "method": "get",
-    "headers": apiHeaders,
-    "muteHttpExceptions": true
-  };
-
   try {
+    const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+    let ss = null;
+    try {
+      ss = SpreadsheetApp.getActiveSpreadsheet();
+    } catch (e) {}
+    if (!ss) {
+      ss = SpreadsheetApp.openById(spreadsheetId);
+    }
+    let sheet = ss.getSheetByName("Pedidos");
+    if (!sheet) {
+      return { success: false, error: "Planilha não encontrada" };
+    }
+
+    const data = sheet.getDataRange().getValues();
+    const headers = data[0];
+    
+    let rowIdx = -1;
+    for (let i = 1; i < data.length; i++) {
+      if (parseInt(data[i][0]) === parseInt(orderId)) {
+        rowIdx = i + 1;
+        break;
+      }
+    }
+
+    if (rowIdx === -1) {
+      return { success: false, error: "Pedido não encontrado" };
+    }
+
+    // Mapeia os dados da linha para um objeto
+    const pedido = {};
+    headers.forEach((header, index) => {
+      pedido[header] = data[rowIdx - 1][index];
+    });
+
+    let packageId = pedido.Superfrete_Package_ID;
+    
+    // Fallback: tentar extrair o packageId de Etiqueta_PDF_URL
+    if (!packageId && pedido.Etiqueta_PDF_URL) {
+      try {
+        const pdfUrl = String(pedido.Etiqueta_PDF_URL);
+        const match = pdfUrl.match(/_etiqueta\/pdf\/([^?]+)/);
+        if (match) {
+          const decoded = Utilities.newBlob(Utilities.base64Decode(match[1])).getDataAsString();
+          const parsed = JSON.parse(decoded);
+          if (parsed && parsed.order_id) {
+            packageId = parsed.order_id;
+          }
+        }
+      } catch (e) {
+        Logger.log("Erro ao decodificar ID da URL PDF: " + e.message);
+      }
+    }
+
+    if (!packageId) {
+      return { success: false, error: "Este pedido não possui ID de pacote (Superfrete_Package_ID) nem URL de etiqueta decodificável." };
+    }
+
+    // Obtém as credenciais e URL base de acordo com o ambiente (sandbox ou produção)
+    const sfConfig = obterConfiguracaoSuperFrete();
+    const token = sfConfig.token;
+    const baseUrl = sfConfig.baseUrl;
+
+    if (!token) {
+      return { success: false, error: "Token de Produção da SuperFrete não configurado." };
+    }
+
+    const apiHeaders = {
+      "Authorization": "Bearer " + token,
+      "Accept": "application/json",
+      "User-Agent": "FigTree (andre.figueira@gmail.com)"
+    };
+
+    const options = {
+      "method": "get",
+      "headers": apiHeaders,
+      "muteHttpExceptions": true
+    };
+
     const response = UrlFetchApp.fetch(baseUrl + "/api/v0/order/info/" + packageId, options);
     const responseText = response.getContentText();
     const responseCode = response.getResponseCode();
@@ -1995,13 +2054,7 @@ function atualizarRastreamentoPedido(orderId) {
     if (trackingIndex !== -1 && resData.tracking) {
       const antigoRastreio = rowValues[trackingIndex];
       rowValues[trackingIndex] = resData.tracking;
-      if (!antigoRastreio) {
-        try {
-          cadastrarNoSeuRastreio(pedido, resData.tracking);
-        } catch (errSR) {
-          Logger.log("Erro ao cadastrar no Seu Rastreio na atualizacao: " + errSR.message);
-        }
-      }
+
     }
 
     // Gravar os novos campos no Sheets
@@ -2145,8 +2198,31 @@ function atualizarRastreamentoPedido(orderId) {
       if (descontoEstimadoIndex !== -1) rowValues[descontoEstimadoIndex] = "";
     }
 
+    let notificou = false;
     if (newPanelStatus && statusIndex !== -1) {
       rowValues[statusIndex] = newPanelStatus;
+      
+      // Envia notificação de mudança de status para o Telegram
+      try {
+        let emoji = "📦";
+        if (sfStatus === "posted") emoji = "🚚";
+        else if (sfStatus === "delivered") emoji = "🎉";
+        else if (sfStatus === "canceled" || sfStatus === "cancelled") emoji = "❌";
+        else if (sfStatus === "pending") emoji = "⚠️";
+        else if (sfStatus === "paid" || sfStatus === "released" || sfStatus === "printed") emoji = "🎫";
+        
+        let titulo = emoji + " Status Atualizado (Pedido #" + orderId + ")";
+        let mensagem = "O status do pedido #" + orderId + " foi atualizado via sincronização automática:\n\n" +
+                       "• <b>Status Anterior:</b> " + currentStatus + "\n" +
+                       "• <b>Novo Status Interno:</b> " + newPanelStatus + "\n" +
+                       "• <b>Status SuperFrete:</b> " + resData.status + "\n" +
+                       "• <b>Rastreamento:</b> <pre>" + (resData.tracking || pedido.Codigo_Rastreio || "Pendente") + "</pre>";
+        
+        enviarNotificacaoTelegram(titulo, mensagem);
+        notificou = true;
+      } catch (errTelegram) {
+        Logger.log("Erro ao enviar notificacao Telegram na sincronizacao: " + errTelegram.message);
+      }
     }
 
     // Salva todas as alterações na planilha de uma única vez em lote
@@ -2162,66 +2238,92 @@ function atualizarRastreamentoPedido(orderId) {
       postedAt: resData.posted_at,
       deliveredAt: resData.delivered_at,
       updatedPanelStatus: newPanelStatus || currentStatus,
-      hasPdf: !!(resData.tracking || pedido.Etiqueta_PDF_URL)
+      hasPdf: !!(resData.tracking || pedido.Etiqueta_PDF_URL),
+      notificou: notificou
     };
 
   } catch (err) {
     return { success: false, error: "Exceção ao consultar API: " + err.message };
+  } finally {
+    if (hasLock) {
+      SpreadsheetApp.flush();
+      lock.releaseLock();
+    }
   }
 }
 
 function sincronizarTodosRastreamentos() {
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
-  let ss = null;
+  const lock = LockService.getScriptLock();
   try {
-    ss = SpreadsheetApp.getActiveSpreadsheet();
-  } catch (e) {}
-  if (!ss) {
-    ss = SpreadsheetApp.openById(spreadsheetId);
-  }
-  let sheet = ss.getSheetByName("Pedidos");
-  if (!sheet) {
-    return { success: false, error: "Planilha não encontrada" };
+    lock.waitLock(30000);
+  } catch (e) {
+    Logger.log("Nao foi possivel obter trava em sincronizarTodosRastreamentos: " + e.message);
+    return { success: false, error: "Recurso ocupado por outra execucao" };
   }
 
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  const packageIdIndex = headers.indexOf("Superfrete_Package_ID");
-  const pdfUrlIndex = headers.indexOf("Etiqueta_PDF_URL");
-  const statusIndex = headers.indexOf("Status");
-  
-  if (statusIndex === -1) {
-    return { success: false, error: "Coluna de Status não encontrada na planilha" };
-  }
+  try {
+    const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+    let ss = null;
+    try {
+      ss = SpreadsheetApp.getActiveSpreadsheet();
+    } catch (e) {}
+    if (!ss) {
+      ss = SpreadsheetApp.openById(spreadsheetId);
+    }
+    let sheet = ss.getSheetByName("Pedidos");
+    if (!sheet) {
+      return { success: false, error: "Planilha não encontrada" };
+    }
 
-  const resultados = [];
-
-  for (let i = 1; i < data.length; i++) {
-    const orderId = data[i][0];
-    const statusVal = String(data[i][statusIndex]).toLowerCase();
+    const data = sheet.getDataRange().getValues();
+    const headers = data[0];
+    const packageIdIndex = headers.indexOf("Superfrete_Package_ID");
+    const pdfUrlIndex = headers.indexOf("Etiqueta_PDF_URL");
+    const statusIndex = headers.indexOf("Status");
     
-    // Ignorar se já estiver finalizado (Recebido) ou se for pendente de pagamento ou cancelado
-    if (statusVal === "recebido (finalizado)" || statusVal === "recebido" || 
-        statusVal.includes("cancelado") || statusVal.includes("pendente")) {
-      continue;
+    if (statusIndex === -1) {
+      return { success: false, error: "Coluna de Status não encontrada na planilha" };
     }
 
-    let packageId = packageIdIndex !== -1 ? data[i][packageIdIndex] : "";
-    let pdfUrl = pdfUrlIndex !== -1 ? data[i][pdfUrlIndex] : "";
+    const resultados = [];
 
-    // Se tem packageId ou se tem uma etiqueta pdfUrl que possamos decodificar, sincroniza!
-    let hasPackageId = !!packageId;
-    if (!hasPackageId && pdfUrl && pdfUrl.includes("_etiqueta/pdf/")) {
-      hasPackageId = true;
+    for (let i = 1; i < data.length; i++) {
+      const orderId = data[i][0];
+      const statusVal = String(data[i][statusIndex]).toLowerCase();
+      
+      // Ignorar se já estiver finalizado (Recebido) ou se for pendente de pagamento ou cancelado
+      if (statusVal === "recebido (finalizado)" || statusVal === "recebido" || 
+          statusVal.includes("cancelado") || statusVal.includes("pendente")) {
+        continue;
+      }
+
+      let packageId = packageIdIndex !== -1 ? data[i][packageIdIndex] : "";
+      let pdfUrl = pdfUrlIndex !== -1 ? data[i][pdfUrlIndex] : "";
+
+      // Se tem packageId ou se tem uma etiqueta pdfUrl que possamos decodificar, sincroniza!
+      let hasPackageId = !!packageId;
+      if (!hasPackageId && pdfUrl && pdfUrl.includes("_etiqueta/pdf/")) {
+        hasPackageId = true;
+      }
+
+      if (hasPackageId) {
+        const res = atualizarRastreamentoPedido(orderId, true);
+        resultados.push(res);
+      }
     }
 
-    if (hasPackageId) {
-      const res = atualizarRastreamentoPedido(orderId);
-      resultados.push(res);
+    // Sincroniza também as movimentações físicas detalhadas públicas
+    try {
+      sincronizarMovimentacoesPublicas(true);
+    } catch (errSync) {
+      Logger.log("Erro na sincronizacao de movimentacoes publicas: " + errSync.message);
     }
+
+    return { success: true, resultados: resultados };
+  } finally {
+    SpreadsheetApp.flush();
+    lock.releaseLock();
   }
-
-  return { success: true, resultados: resultados };
 }
 
 function obterPlanilhaCupons(ss) {
@@ -3152,9 +3254,17 @@ function processarWebhookSuperFrete(e) {
 }
 
 function processarWebhookSuperFreteDirect(payload) {
-  // Intercepta e processa webhooks do Seu Rastreio de forma especializada
-  if (payload && payload.tracking && payload.tracking.codigo) {
-    return processarWebhookSeuRastreio(payload);
+
+
+  const lock = LockService.getScriptLock();
+  let hasLock = false;
+  try {
+    lock.waitLock(20000);
+    hasLock = true;
+  } catch (e) {
+    Logger.log("Nao foi possivel obter trava em processarWebhookSuperFreteDirect: " + e.message);
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: "Recurso ocupado por outra execucao" }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 
   try {
@@ -3215,9 +3325,9 @@ function processarWebhookSuperFreteDirect(payload) {
     }
     
     // Executa a sincronização oficial de rastreamento usando a função existente
-    const res = atualizarRastreamentoPedido(orderId);
+    const res = atualizarRastreamentoPedido(orderId, true);
     
-    if (res && res.success) {
+    if (res && res.success && !res.notificou) {
       try {
         const sfStatus = String(res.superfreteStatus).toLowerCase().trim();
         let titulo = "📦 Atualização de Frete (Pedido #" + orderId + ")";
@@ -3257,6 +3367,11 @@ function processarWebhookSuperFreteDirect(payload) {
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.message }))
       .setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    if (hasLock) {
+      SpreadsheetApp.flush();
+      lock.releaseLock();
+    }
   }
 }
 
@@ -3369,9 +3484,10 @@ function registrarWebhookNoSuperFrete() {
 function enviarNotificacaoTelegram(titulo, mensagem) {
   try {
     const scriptProps = PropertiesService.getScriptProperties();
-    let token = scriptProps.getProperty("TELEGRAM_BOT_TOKEN");
+    const token = scriptProps.getProperty("TELEGRAM_BOT_TOKEN");
     if (!token) {
-      token = "8782927815:AAEgY0cK1rC-d5dZOAYbA1xkDNySYoL81fY";
+      Logger.log("Telegram Bot Token não configurado nas propriedades do script.");
+      return { success: false, error: "Telegram Bot Token não configurado" };
     }
     const chatId = scriptProps.getProperty("TELEGRAM_CHAT_ID");
     
@@ -3419,10 +3535,10 @@ function enviarNotificacaoTelegram(titulo, mensagem) {
 function configurarTelegramChatId() {
   try {
     const scriptProps = PropertiesService.getScriptProperties();
-    let token = scriptProps.getProperty("TELEGRAM_BOT_TOKEN");
+    const token = scriptProps.getProperty("TELEGRAM_BOT_TOKEN");
     if (!token) {
-      token = "8782927815:AAEgY0cK1rC-d5dZOAYbA1xkDNySYoL81fY";
-      scriptProps.setProperty("TELEGRAM_BOT_TOKEN", token);
+      Logger.log("TELEGRAM_BOT_TOKEN não está configurado nas propriedades do script.");
+      return { success: false, error: "TELEGRAM_BOT_TOKEN não está configurado" };
     }
     
     // Limpar propriedades antigas do NTFY para não deixar "lixo"
@@ -3525,181 +3641,278 @@ function obterConfiguracaoSuperFrete() {
   }
 }
 
+
+
 /**
- * Cadastra o código de rastreio no Seu Rastreio para começar a receber as atualizações físicas de trânsito em tempo real.
+ * Configura um acionador de tempo (time-driven trigger) no Google Apps Script
+ * para rodar a função sincronizarTodosRastreamentos a cada 30 minutos de forma automática.
  */
-function cadastrarNoSeuRastreio(pedido, trackingCode) {
-  try {
-    if (!trackingCode) return;
-    
-    const apiKey = PropertiesService.getScriptProperties().getProperty("SEURASTREIO_API_KEY");
-    if (!apiKey) {
-      Logger.log("API Key do Seu Rastreio nao configurada.");
-      return;
+function configurarAcionadorSincronizacao() {
+  const triggers = ScriptApp.getProjectTriggers();
+  for (const trigger of triggers) {
+    if (trigger.getHandlerFunction() === "sincronizarTodosRastreamentos") {
+      ScriptApp.deleteTrigger(trigger);
     }
-    
-    const cleanPhone = String(pedido.Whatsapp || "").replace(/\D/g, "");
-    
-    let carrier = "Correios";
-    const metodo = String(pedido.Frete_Metodo || "").toUpperCase();
-    if (metodo.indexOf("JADLOG") !== -1) {
-      carrier = "Jadlog";
-    } else if (metodo.indexOf("LOGGI") !== -1) {
-      carrier = "Loggi";
-    }
-    
-    const payload = {
-      "externalId": String(pedido.ID_Pedido),
-      "orderNumber": "#" + pedido.ID_Pedido,
-      "trackingCode": String(trackingCode).trim(),
-      "trackingCarrier": carrier,
-      "status": "shipped",
-      "customerName": String(pedido.Nome || "").trim(),
-      "phone": cleanPhone
-    };
-    
-    const options = {
-      "method": "post",
-      "contentType": "application/json",
-      "headers": {
-        "Authorization": "Bearer " + apiKey,
-        "Accept": "application/json",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-      },
-      "payload": JSON.stringify(payload),
-      "muteHttpExceptions": true
-    };
-    
-    Logger.log("Cadastrando pedido no Seu Rastreio: " + JSON.stringify(payload));
-    const response = UrlFetchApp.fetch("https://seurastreio.com.br/api/public/pedidos", options);
-    const responseText = response.getContentText();
-    const responseCode = response.getResponseCode();
-    
-    Logger.log("Response Seu Rastreio (" + responseCode + "): " + responseText);
-    
-  } catch (err) {
-    Logger.log("Erro ao cadastrar no Seu Rastreio: " + err.message);
   }
+  
+  ScriptApp.newTrigger("sincronizarTodosRastreamentos")
+    .timeBased()
+    .everyMinutes(30)
+    .create();
+  
+  return { success: true, message: "Acionador de tempo criado com sucesso para rodar a cada 30 minutos." };
 }
 
 /**
- * Processa a notificação recebida por Webhook do Seu Rastreio informando o deslocamento físico detalhado.
+ * Formata data e hora de YYYY-MM-DD HH:MM:SS para o padrão brasileiro DD/MM/YYYY HH:MM:SS
  */
-function processarWebhookSeuRastreio(payload) {
+function formatarDataHoraPublica(dateTimeStr) {
+  if (!dateTimeStr) return "";
+  const partes = String(dateTimeStr).trim().split(" ");
+  const dataPart = partes[0];
+  const horaPart = partes[1] || "";
+  
+  const subPartes = dataPart.split("-");
+  if (subPartes.length === 3) {
+    const dataFormatada = subPartes[2] + "/" + subPartes[1] + "/" + subPartes[0];
+    return horaPart ? dataFormatada + " " + horaPart : dataFormatada;
+  }
+  return dateTimeStr;
+}
+
+/**
+ * Sincroniza as movimentações físicas detalhadas dos pedidos ativos usando a API pública de rastreamento da SuperFrete.
+ * Roda periodicamente para enviar notificações para o Telegram se houver novos eventos.
+ */
+function sincronizarMovimentacoesPublicas(skipLock) {
+  let hasLock = false;
+  const lock = LockService.getScriptLock();
+  if (!skipLock) {
+    try {
+      lock.waitLock(20000);
+      hasLock = true;
+    } catch (e) {
+      Logger.log("Nao foi possivel obter trava em sincronizarMovimentacoesPublicas: " + e.message);
+      return;
+    }
+  }
+
   try {
-    const trackingCode = String(payload.tracking.codigo).trim();
-    const eventDescription = String(payload.tracking.lastEventDescription || "").trim();
-    const eventLocation = String(payload.tracking.lastEventLocation || "").trim();
-    const eventLabel = String(payload.eventLabel || "").trim();
-    
-    let orderId = payload.order ? payload.order.orderId : null;
-    
     const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
     let ss = null;
     try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
     if (!ss) ss = SpreadsheetApp.openById(spreadsheetId);
-    
     const sheet = ss.getSheetByName("Pedidos");
-    if (!sheet) {
-      return ContentService.createTextOutput(JSON.stringify({ success: false, error: "Planilha nao encontrada" }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-    
+    if (!sheet) return;
+
     const data = sheet.getDataRange().getValues();
     const headers = data[0];
-    
     const colIdPedido = headers.indexOf("ID_Pedido");
     const colTracking = headers.indexOf("Codigo_Rastreio");
-    
-    if (colIdPedido === -1) {
-      return ContentService.createTextOutput(JSON.stringify({ success: false, error: "Coluna ID_Pedido nao encontrada" }))
-        .setMimeType(ContentService.MimeType.JSON);
+    const colStatus = headers.indexOf("Status");
+    const colSfStatus = headers.indexOf("Superfrete_Status");
+    const colDataEntrega = headers.indexOf("Data_Entrega");
+    const colDataPostagem = headers.indexOf("Data_Postagem");
+    const colSfPrevisaoEntrega = headers.indexOf("Superfrete_Previsao_Entrega");
+    const colUltimoStatusFisico = headers.indexOf("Ultimo_Status_Fisico");
+    const colUltimaMovimentacaoDesc = headers.indexOf("Ultima_Movimentacao_Desc");
+    const colUltimaMovimentacaoUnidade = headers.indexOf("Ultima_Movimentacao_Unidade");
+    const colUltimaMovimentacaoData = headers.indexOf("Ultima_Movimentacao_Data");
+
+    if (colIdPedido === -1 || colTracking === -1 || colStatus === -1) return;
+
+    // Auto-migração se as novas colunas estiverem ausentes
+    if (colUltimoStatusFisico === -1 || colUltimaMovimentacaoData === -1 || colSfPrevisaoEntrega === -1 || colUltimaMovimentacaoDesc === -1 || colUltimaMovimentacaoUnidade === -1) {
+      reordenarColunasPlanilha();
+      return sincronizarMovimentacoesPublicas(skipLock); // Recarrega os cabeçalhos atualizados
     }
-    
-    if (!orderId) {
-      // Busca na planilha pelo Código de Rastreio
-      for (let i = 1; i < data.length; i++) {
-        const rowTracking = colTracking !== -1 ? String(data[i][colTracking]).trim() : "";
-        if (trackingCode && rowTracking && (rowTracking === trackingCode)) {
-          orderId = data[i][colIdPedido];
-          break;
-        }
-      }
-    }
-    
-    if (!orderId) {
-      return ContentService.createTextOutput(JSON.stringify({ success: false, error: "Nenhum pedido correspondente encontrado na planilha para o rastreio " + trackingCode }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-    
-    // Atualiza a data de postagem ou entrega na planilha com base no status operacional
-    const statusOp = String(payload.order ? payload.order.operationalStatus : "").toLowerCase().trim();
-    const postagemIndex = headers.indexOf("Data_Postagem");
-    const entregaIndex = headers.indexOf("Data_Entrega");
-    const superfreteStatusIndex = headers.indexOf("Superfrete_Status");
-    const statusIndex = headers.indexOf("Status");
-    
-    let rowIdx = -1;
+
     for (let i = 1; i < data.length; i++) {
-      if (parseInt(data[i][colIdPedido]) === parseInt(orderId)) {
-        rowIdx = i + 1;
-        break;
+      const orderId = String(data[i][colIdPedido]).trim();
+      const trackingCode = String(data[i][colTracking]).trim();
+      const statusVal = String(data[i][colStatus]).toLowerCase().trim();
+
+      // Sincroniza apenas pedidos que estão Enviados ou Em Trânsito
+      if (!trackingCode || trackingCode === "Pendente" || 
+          !(statusVal === "enviado" || statusVal === "em transito" || statusVal === "em trânsito")) {
+        continue;
+      }
+
+      try {
+        const url = "https://rastreamento.superfrete.com/public/tracking/" + encodeURIComponent(trackingCode) + "?application_id=100";
+        const options = {
+          method: "get",
+          headers: {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "application/json"
+          },
+          muteHttpExceptions: true
+        };
+
+        const response = UrlFetchApp.fetch(url, options);
+        if (response.getResponseCode() !== 200) continue;
+
+        const resData = JSON.parse(response.getContentText());
+        const pt = resData.provider_tracking;
+        if (!pt || !pt.tracking || !Array.isArray(pt.tracking.eventos) || pt.tracking.eventos.length === 0) {
+          continue;
+        }
+
+        const ultimoEvento = pt.tracking.eventos[0];
+        const eventDate = String(ultimoEvento.data).trim();
+        const eventStatus = String(ultimoEvento.status).trim();
+        const eventDesc = String(ultimoEvento.descricao).trim();
+        const eventUnidade = String(ultimoEvento.unidade || "").trim();
+
+        // Informações adicionais da transportadora
+        const transportadora = String(pt.provider || "").toUpperCase();
+        const previsaoOriginal = pt.previsaoEntrega ? String(pt.previsaoEntrega).trim() : "";
+        let previsaoFormatada = "";
+        if (previsaoOriginal) {
+          const partesPrev = previsaoOriginal.split("-");
+          if (partesPrev.length === 3) {
+            previsaoFormatada = partesPrev[2] + "/" + partesPrev[1] + "/" + partesPrev[0];
+          } else {
+            previsaoFormatada = previsaoOriginal;
+          }
+        }
+
+        const codigoTransportadora = pt.tracking.codigo ? String(pt.tracking.codigo).trim() : "";
+
+        // Tenta detectar data de postagem se a coluna estiver vazia
+        let dataPostagemDetectada = "";
+        for (let j = pt.tracking.eventos.length - 1; j >= 0; j--) {
+          const ev = pt.tracking.eventos[j];
+          const st = String(ev.status || "").toLowerCase();
+          const desc = String(ev.descricao || "").toLowerCase();
+          if (st.includes("postado") || st.includes("coleta") || st.includes("depositado") || 
+              desc.includes("postado") || desc.includes("coleta") || desc.includes("depositado")) {
+            dataPostagemDetectada = ev.data;
+            break;
+          }
+        }
+        if (!dataPostagemDetectada && pt.tracking.eventos.length > 1) {
+          // Fallback: pega o penúltimo evento da lista (o primeiro físico após a criação)
+          dataPostagemDetectada = pt.tracking.eventos[pt.tracking.eventos.length - 2].data;
+        }
+
+        // Lê a última assinatura física gravada na planilha
+        const savedStatus = String(data[i][colUltimoStatusFisico] || "").trim();
+        const savedDesc = String(data[i][colUltimaMovimentacaoDesc] || "").trim();
+        const savedUnidade = String(data[i][colUltimaMovimentacaoUnidade] || "").trim();
+        
+        let savedDate = "";
+        const rawDate = data[i][colUltimaMovimentacaoData];
+        if (rawDate instanceof Date) {
+          savedDate = Utilities.formatDate(rawDate, Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm:ss");
+        } else {
+          savedDate = String(rawDate || "").trim();
+        }
+        
+        const hasEventChanged = (eventDate !== savedDate || eventStatus !== savedStatus || eventDesc !== savedDesc || eventUnidade !== savedUnidade);
+
+        // Identifica se foi entregue
+        const isEntregue = (pt.shipmentStatus === "Entregue" || 
+                            eventStatus.toLowerCase().includes("entregue") || 
+                            eventDesc.toLowerCase().includes("entregue") ||
+                            eventStatus.toLowerCase() === "delivered");
+
+        if (isEntregue) {
+          // Atualiza a planilha para marcar o pedido como entregue/finalizado
+          sheet.getRange(i + 1, colStatus + 1).setValue("Recebido (Finalizado)");
+          if (colSfStatus !== -1) sheet.getRange(i + 1, colSfStatus + 1).setValue("delivered");
+          if (colDataEntrega !== -1) {
+            // Grava a data de entrega na planilha
+            sheet.getRange(i + 1, colDataEntrega + 1).setValue(eventDate || new Date());
+          }
+          if (colDataPostagem !== -1 && dataPostagemDetectada) {
+            const currentPost = String(sheet.getRange(i + 1, colDataPostagem + 1).getValue() || "").trim();
+            if (!currentPost) {
+              sheet.getRange(i + 1, colDataPostagem + 1).setValue(dataPostagemDetectada);
+            }
+          }
+
+          // Também atualiza o status físico na planilha para controle
+          if (colUltimoStatusFisico !== -1) sheet.getRange(i + 1, colUltimoStatusFisico + 1).setValue(eventStatus);
+          if (colUltimaMovimentacaoDesc !== -1) sheet.getRange(i + 1, colUltimaMovimentacaoDesc + 1).setValue(eventDesc);
+          if (colUltimaMovimentacaoUnidade !== -1) sheet.getRange(i + 1, colUltimaMovimentacaoUnidade + 1).setValue(eventUnidade);
+          if (colUltimaMovimentacaoData !== -1) sheet.getRange(i + 1, colUltimaMovimentacaoData + 1).setValue(eventDate);
+          if (colSfPrevisaoEntrega !== -1 && previsaoFormatada) {
+            sheet.getRange(i + 1, colSfPrevisaoEntrega + 1).setValue(previsaoFormatada);
+          }
+
+          // Se o evento mudou (ainda não tínhamos notificado a entrega), envia notificação Telegram
+          if (hasEventChanged) {
+            const localizacaoText = eventUnidade ? " (" + eventUnidade + ")" : "";
+            const codigoTransportadoraText = (codigoTransportadora && codigoTransportadora !== trackingCode) ? 
+              "\n• <b>Cód. Transportadora:</b> <pre>" + codigoTransportadora + "</pre>" : "";
+            const dataEntregaFormatada = formatarDataHoraPublica(eventDate);
+
+            const titulo = "🎉 Entrega Concluída: Pedido #" + orderId;
+            const messageContent = "O pacote foi entregue com sucesso ao destinatário!\n\n" +
+                             "• <b>Transportadora:</b> " + transportadora + "\n" +
+                             "• <b>Status:</b> " + eventStatus + localizacaoText + "\n" +
+                             "• <b>Data/Hora da Entrega:</b> " + dataEntregaFormatada + "\n" +
+                             codigoTransportadoraText + "\n" +
+                             "• <b>Rastreio SuperFrete:</b> <pre>" + trackingCode + "</pre>\n" +
+                             "• <b>Link de Rastreamento:</b> <a href=\"https://rastreamento.superfrete.com/#" + trackingCode + "\">Rastrear na SuperFrete</a>";
+
+            enviarNotificacaoTelegram(titulo, messageContent);
+          }
+
+          continue;
+        }
+
+        // Se não entregue, atualiza a data de postagem na planilha se ainda não tiver e tiver sido detectada
+        if (colDataPostagem !== -1 && dataPostagemDetectada) {
+          const currentPost = String(sheet.getRange(i + 1, colDataPostagem + 1).getValue() || "").trim();
+          if (!currentPost) {
+            sheet.getRange(i + 1, colDataPostagem + 1).setValue(dataPostagemDetectada);
+          }
+        }
+
+        // Se não houve mudança em trânsito, encerra a verificação para este pedido
+        if (!hasEventChanged) {
+          continue;
+        }
+
+        // Atualiza o último status físico na planilha
+        if (colUltimoStatusFisico !== -1) sheet.getRange(i + 1, colUltimoStatusFisico + 1).setValue(eventStatus);
+        if (colUltimaMovimentacaoDesc !== -1) sheet.getRange(i + 1, colUltimaMovimentacaoDesc + 1).setValue(eventDesc);
+        if (colUltimaMovimentacaoUnidade !== -1) sheet.getRange(i + 1, colUltimaMovimentacaoUnidade + 1).setValue(eventUnidade);
+        if (colUltimaMovimentacaoData !== -1) sheet.getRange(i + 1, colUltimaMovimentacaoData + 1).setValue(eventDate);
+        if (colSfPrevisaoEntrega !== -1 && previsaoFormatada) {
+          sheet.getRange(i + 1, colSfPrevisaoEntrega + 1).setValue(previsaoFormatada);
+        }
+
+        // Constrói a mensagem de trânsito e envia para o Telegram
+        const localizacaoText = eventUnidade ? " (" + eventUnidade + ")" : "";
+        const previsaoText = previsaoFormatada ? "\n• <b>Previsão de Entrega:</b> " + previsaoFormatada : "";
+        const codigoTransportadoraText = (codigoTransportadora && codigoTransportadora !== trackingCode) ? 
+          "\n• <b>Cód. Transportadora:</b> <pre>" + codigoTransportadora + "</pre>" : "";
+        const dataMovimentacaoFormatada = formatarDataHoraPublica(eventDate);
+
+        const titulo = "🚚 Movimentação: " + eventStatus + " (Pedido #" + orderId + ")";
+        const messageContent = "Nova atualização física no deslocamento do pacote:\n\n" +
+                         "• <b>Transportadora:</b> " + transportadora + "\n" +
+                         "• <b>Status:</b> " + eventDesc + localizacaoText + "\n" +
+                         "• <b>Data/Hora:</b> " + dataMovimentacaoFormatada + 
+                         previsaoText + 
+                         codigoTransportadoraText + "\n" +
+                         "• <b>Rastreio SuperFrete:</b> <pre>" + trackingCode + "</pre>\n" +
+                         "• <b>Link de Rastreamento:</b> <a href=\"https://rastreamento.superfrete.com/#" + trackingCode + "\">Rastrear na SuperFrete</a>";
+
+        enviarNotificacaoTelegram(titulo, messageContent);
+
+      } catch (err) {
+        Logger.log("Erro ao sincronizar movimentação pública para pedido " + orderId + ": " + err.message);
       }
     }
-    
-    if (rowIdx !== -1) {
-      const rowValues = data[rowIdx - 1].slice();
-      let alterou = false;
-      
-      if (statusOp === "nao_postado" || statusOp === "postado" || statusOp === "em_curso") {
-        if (superfreteStatusIndex !== -1 && rowValues[superfreteStatusIndex] !== "posted") {
-          rowValues[superfreteStatusIndex] = "posted";
-          alterou = true;
-        }
-        if (statusIndex !== -1 && rowValues[statusIndex] !== "Enviado") {
-          rowValues[statusIndex] = "Enviado";
-          alterou = true;
-        }
-        if (postagemIndex !== -1 && !rowValues[postagemIndex]) {
-          rowValues[postagemIndex] = payload.occurredAt || new Date();
-          alterou = true;
-        }
-      } else if (statusOp === "entregue") {
-        if (superfreteStatusIndex !== -1 && rowValues[superfreteStatusIndex] !== "delivered") {
-          rowValues[superfreteStatusIndex] = "delivered";
-          alterou = true;
-        }
-        if (statusIndex !== -1 && rowValues[statusIndex] !== "Recebido (Finalizado)") {
-          rowValues[statusIndex] = "Recebido (Finalizado)";
-          alterou = true;
-        }
-        if (entregaIndex !== -1 && !rowValues[entregaIndex]) {
-          rowValues[entregaIndex] = payload.occurredAt || new Date();
-          alterou = true;
-        }
-      }
-      
-      if (alterou) {
-        sheet.getRange(rowIdx, 1, 1, rowValues.length).setValues([rowValues]);
-      }
+  } finally {
+    if (hasLock) {
+      SpreadsheetApp.flush();
+      lock.releaseLock();
     }
-    
-    // Dispara a notificação de deslocamento físico detalhado no Telegram
-    let localizacaoText = eventLocation ? " (" + eventLocation + ")" : "";
-    let titulo = "🚚 Movimentação: " + eventLabel + " (Pedido #" + orderId + ")";
-    let mensagem = "Nova atualização física no deslocamento do pacote:\n\n" +
-                     "• <b>Status:</b> " + eventDescription + localizacaoText + "\n" +
-                     "• <b>Rastreio:</b> <pre>" + trackingCode + "</pre>";
-                     
-    enviarNotificacaoTelegram(titulo, mensagem);
-    
-    return ContentService.createTextOutput(JSON.stringify({ success: true }))
-      .setMimeType(ContentService.MimeType.JSON);
-      
-  } catch (error) {
-    Logger.log("Erro ao processar webhook do Seu Rastreio: " + error.message);
-    return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.message }))
-      .setMimeType(ContentService.MimeType.JSON);
   }
 }
 
