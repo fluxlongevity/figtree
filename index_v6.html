@@ -2206,6 +2206,28 @@
        LÓGICA JAVASCRIPT INTEGRADA
        ========================================================================== -->
   <script>
+    // ==========================================================================
+    // INTERCEPTADOR DE ERROS DE RUNTIME PARA DEBBUG NO CELULAR
+    // ==========================================================================
+    window.onerror = function(message, source, lineno, colno, error) {
+      const errorMsg = `Erro: ${message}\nLinha: ${lineno}:${colno}\nArquivo: ${source}`;
+      alert("[Console Error]\n\n" + errorMsg);
+      const div = document.createElement("div");
+      div.style.cssText = "position:fixed;top:0;left:0;right:0;background:#dc3545;color:#ffffff;padding:24px;z-index:999999;font-family:monospace;font-size:13px;line-height:1.4;box-shadow:0 4px 20px rgba(0,0,0,0.3);";
+      div.innerHTML = `<strong>Erro de Execução JavaScript:</strong><br><br>${message}<br><br>Linha: ${lineno}:${colno}<br>Arquivo: ${source}<br><br><button onclick="this.parentElement.remove()" style="background:#ffffff;color:#dc3545;border:1px solid #ffffff;padding:6px 12px;font-family:inherit;font-weight:bold;cursor:pointer;">Fechar</button>`;
+      document.body.insertBefore(div, document.body.firstChild);
+      return false;
+    };
+
+    window.onunhandledrejection = function(event) {
+      const reason = event.reason || "Erro desconhecido em Promise";
+      alert("[Promise Rejection]\n\n" + reason);
+      const div = document.createElement("div");
+      div.style.cssText = "position:fixed;top:0;left:0;right:0;background:#ffc107;color:#212529;padding:24px;z-index:999999;font-family:monospace;font-size:13px;line-height:1.4;box-shadow:0 4px 20px rgba(0,0,0,0.3);";
+      div.innerHTML = `<strong>Rejeição de Promise não tratada:</strong><br><br>${reason}<br><br><button onclick="this.parentElement.remove()" style="background:#212529;color:#ffc107;border:1px solid #212529;padding:6px 12px;font-family:inherit;font-weight:bold;cursor:pointer;">Fechar</button>`;
+      document.body.insertBefore(div, document.body.firstChild);
+    };
+
     // Configurações Globais
     const SELLER_WHATSAPP = "5521969467886";
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbycjYy2UiWKMJAQcrFEs9IFJ42LTKtSJMgUufCYErjlX9U80m6V7M1pHvRb0gbH5TSF/exec"; 
