@@ -1,0 +1,3767 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FigTree — Caderninhos de Bolso Artesanais (9x14 cm)</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📓</text></svg>">
+  
+  <!-- Fontes do Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       1. VARIÁVEIS CSS E DESIGN SYSTEM (ESTILO DAPPER NOTES)
+       ========================================================================== */
+    :root {
+      /* Cores */
+      --bg-base: #fcfaf6;       /* Creme suave de papel */
+      --bg-alt: #f4efe6;        /* Creme ligeiramente mais escuro para contraste */
+      --bg-hero: #d2723c;       /* Terracota rico do Dapper Notes */
+      --bg-hero-dark: #b85f29;  /* Terracota escuro */
+      --ink: #261512;           /* Preto tinta / Marrom escuro */
+      --muted: #705550;         /* Marrom acinzentado sutil */
+      --accent: #c87955;        /* Terracota claro */
+      --accent-dark: #53251b;   /* Marrom argila profundo */
+      --sage: #7c8d70;          /* Verde sálvia */
+      --sage-light: #f2ede2;    /* Verde sálvia muito claro para fundos */
+      --line: rgba(38, 21, 18, 0.08);
+      --line-white: rgba(255, 255, 255, 0.15);
+      
+      /* Tipografia */
+      --serif: "Cormorant Garamond", Georgia, serif;
+      --sans: "Inter", Arial, Helvetica, sans-serif;
+      
+      /* Sombras e Efeitos */
+      --shadow-sm: 0 2px 8px rgba(38, 21, 18, 0.04);
+      --shadow-md: 0 8px 24px rgba(38, 21, 18, 0.08);
+      --shadow-lg: 0 16px 48px rgba(38, 21, 18, 0.12);
+      --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Reset Geral */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100%;
+      overflow-x: hidden;
+      font-family: var(--sans);
+      color: var(--ink);
+      background-color: var(--bg-base);
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      transition: var(--transition);
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+      transition: var(--transition);
+    }
+
+    /* ==========================================================================
+       2. LAYOUT E COMPONENTES GERAIS
+       ========================================================================== */
+    .container {
+      width: min(1200px, 100% - 32px);
+      margin: 0 auto;
+    }
+    
+    @media (min-width: 769px) {
+      .container {
+        width: min(1200px, 100% - 64px);
+      }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 28px;
+      border-radius: 99px;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(200, 121, 85, 0.25);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(83, 37, 27, 0.35);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 1.5px solid var(--ink);
+      color: var(--ink);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--ink);
+      color: var(--bg-base);
+      transform: translateY(-2px);
+    }
+
+    .section-padding {
+      padding: 60px 0;
+    }
+
+    @media (min-width: 769px) {
+      .section-padding {
+        padding: 100px 0;
+      }
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 40px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .section-subtitle {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ==========================================================================
+       3. TOPBAR E NAVEGAÇÃO
+       ========================================================================== */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: rgba(252, 250, 246, 0.95);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+      transition: var(--transition);
+    }
+
+    .topbar-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 70px;
+    }
+
+    .logo-wrapper img {
+      height: 38px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .nav-menu {
+      display: none;
+    }
+
+    .cart-trigger {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1.5px solid var(--line);
+      color: var(--ink);
+    }
+
+    .cart-trigger:hover {
+      background-color: var(--bg-alt);
+      border-color: var(--ink);
+      transform: scale(1.05);
+    }
+
+    .cart-trigger svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background-color: var(--accent);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--bg-base);
+      animation: pop 0.3s ease;
+    }
+
+    @media (min-width: 769px) {
+      .topbar-container {
+        height: 80px;
+      }
+      .nav-menu {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+      }
+      .nav-link {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .nav-link:hover {
+        color: var(--ink);
+      }
+    }
+
+    /* ==========================================================================
+       4. HERO SECTION
+       ========================================================================== */
+    .hero {
+      background-color: var(--bg-hero);
+      color: #ffffff;
+      padding: 60px 0 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.2px, transparent 1.2px);
+      background-size: 24px 24px;
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 40px;
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+      z-index: 1;
+    }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(38px, 5.5vw, 64px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-desc {
+      font-size: 16px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 480px;
+      font-weight: 300;
+    }
+
+    .hero-cta {
+      margin-top: 10px;
+    }
+
+    .hero-btn {
+      background-color: var(--ink);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(38, 21, 18, 0.2);
+    }
+
+    .hero-btn:hover {
+      background-color: #000000;
+      transform: translateY(-2px);
+    }
+
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .hero-mockup-wrapper {
+      width: min(340px, 80vw);
+      height: min(340px, 80vw);
+      border-radius: 20px;
+      border: 10px solid rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg), 0 20px 40px rgba(0, 0, 0, 0.15);
+      transform: rotate(-3deg);
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hero-mockup-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hero-mockup-wrapper:hover {
+      transform: rotate(0deg) scale(1.03);
+    }
+
+    @media (min-width: 769px) {
+      .hero {
+        padding: 100px 0 120px;
+      }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+      }
+      .hero-content {
+        align-items: flex-start;
+        text-align: left;
+      }
+      .hero-mockup-wrapper {
+        width: 460px;
+        height: 460px;
+        border: 14px solid rgba(255, 255, 255, 0.12);
+      }
+    }
+
+    /* ==========================================================================
+       5. SEÇÃO STORYTELLING (FEITO À MÃO - CANOAGEM)
+       ========================================================================== */
+    .story {
+      background-color: var(--bg-alt);
+    }
+
+    .story-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .story-image-col {
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+
+    .story-image-col img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .story-image-col:hover img {
+      transform: scale(1.02);
+    }
+
+    .story-text-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .story-tag {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--accent);
+    }
+
+    .story-title {
+      font-family: var(--serif);
+      font-size: clamp(28px, 3.5vw, 40px);
+      font-weight: 700;
+      line-height: 1.15;
+    }
+
+    .story-desc {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    .story-desc strong {
+      color: var(--ink);
+    }
+
+    @media (min-width: 769px) {
+      .story-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.1fr;
+        gap: 70px;
+        align-items: center;
+      }
+    }
+
+    /* ==========================================================================
+       6. SEÇÃO OS DETALHE QUE IMPORTAM (MATERIAL)
+       ========================================================================== */
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 500px) {
+      .details-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 900px) {
+      .details-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .detail-card {
+      background-color: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 32px 24px;
+      transition: var(--transition);
+    }
+
+    .detail-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .detail-icon {
+      font-size: 32px;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+
+    .detail-card-title {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .detail-card-desc {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ==========================================================================
+       7. SECTION MONTE SEU KIT (CUSTOMIZADOR DE COMPRA)
+       ========================================================================== */
+    .customizer {
+      background-color: #ffffff;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .customizer-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .customizer-step {
+      margin-bottom: 20px;
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: var(--ink);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+      margin-right: 10px;
+    }
+
+    .step-title-text {
+      font-family: var(--serif);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--ink);
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    /* Grid de Capas */
+    .cover-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    @media (min-width: 500px) {
+      .cover-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 900px) {
+      .cover-grid {
+        grid-template-columns: repeat(6, 1fr);
+      }
+    }
+
+    .cover-option {
+      background-color: var(--bg-base);
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .cover-option.is-selected {
+      border-color: var(--accent);
+      background-color: #ffffff;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .cover-option.is-selected::after {
+      content: "✓";
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background-color: var(--accent);
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 800;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .cover-thumb {
+      width: 100%;
+      aspect-ratio: 9/14;
+      border-radius: 6px;
+      overflow: hidden;
+      background-color: var(--bg-alt);
+      margin-bottom: 8px;
+      position: relative;
+      box-shadow: 0 2px 6px rgba(38,21,18,0.03);
+    }
+
+    .cover-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cover-name {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .zoom-button {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--line);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      opacity: 0.8;
+    }
+
+    .zoom-button:hover {
+      opacity: 1;
+      transform: scale(1.05);
+      background-color: #ffffff;
+    }
+
+    .zoom-button svg {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2.5;
+    }
+
+    /* Grid de Miolos */
+    .interior-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    @media (min-width: 600px) {
+      .interior-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 900px) {
+      .interior-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .interior-option {
+      background-color: var(--bg-base);
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .interior-option.is-selected {
+      border-color: var(--accent);
+      background-color: #ffffff;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .interior-option.is-selected::after {
+      content: "✓";
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background-color: var(--accent);
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 800;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .interior-preview {
+      width: 100%;
+      height: 110px;
+      border-radius: 6px;
+      overflow: hidden;
+      background-color: #ffffff;
+      border: 1px solid var(--line);
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .interior-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+    }
+
+    .interior-option strong {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .interior-option span {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    /* Adicionar Item */
+    .add-to-cart-box {
+      background-color: var(--bg-alt);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    @media (min-width: 769px) {
+      .add-to-cart-box {
+        flex-direction: row;
+        padding: 32px;
+      }
+    }
+
+    .selection-summary {
+      font-size: 14.5px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (min-width: 769px) {
+      .selection-summary {
+        text-align: left;
+      }
+    }
+
+    .selection-summary strong {
+      color: var(--ink);
+    }
+
+    .qty-selector {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid var(--ink);
+      border-radius: 99px;
+      height: 48px;
+      overflow: hidden;
+      background-color: #ffffff;
+    }
+
+    .qty-btn-ctrl {
+      width: 44px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink);
+      font-weight: 800;
+      font-size: 16px;
+    }
+
+    .qty-btn-ctrl:hover {
+      background-color: var(--bg-alt);
+    }
+
+    .qty-input-ctrl {
+      width: 40px;
+      height: 100%;
+      border: none;
+      text-align: center;
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--ink);
+      background: none;
+      outline: none;
+    }
+
+    .add-action-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    @media (min-width: 769px) {
+      .add-action-group {
+        width: auto;
+        justify-content: flex-end;
+      }
+    }
+
+    .add-btn-main {
+      height: 48px;
+      padding: 0 32px;
+      font-size: 14px;
+      background-color: var(--ink);
+      color: #ffffff;
+      border-radius: 99px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .add-btn-main:hover {
+      background-color: #000000;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .add-btn-main svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2.5;
+    }
+
+    /* ==========================================================================
+       8. TESTIMONIALS & REVIEWS
+       ========================================================================== */
+    .testimonials {
+      background-color: var(--bg-alt);
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 769px) {
+      .testimonials-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .testimonial-card {
+      background-color: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stars {
+      color: #d4a373;
+      font-size: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 2px;
+    }
+
+    .testimonial-quote {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--ink);
+      font-style: italic;
+      flex-grow: 1;
+      margin-bottom: 24px;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .author-initials {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--accent);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .author-meta h4 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .author-meta span {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ==========================================================================
+       9. DRAWER DO CARRINHO (CHECKOUT LATERAL)
+       ========================================================================== */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(38, 21, 18, 0.4);
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      backdrop-filter: blur(2px);
+    }
+
+    .drawer-overlay.is-active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(480px, 100%);
+      background-color: var(--bg-base);
+      z-index: 1001;
+      box-shadow: -10px 0 40px rgba(0,0,0,0.1);
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer.is-active {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #ffffff;
+    }
+
+    .drawer-title {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .drawer-close {
+      font-size: 24px;
+      color: var(--muted);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .drawer-close:hover {
+      background-color: var(--bg-alt);
+      color: var(--ink);
+    }
+
+    .drawer-body {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* Lista do Carrinho */
+    .cart-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .empty-cart {
+      text-align: center;
+      font-size: 14px;
+      color: var(--muted);
+      padding: 40px 0;
+      line-height: 1.5;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      gap: 12px;
+      position: relative;
+    }
+
+    .cart-item-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-grow: 1;
+      cursor: pointer;
+    }
+
+    .cart-item-thumb {
+      width: 48px;
+      aspect-ratio: 9/14;
+      border-radius: 4px;
+      overflow: hidden;
+      background-color: var(--bg-alt);
+    }
+
+    .cart-item-details {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .cart-item-details strong {
+      font-size: 13.5px;
+      color: var(--ink);
+    }
+
+    .cart-item-details span {
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+
+    .cart-item-qty {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .qty-btn {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background-color: var(--bg-base);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .qty-btn:hover {
+      background-color: var(--bg-alt);
+    }
+
+    .qty-val {
+      font-size: 12px;
+      font-weight: 800;
+      min-width: 14px;
+      text-align: center;
+    }
+
+    .remove-item {
+      font-size: 20px;
+      color: var(--muted);
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .remove-item:hover {
+      background-color: var(--bg-alt);
+      color: var(--accent);
+    }
+
+    /* Formulários no Drawer */
+    .drawer-form-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 24px;
+    }
+
+    .drawer-section-title {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-group label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+    }
+
+    .form-control {
+      height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 14px;
+      font-size: 13.5px;
+      color: var(--ink);
+      background-color: #ffffff;
+      outline: none;
+      transition: var(--transition);
+      width: 100%;
+    }
+
+    .form-control:focus {
+      border-color: var(--ink);
+      box-shadow: 0 0 0 2px rgba(38, 21, 18, 0.05);
+    }
+
+    .form-control[readonly] {
+      background-color: var(--bg-alt);
+      cursor: pointer;
+    }
+
+    /* Frete */
+    .shipping-box {
+      background-color: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .shipping-option-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1.5px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .shipping-option-card:has(input:checked) {
+      border-color: var(--accent);
+      background-color: var(--bg-base);
+    }
+
+    .shipping-option-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-grow: 1;
+      gap: 10px;
+    }
+
+    .shipping-option-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .shipping-option-time {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .shipping-option-price {
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    /* Cupom */
+    .coupon-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .coupon-btn {
+      height: 44px;
+      padding: 0 20px;
+      background-color: var(--ink);
+      color: #ffffff;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .coupon-btn:hover {
+      background-color: #000000;
+    }
+
+    .coupon-feedback {
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    /* Resumo e Botão Final */
+    .drawer-footer {
+      padding: 20px 24px;
+      border-top: 1px solid var(--line);
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .summary-box {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .summary-line.total {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      border-top: 1px dashed var(--line);
+      padding-top: 12px;
+      margin-top: 4px;
+    }
+
+    .discount-note {
+      background-color: rgba(200, 121, 85, 0.05);
+      border: 1px solid rgba(200, 121, 85, 0.15);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .whatsapp-btn-main {
+      height: 52px;
+      width: 100%;
+      background-color: #25d366; /* Verde do WhatsApp */
+      color: #ffffff;
+      border-radius: 99px;
+      font-size: 14.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);
+    }
+
+    .whatsapp-btn-main:hover {
+      background-color: #20ba5a;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
+    }
+
+    .whatsapp-btn-main.is-disabled {
+      background-color: var(--bg-alt);
+      color: var(--muted);
+      border: 1px solid var(--line);
+      cursor: not-allowed;
+      box-shadow: none;
+      pointer-events: none;
+    }
+
+    /* ==========================================================================
+       10. MODAIS CUSTOMIZADOS (QRCODE PIX, ALERTA E CONFIRMAÇÃO)
+       ========================================================================== */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(38, 21, 18, 0.5);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background-color: var(--bg-base);
+      border-radius: 20px;
+      width: min(440px, 100%);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      transform: scale(0.95);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--line);
+    }
+
+    .modal.is-open .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #ffffff;
+    }
+
+    .modal-title {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .modal-close {
+      font-size: 22px;
+      color: var(--muted);
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .modal-close:hover {
+      background-color: var(--bg-alt);
+      color: var(--ink);
+    }
+
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      max-height: 70vh;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .modal-body strong {
+      color: var(--ink);
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--line);
+      background-color: #ffffff;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    /* Customizações do Modal do PIX */
+    .pix-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .qrcode-container {
+      background-color: #ffffff;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .pix-input-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .pix-code-text {
+      width: 100%;
+      height: 70px;
+      border: 1.5px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 11px;
+      font-family: monospace;
+      color: var(--muted);
+      background-color: var(--bg-alt);
+      resize: none;
+      outline: none;
+    }
+
+    /* Modal do Endereço */
+    .address-summary {
+      background-color: rgba(200, 121, 85, 0.05);
+      border: 1px solid rgba(200, 121, 85, 0.15);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* Carousel de Zoom */
+    .preview-carousel-container {
+      display: flex;
+      align-items: center;
+      position: relative;
+      width: 100%;
+      height: 380px;
+    }
+
+    .preview-carousel {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .preview-carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .preview-slide {
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      scroll-snap-align: start;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+    }
+
+    .preview-cover-large {
+      height: 100%;
+      aspect-ratio: 9/14;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      border: 4px solid #ffffff;
+      background-color: var(--bg-alt);
+    }
+
+    .preview-cover-large img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .preview-interior-large {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+      border-radius: 10px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--line);
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink);
+      box-shadow: var(--shadow-sm);
+      z-index: 10;
+    }
+
+    .carousel-btn:hover {
+      background-color: #ffffff;
+      transform: translateY(-50%) scale(1.05);
+    }
+
+    .carousel-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2;
+    }
+
+    .prev-btn { left: 10px; }
+    .next-btn { right: 10px; }
+
+    /* ==========================================================================
+       11. RODAPÉ (FOOTER)
+       ========================================================================== */
+    .footer {
+      background-color: var(--accent-dark);
+      color: #ffffff;
+      padding: 60px 0 40px;
+      border-top: 1px solid var(--line-white);
+    }
+
+    .footer-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      border-bottom: 1px solid var(--line-white);
+      padding-bottom: 40px;
+      margin-bottom: 30px;
+    }
+
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .footer-logo img {
+      height: 44px;
+      width: auto;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+    }
+
+    .footer-tagline {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.5;
+      max-width: 320px;
+    }
+
+    .footer-links {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .footer-links-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links-col h4 {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .footer-link {
+      font-size: 13.5px;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .footer-link:hover {
+      color: #ffffff;
+      transform: translateX(2px);
+    }
+
+    .footer-quote {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-style: italic;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.5;
+      max-width: 280px;
+    }
+
+    .footer-bottom {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+      text-align: center;
+      font-size: 12.5px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    @media (min-width: 769px) {
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 1fr;
+        gap: 80px;
+      }
+      .footer-links {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .footer-bottom {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+      }
+    }
+
+    /* ==========================================================================
+       12. ANIMAÇÕES
+       ========================================================================== */
+    @keyframes pop {
+      0% { transform: scale(0.6); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       CABEÇALHO & TOPBAR
+       ========================================================================== -->
+  <header class="topbar">
+    <div class="container topbar-container">
+      <a href="#" class="logo-wrapper" title="FigTree Home">
+        <img src="assets/logo_color_tranparent_horizontal.png" alt="FigTree Logo">
+      </a>
+      <nav class="nav-menu">
+        <a href="#customizer" class="nav-link">Cadernos</a>
+        <a href="#story" class="nav-link">Como Fazemos</a>
+        <a href="#details" class="nav-link">Os Detalhes</a>
+        <a href="#testimonials" class="nav-link">Avaliações</a>
+      </nav>
+      <button class="cart-trigger" id="cartTrigger" type="button" aria-label="Abrir resumo de pedidos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span class="cart-badge" id="cartBadge" style="display: none;">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       HERO SECTION
+       ========================================================================== -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <h1 class="hero-title">Feitos à mão para durar uma vida.</h1>
+        <p class="hero-desc">Caderninhos de bolso táticos e elegantes (9 x 14 cm) em papel pólen de alta qualidade. Perfeitos para rascunhos rápidos, diários e notas do dia a dia.</p>
+        <div class="hero-cta">
+          <a href="#customizer" class="btn hero-btn">Escolha o seu Kit</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-mockup-wrapper">
+          <img src="assets/leque-cadernos-a6-capas.webp" alt="Leque de Cadernos de Bolso FigTree">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       SEÇÃO STORYTELLING (CONFECÇÃO E DOBRA MANUAL)
+       ========================================================================== -->
+  <section class="section-padding story" id="story">
+    <div class="container story-grid">
+      <div class="story-image-col">
+        <img src="assets/lifestyle_desk.png" alt="Mesa de escrita aconchegante com caderno FigTree">
+      </div>
+      <div class="story-text-col">
+        <span class="story-tag">O Toque do Criador</span>
+        <h2 class="story-title">Dobra precisa e vinco feito à mão</h2>
+        <p class="story-desc">Acreditamos que um caderninho é mais do que apenas papel grampeado dentro de uma capa. Cada peça da <strong>FigTree</strong> é montada e dobrada manualmente em nossa oficina, garantindo um alinhamento perfeito e um toque tátil analógico inigualável.</p>
+        <p class="story-desc">Usamos técnicas de <strong>canoagem (saddle-stitch com grampos)</strong> de alta durabilidade, permitindo que o caderno abra perfeitamente na mesa e te acompanhe sem descolar ou quebrar folhas, não importa quantas vezes seja dobrado ou colocado no bolso de trás.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       SEÇÃO OS DETALHES QUE IMPORTAM
+       ========================================================================== -->
+  <section class="section-padding details" id="details">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Os Detalhes que Importam</h2>
+        <p class="section-subtitle">Focamos em materiais nobres e acabamento minucioso para criar um produto resistente e prazeroso de usar.</p>
+      </div>
+      <div class="details-grid">
+        <div class="detail-card">
+          <span class="detail-icon">🖋️</span>
+          <h3 class="detail-card-title">Papel Pólen Bold</h3>
+          <p class="detail-card-desc">Papel pólen amarelado de 90g. Confortável para ler, macio para escrever e amigável para canetas-tinteiro.</p>
+        </div>
+        <div class="detail-card">
+          <span class="detail-icon">✂️</span>
+          <h3 class="detail-card-title">Cantos Arredondados</h3>
+          <p class="detail-card-desc">Cada caderno é cortado e arredondado manualmente. Evita que os cantos amassem ou orelhem dentro do seu bolso.</p>
+        </div>
+        <div class="detail-card">
+          <span class="detail-icon">📐</span>
+          <h3 class="detail-card-title">Tamanho Compacto</h3>
+          <p class="detail-card-desc">Projetado na dimensão de bolso ideal (9 x 14 cm). Compacto para carregar e espaçoso para rascunhar.</p>
+        </div>
+        <div class="detail-card">
+          <span class="detail-icon">📎</span>
+          <h3 class="detail-card-title">Grampos de Aço</h3>
+          <p class="detail-card-desc">Encadernação por grampos reforçados. O caderno abre totalmente reto em 180° sem soltar folhas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       SEÇÃO INTEGRADA DE DETALHES DE GRAMPOS
+       ========================================================================== -->
+  <section class="section-padding story" style="background-color: var(--sage-light); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
+    <div class="container story-grid">
+      <div class="story-text-col">
+        <span class="story-tag">Engenharia Simples</span>
+        <h2 class="story-title">Firmeza absoluta no bolso</h2>
+        <p class="story-desc">Diferente de cadernos colados convencionais que quebram a lombada ou desfolham no uso diário, o acabamento grampeado FigTree oferece resistência incomparável no bolso.</p>
+        <p class="story-desc">O corte de canto arredondado e o miolo prensado proporcionam uma dobra compacta e limpa, resultando em um perfil incrivelmente fino para transporte confortável no paletó, calça ou mochila.</p>
+      </div>
+      <div class="story-image-col">
+        <img src="assets/stapled_detail.png" alt="Close-up do miolo aberto mostrando os grampos de metal da FigTree">
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       SEÇÃO DO CUSTOMIZADOR / MONTE SEU KIT
+       ========================================================================== -->
+  <section class="section-padding customizer" id="customizer">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Monte seu Kit Personalizado</h2>
+        <p class="section-subtitle">Escolha o modelo de capa, o tipo de miolo que mais se adapta ao seu estilo, selecione a quantidade desejada e monte seu kit com descontos progressivos!</p>
+      </div>
+      
+      <div class="customizer-layout">
+        <!-- Passo 1: Escolha a Capa -->
+        <div class="customizer-step">
+          <div class="step-header">
+            <span class="step-badge">1</span>
+            <h3 class="step-title-text">Escolha a Capa</h3>
+          </div>
+          <div class="cover-grid" id="coverGrid">
+            <!-- Renderizado dinamicamente via JS -->
+          </div>
+        </div>
+
+        <!-- Passo 2: Escolha o Miolo -->
+        <div class="customizer-step">
+          <div class="step-header">
+            <span class="step-badge">2</span>
+            <h3 class="step-title-text">Escolha o Miolo</h3>
+          </div>
+          <div class="interior-grid" id="interiorGrid">
+            <!-- Renderizado dinamicamente via JS -->
+          </div>
+        </div>
+
+        <!-- Passo 3: Quantidade e Ação -->
+        <div class="add-to-cart-box">
+          <div class="selection-summary" id="currentSelection">
+            Selecionado agora: <strong>1x Capa 1</strong> com miolo <strong>Pautado simples</strong>.
+          </div>
+          <div class="add-action-group">
+            <div class="qty-selector">
+              <button class="qty-btn-ctrl" id="minus" type="button" aria-label="Diminuir quantidade">-</button>
+              <input class="qty-input-ctrl" id="quantity" type="number" min="1" max="50" value="1" aria-label="Quantidade">
+              <button class="qty-btn-ctrl" id="plus" type="button" aria-label="Aumentar quantidade">+</button>
+            </div>
+            <button class="add-btn-main" id="addItem" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+              Adicionar ao Kit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       SEÇÃO AVALIAÇÕES (DEPOIMENTOS)
+       ========================================================================== -->
+  <section class="section-padding testimonials" id="testimonials">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">O que dizem os escritores</h2>
+        <p class="section-subtitle">Opiniões de quem já usa os cadernos FigTree para organizar a rotina, rabiscar ou desenhar.</p>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-quote">"Tamanho ideal para levar no bolso da calça. A gramatura do papel é incrível, uso caneta nanquim e não sangra para a página de trás. Excelente acabamento!"</p>
+          <div class="testimonial-author">
+            <div class="author-initials">MR</div>
+            <div class="author-meta">
+              <h4>Maurício Ramos</h4>
+              <span>Designer e Ilustrador</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-quote">"Muito charmoso e tátil. A dobra manual é super bem feita e o vinco do miolo prensado com grampo deixa o caderno super plano. Comprei o kit com 4 cadernos."</p>
+          <div class="testimonial-author">
+            <div class="author-initials">CL</div>
+            <div class="author-meta">
+              <h4>Camila Lins</h4>
+              <span>Escritora e Jornalista</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-quote">"A melhor compra que fiz para organizar minhas ideias rápidas. O papel pólen amarelado é super amigável aos olhos sob luz forte. Prático e muito resistente."</p>
+          <div class="testimonial-author">
+            <div class="author-initials">FS</div>
+            <div class="author-meta">
+              <h4>Felipe Silva</h4>
+              <span>Planejador Criativo</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       FOOTER
+       ========================================================================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="footer-logo">
+            <img src="assets/logo_white_tranparent_vazado.png" alt="FigTree Logo Branca">
+          </a>
+          <p class="footer-tagline">Objetos de papelaria minimalista e funcional, produzidos e finalizados manualmente com todo carinho no Brasil.</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-links-col">
+            <h4>FigTree</h4>
+            <a href="#customizer" class="footer-link">Ver Coleções</a>
+            <a href="#story" class="footer-link">Como Fazemos</a>
+            <a href="#details" class="footer-link">Os Detalhes</a>
+          </div>
+          <div class="footer-links-col">
+            <h4>Suporte</h4>
+            <a href="https://wa.me/5521969467886" class="footer-link" target="_blank">Fale Conosco</a>
+            <a href="#" class="footer-link">FAQ / Dúvidas</a>
+            <a href="#" class="footer-link">Políticas de Envio</a>
+          </div>
+        </div>
+        <div>
+          <p class="footer-quote">“Escrevemos para provar a vida duas vezes, no momento e em retrospecto.”</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 FigTree Papelaria. Todos os direitos reservados.</p>
+        <p>Feito à mão no Brasil 🇧🇷</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       DRAWER DO CARRINHO (CHECKOUT LATERAL SLIDE-IN)
+       ========================================================================== -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <div class="drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+    <div class="drawer-header">
+      <h3 class="drawer-title" id="drawerTitle">Seu Kit</h3>
+      <button class="drawer-close" id="drawerClose" type="button" aria-label="Fechar resumo">×</button>
+    </div>
+    
+    <div class="drawer-body">
+      <!-- Lista de Itens no Carrinho -->
+      <div class="cart-list" id="cartList">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+
+      <!-- Formulários de Checkout -->
+      <div class="drawer-form-section" id="checkoutForm">
+        <h4 class="drawer-section-title">Dados de Entrega</h4>
+        
+        <div class="form-group">
+          <label for="name">Nome Completo</label>
+          <input class="form-control" id="name" type="text" placeholder="Nome e Sobrenome" required>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">WhatsApp</label>
+            <input class="form-control" id="phone" type="tel" placeholder="(00) 00000-0000" required>
+          </div>
+          <div class="form-group">
+            <label for="cep">CEP</label>
+            <input class="form-control" id="cep" type="text" placeholder="00000-000" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="delivery">Endereço de Entrega</label>
+          <input class="form-control" id="delivery" type="text" placeholder="Clique após digitar o CEP" readonly required>
+        </div>
+
+        <button class="btn btn-secondary" id="calcShipping" type="button" style="height: 44px; font-size: 13px;">Calcular Frete</button>
+
+        <!-- Opções de Frete (Carregadas dinamicamente) -->
+        <div class="form-group" id="shippingOptionsField" style="display: none;">
+          <label>Opções de Envio</label>
+          <div class="shipping-box" id="shippingOptionsList">
+            <!-- Rádios renderizados dinamicamente via JS -->
+          </div>
+        </div>
+
+        <!-- Observações -->
+        <div class="form-group">
+          <label for="notes">Observações do Pedido</label>
+          <input class="form-control" id="notes" type="text" placeholder="Ex: Mensagem de presente ou instruções de entrega">
+        </div>
+
+        <!-- Cupom de Desconto -->
+        <div class="form-group">
+          <label for="couponInput">Cupom de Desconto</label>
+          <div class="coupon-group">
+            <input class="form-control" id="couponInput" type="text" placeholder="CÓDIGO">
+            <button class="coupon-btn" id="applyCouponBtn" type="button">Aplicar</button>
+          </div>
+          <div class="coupon-feedback" id="couponFeedback" style="display: none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rodapé do Drawer com Resumo e WhatsApp -->
+    <div class="drawer-footer">
+      <div class="summary-box">
+        <div class="summary-line" id="fullPriceLine" style="display: none;">
+          <span>Preço Cheio:</span>
+          <span id="summaryFullPrice">R$ 0,00</span>
+        </div>
+        <div class="summary-line" id="kitDiscountLine" style="display: none;">
+          <span>Desconto de Volume (Kits <span id="kitDiscountPercent">0%</span>):</span>
+          <strong id="summaryKitDiscount" style="color: #28a745;">-R$ 0,00</strong>
+        </div>
+        <div id="autoPromotionsContainer"></div>
+        <div class="summary-line" id="shippingSummaryLine" style="display: none;">
+          <span>Frete (<span id="shippingMethodName">PAC</span>):</span>
+          <span id="summaryShippingPrice">R$ 0,00</span>
+        </div>
+        <div class="summary-line" id="couponSummaryLine" style="display: none;">
+          <span>Cupom (<span id="couponSummaryCode">CUPOM</span>):</span>
+          <strong id="couponSummaryDiscount" style="color: #28a745;">-R$ 0,00</strong>
+        </div>
+        <div class="summary-line total">
+          <span>Total Geral:</span>
+          <span id="summaryTotal">R$ 0,00</span>
+        </div>
+      </div>
+
+      <div class="discount-note" id="discountNote">
+        Carregando informações promocionais...
+      </div>
+
+      <button class="whatsapp-btn-main is-disabled" id="whatsappButton" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+        <span>Adicione itens ao pedido</span>
+      </button>
+
+      <button class="btn btn-secondary" id="reopenPixButton" type="button" style="display: none; height: 44px; font-size: 13px; margin-top: -8px;">Mostrar QR Code PIX</button>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAIS CUSTOMIZADOS
+       ========================================================================== -->
+  
+  <!-- 1. Modal de Confirmação (Item Adicionado) -->
+  <div class="modal" id="confirmModal" role="dialog" aria-hidden="true" aria-labelledby="confirmTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="confirmTitle">Adicionado com Sucesso!</h4>
+        <button class="modal-close" id="confirmClose" type="button" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-body">
+        O caderno selecionado foi adicionado ao seu Kit! Deseja escolher mais capas e miolos ou ir direto para o fechamento e cálculo de frete?
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="confirmYes" type="button" style="padding: 10px 20px; font-size: 12.5px;">Escolher mais capas</button>
+        <button class="btn btn-primary" id="confirmNo" type="button" style="padding: 10px 20px; font-size: 12.5px;">Fechar Kit e Pagar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Modal de Confirmação de Exclusão -->
+  <div class="modal" id="deleteConfirmModal" role="dialog" aria-hidden="true" aria-labelledby="deleteTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="deleteTitle">Remover item?</h4>
+        <button class="modal-close" id="deleteConfirmClose" type="button" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-body">
+        Você tem certeza que deseja remover esta combinação do seu Kit?
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="deleteConfirmNo" type="button" style="padding: 10px 20px; font-size: 12.5px;">Cancelar</button>
+        <button class="btn btn-primary" id="deleteConfirmYes" type="button" style="padding: 10px 20px; font-size: 12.5px; background-color: #dc3545; border-color: #dc3545; box-shadow: none;">Remover</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Modal de Alerta Customizado -->
+  <div class="modal" id="alertModal" role="dialog" aria-hidden="true" aria-labelledby="alertTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="alertTitle">Aviso</h4>
+        <button class="modal-close" id="alertClose" type="button" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-body" id="alertMessage">
+        Mensagem de aviso.
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="alertOk" type="button" style="padding: 10px 20px; font-size: 12.5px;">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Modal de Preenchimento de Número/Complemento -->
+  <div class="modal" id="addressModal" role="dialog" aria-hidden="true" aria-labelledby="addressTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="addressTitle">Número e Complemento</h4>
+        <button class="modal-close" id="addressClose" type="button" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="address-summary" id="addressModalSummary">
+          Buscando CEP...
+        </div>
+        
+        <!-- Campos manuais se o ViaCEP não trouxer logradouro -->
+        <div id="addressModalManualFields" style="display: none; flex-direction: column; gap: 12px; margin-bottom: 12px;">
+          <div class="form-group">
+            <label for="addressModalStreet">Rua / Logradouro</label>
+            <input class="form-control" id="addressModalStreet" type="text" placeholder="Nome da rua">
+          </div>
+          <div class="form-group">
+            <label for="addressModalDistrict">Bairro</label>
+            <input class="form-control" id="addressModalDistrict" type="text" placeholder="Nome do bairro">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="addressModalNum">Número</label>
+            <input class="form-control" id="addressModalNum" type="text" placeholder="Nº" required>
+          </div>
+          <div class="form-group">
+            <label for="addressModalComp">Complemento</label>
+            <input class="form-control" id="addressModalComp" type="text" placeholder="Apto, bloco, etc.">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="addressModalCancel" type="button" style="padding: 10px 20px; font-size: 12.5px;">Cancelar</button>
+        <button class="btn btn-primary" id="addressModalConfirm" type="button" style="padding: 10px 20px; font-size: 12.5px;">Confirmar Endereço</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Modal do Pix Copia e Cola -->
+  <div class="modal" id="pixModal" role="dialog" aria-hidden="true" aria-labelledby="pixTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="pixTitle">Pagamento via PIX</h4>
+        <button class="modal-close" id="pixClose" type="button" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-body pix-box">
+        <p style="text-align: center;">Escaneie o QR Code abaixo ou copie o código Copia e Cola para pagar o seu pedido via PIX:</p>
+        
+        <div class="qrcode-container" id="qrcode">
+          <!-- Gerado dinamicamente -->
+        </div>
+
+        <div class="pix-input-wrapper">
+          <label for="pixCodeText">Código Copia e Cola</label>
+          <textarea class="pix-code-text" id="pixCodeText" readonly></textarea>
+        </div>
+      </div>
+      <div class="modal-footer" style="flex-direction: column; align-items: stretch; gap: 8px;">
+        <button class="btn btn-primary" id="copyPixCodeBtn" type="button" style="width: 100%; height: 44px; font-size: 13px; background-color: #32BCAD; border-color: #32BCAD; box-shadow: none;">Copiar código PIX</button>
+        <button class="btn btn-secondary" id="pixCloseBtn" type="button" style="width: 100%; height: 44px; font-size: 13px;">Fechar janela</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Modal de Zoom de Imagens (Carousel) -->
+  <div class="modal" id="previewModal" role="dialog" aria-hidden="true" aria-labelledby="previewTitle" style="background-color: rgba(38, 21, 18, 0.9);">
+    <div class="modal-content" style="background: none; border: none; box-shadow: none; width: min(560px, 100%);">
+      <div class="modal-header" style="background: none; border-bottom: none; padding: 12px; color: #ffffff;">
+        <h4 class="modal-title" id="previewTitle" style="color: #ffffff; font-family: var(--serif); font-size: 24px;">Zoom</h4>
+        <button class="modal-close" id="previewClose" type="button" style="color: #ffffff; background: rgba(255,255,255,0.15); width: 34px; height: 34px;">×</button>
+      </div>
+      <div class="modal-body" id="previewBody" style="padding: 10px; display: flex; align-items: center; justify-content: center; position: relative;">
+        <!-- Injetado dinamicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Modal de Solicitação de CPF (Obrigatório para emissão de etiquetas pelo SuperFrete) -->
+  <div class="modal" id="cpfModal" role="dialog" aria-hidden="true" aria-labelledby="cpfTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="cpfTitle">CPF Obrigatório</h4>
+        <button class="modal-close" id="cpfClose" type="button" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-body">
+        Como o frete será enviado via transportadora cadastrada no SuperFrete, é obrigatório informar o CPF para a emissão da etiqueta de envio.
+        
+        <div class="form-group" style="margin-top: 16px;">
+          <label for="cpfInputModal">CPF do Destinatário</label>
+          <input class="form-control" id="cpfInputModal" type="text" placeholder="000.000.000-00" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cpfModalCancel" type="button" style="padding: 10px 20px; font-size: 12.5px;">Cancelar</button>
+        <button class="btn btn-primary" id="cpfModalConfirm" type="button" style="padding: 10px 20px; font-size: 12.5px;">Salvar e Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Biblioteca QRCode.js para gerar os QRCodes -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- ==========================================================================
+       LÓGICA JAVASCRIPT INTEGRADA (FRETES, CUPONS E PEDIDO)
+       ========================================================================== -->
+  <script>
+    // Configurações do Vendedor
+    const SELLER_WHATSAPP = "5521969467886";
+    // URL do Web App do Google Apps Script
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbycjYy2UiWKMJAQcrFEs9IFJ42LTKtSJMgUufCYErjlX9U80m6V7M1pHvRb0gbH5TSF/exec"; 
+
+    // Estados e variáveis globais
+    let selectedShipping = null;
+    let deliveryRua = "";
+    let deliveryNumero = "";
+    let deliveryComplemento = "";
+    let deliveryBairro = "";
+    let deliveryCidade = "";
+    let deliveryEstado = "";
+    let lastCalculatedServices = [];
+    let wasLastLocal = false;
+    let isCepValid = false;
+    let lastOrderId = null;
+    let isOrderSaved = false;
+    let lastSavedOrderKey = "";
+    let lastCepResponseData = null;
+    let activeCoupon = null;
+    let couponDiscountValue = 0;
+    let checkoutStarted = false;
+    let promocoesAtivas = [];
+
+    // Arrays de Capas e Miolos
+    let covers = [
+      ...Array.from({ length: 12 }, (_, index) => {
+        const number = String(index + 1).padStart(2, "0");
+        return {
+          name: `Capa ${index + 1}`,
+          src: `assets/capa-${number}n.webp`,
+          thumbSrc: `assets/capa-${number}.webp`
+        };
+      }),
+      { name: "Capa 13", src: "assets/capa-13n.webp", thumbSrc: "assets/capa-13n.webp" },
+      { name: "Capa 14", src: "assets/capa-14n.webp", thumbSrc: "assets/capa-14n.webp" },
+      { name: "Capa lisa", src: "assets/mockup-capa-lisa.webp", thumbSrc: "assets/mockup-capa-lisa.webp" }
+    ];
+
+    let interiors = [
+      {
+        name: "Pautado simples",
+        detail: "Linhas sem data e sem dias.",
+        src: "assets/miolo-pautado-sem-data-dias.webp"
+      },
+      {
+        name: "Pautado com data",
+        detail: "Com dias da semana, quadrinhos e data.",
+        src: "assets/miolo-pautado-com-data-dias-01.webp"
+      },
+      {
+        name: "Sem pauta com data",
+        detail: "Sem linhas, com dias da semana e data.",
+        src: "assets/miolo-liso-com-data-dias.webp"
+      },
+      {
+        name: "Sem pauta liso",
+        detail: "Páginas totalmente livres.",
+        src: "assets/miolo-liso-sem-data-dias.webp"
+      },
+      {
+        name: "Pontilhado simples",
+        detail: "Grade de pontos sem data.",
+        src: "assets/miolo-pontilhado-sem-data.webp"
+      },
+      {
+        name: "Pontilhado com data",
+        detail: "Grade de pontos com dias da semana e data.",
+        src: "assets/miolo-pontilhado-com-data.webp"
+      },
+      {
+        name: "Quadriculado simples",
+        detail: "Grade quadriculada sem data.",
+        src: "assets/miolo-quadriculado-sem-data.webp"
+      },
+      {
+        name: "Quadriculado com data",
+        detail: "Grade quadriculada com dias da semana e data.",
+        src: "assets/miolo-quadriculado-com-data.webp"
+      }
+    ];
+
+    const KNOWN_INTERIORS_METADATA = {
+      "miolo-pautado-sem-data-dias.webp": {
+        name: "Pautado simples",
+        detail: "Linhas sem data e sem dias."
+      },
+      "miolo-pautado-com-data-dias-01.webp": {
+        name: "Pautado com data",
+        detail: "Com dias da semana, quadrinhos e data."
+      },
+      "miolo-liso-com-data-dias.webp": {
+        name: "Sem pauta com data",
+        detail: "Sem linhas, com dias da semana e data."
+      },
+      "miolo-liso-sem-data-dias.webp": {
+        name: "Sem pauta liso",
+        detail: "Páginas totalmente livres."
+      },
+      "miolo-pontilhado-sem-data.webp": {
+        name: "Pontilhado simples",
+        detail: "Grade de pontos sem data."
+      },
+      "miolo-pontilhado-com-data.webp": {
+        name: "Pontilhado com data",
+        detail: "Grade de pontos com dias da semana e data."
+      },
+      "miolo-quadriculado-sem-data.webp": {
+        name: "Quadriculado simples",
+        detail: "Grade quadriculada sem data."
+      },
+      "miolo-quadriculado-com-data.webp": {
+        name: "Quadriculado com data",
+        detail: "Grade quadriculada com dias da semana e data."
+      }
+    };
+
+    const state = {
+      coverName: covers[0].name,
+      coverSrc: covers[0].src,
+      coverThumb: covers[0].thumbSrc,
+      interiorName: interiors[0].name,
+      interiorSrc: interiors[0].src,
+      cpf: ""
+    };
+
+    const cart = [];
+
+    // --- SELEÇÃO DE ELEMENTOS DOM ---
+    const coverGrid = document.getElementById("coverGrid");
+    const interiorGrid = document.getElementById("interiorGrid");
+    const currentSelection = document.getElementById("currentSelection");
+    const quantityInput = document.getElementById("quantity");
+    const cartList = document.getElementById("cartList");
+    const summaryTotal = document.getElementById("summaryTotal");
+    const summaryQty = document.getElementById("summaryQty");
+    const discountNote = document.getElementById("discountNote");
+    const whatsappButton = document.getElementById("whatsappButton");
+    
+    // Modal zoom
+    const previewModal = document.getElementById("previewModal");
+    const previewTitle = document.getElementById("previewTitle");
+    const previewBody = document.getElementById("previewBody");
+    const previewClose = document.getElementById("previewClose");
+    
+    // Drawer
+    const cartDrawer = document.getElementById("cartDrawer");
+    const drawerOverlay = document.getElementById("drawerOverlay");
+    const cartTrigger = document.getElementById("cartTrigger");
+    const drawerClose = document.getElementById("drawerClose");
+    const cartBadge = document.getElementById("cartBadge");
+
+    // Ícone de lupa (SVG)
+    const zoomIcon = `
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="6"></circle>
+        <path d="m16 16 4 4"></path>
+      </svg>
+    `;
+
+    // Formatador de Moeda
+    const currency = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+
+    // ==========================================================================
+    // LÓGICA DE INTERACTION E RENDERING
+    // ==========================================================================
+    
+    // Abrir/Fechar Drawer
+    function openDrawer() {
+      cartDrawer.classList.add("is-active");
+      drawerOverlay.classList.add("is-active");
+      document.body.style.overflow = "hidden"; // Trava scroll da página
+    }
+
+    function closeDrawer() {
+      cartDrawer.classList.remove("is-active");
+      drawerOverlay.classList.remove("is-active");
+      document.body.style.overflow = ""; // Destrava scroll
+    }
+
+    cartTrigger.addEventListener("click", openDrawer);
+    drawerClose.addEventListener("click", closeDrawer);
+    drawerOverlay.addEventListener("click", closeDrawer);
+
+    // Renderizar Capas
+    function renderCovers() {
+      coverGrid.innerHTML = "";
+      covers.forEach((cover, index) => {
+        const button = document.createElement("div");
+        button.setAttribute("role", "button");
+        button.tabIndex = 0;
+        button.className = `cover-option${cover.name === state.coverName ? " is-selected" : ""}`;
+        button.dataset.coverName = cover.name;
+        button.innerHTML = `
+          <span class="cover-thumb">
+            <img class="cover-thumb-base" src="${cover.thumbSrc}" alt="${cover.name}">
+            <button class="zoom-button" type="button" aria-label="Ver detalhes de ${cover.name}">${zoomIcon}</button>
+          </span>
+          <span class="cover-name">${cover.name}</span>
+        `;
+
+        const selectCover = () => {
+          document.querySelectorAll(".cover-option").forEach(item => item.classList.remove("is-selected"));
+          button.classList.add("is-selected");
+          state.coverName = cover.name;
+          state.coverSrc = cover.src;
+          state.coverThumb = cover.thumbSrc;
+          updateSummary();
+        };
+
+        button.addEventListener("click", event => {
+          if (isOrderSaved) return;
+          if (event.target.closest(".zoom-button")) return;
+          selectCover();
+        });
+
+        button.addEventListener("keydown", event => {
+          if (isOrderSaved) return;
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectCover();
+          }
+        });
+
+        button.querySelector(".zoom-button").addEventListener("click", event => {
+          event.stopPropagation();
+          openZoomCarousel("covers", index);
+        });
+
+        coverGrid.appendChild(button);
+      });
+    }
+
+    // Renderizar Miolos
+    function renderInteriors() {
+      interiorGrid.innerHTML = "";
+      interiors.forEach((interior, index) => {
+        const button = document.createElement("div");
+        button.setAttribute("role", "button");
+        button.tabIndex = 0;
+        button.className = `interior-option${interior.name === state.interiorName ? " is-selected" : ""}`;
+        button.innerHTML = `
+          <span class="interior-preview">
+            <img src="${interior.src}" alt="${interior.name}">
+            <button class="zoom-button" type="button" aria-label="Ver detalhes de ${interior.name}">${zoomIcon}</button>
+          </span>
+          <strong>${interior.name}</strong>
+          <span>${interior.detail}</span>
+        `;
+
+        const selectInterior = () => {
+          document.querySelectorAll(".interior-option").forEach(item => item.classList.remove("is-selected"));
+          button.classList.add("is-selected");
+          state.interiorName = interior.name;
+          state.interiorSrc = interior.src;
+          updateSummary();
+        };
+
+        button.addEventListener("click", event => {
+          if (isOrderSaved) return;
+          if (event.target.closest(".zoom-button")) return;
+          selectInterior();
+        });
+
+        button.addEventListener("keydown", event => {
+          if (isOrderSaved) return;
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectInterior();
+          }
+        });
+
+        button.querySelector(".zoom-button").addEventListener("click", event => {
+          event.stopPropagation();
+          openZoomCarousel("interiors", index);
+        });
+
+        interiorGrid.appendChild(button);
+      });
+    }
+
+    // Quantidade da seleção principal
+    function normalizeQuantity() {
+      const qty = Math.min(50, Math.max(1, Number(quantityInput.value) || 1));
+      quantityInput.value = qty;
+      return qty;
+    }
+
+    function updateCurrentSelection() {
+      const qty = normalizeQuantity();
+      currentSelection.innerHTML = `Selecionado agora: <strong>${qty}x ${state.coverName}</strong> com miolo <strong>${state.interiorName}</strong>.`;
+    }
+
+    quantityInput.addEventListener("input", updateCurrentSelection);
+    document.getElementById("minus").addEventListener("click", () => {
+      quantityInput.value = Math.max(1, Number(quantityInput.value) - 1);
+      updateSummary();
+    });
+    document.getElementById("plus").addEventListener("click", () => {
+      quantityInput.value = Math.min(50, Number(quantityInput.value) + 1);
+      updateSummary();
+    });
+
+    // ==========================================================================
+    // LÓGICA DE PREÇOS, PROMOÇÕES E KITS (PROGRESSIVOS)
+    // ==========================================================================
+    function calculateTotal(qty) {
+      if (qty <= 0) return 0;
+      
+      const fixedPrices = {
+        1: 15,
+        2: 28,
+        3: 45,
+        4: 45,
+        5: 60,
+        6: 75,
+        7: 90,
+        8: 79,
+        9: 94,
+        10: 109,
+        11: 124,
+        12: 109
+      };
+      
+      if (qty <= 12) {
+        return fixedPrices[qty];
+      }
+      
+      const kits12 = Math.floor(qty / 12);
+      const remainder = qty % 12;
+      const remainderPrice = remainder > 0 ? fixedPrices[remainder] : 0;
+      return kits12 * 109 + remainderPrice;
+    }
+
+    function calcularTotalProdutosCarrinho() {
+      let totalQty = 0;
+      let totalQtyNormais = 0;
+      let totalPromocionais = 0;
+      let totalDescontoPromocionais = 0;
+      const promocoesAplicadasMap = {};
+      
+      const itemsPorPromo = {};
+      const itemsNormais = [];
+      
+      cart.forEach(item => {
+        totalQty += item.qty;
+        let matched = false;
+        
+        if (promocoesAtivas.length > 0) {
+          const coverNameLower = item.coverName.trim().toLowerCase();
+          const interiorNameLower = item.interiorName.trim().toLowerCase();
+          
+          for (const p of promocoesAtivas) {
+            const pCapaLower = String(p.Capa || "Qualquer").trim().toLowerCase();
+            const pMioloLower = String(p.Miolo || "Qualquer").trim().toLowerCase();
+            
+            const capasElegiveis = pCapaLower.split(/\s*,\s*/);
+            const miolosElegiveis = pMioloLower.split(/\s*,\s*/);
+            
+            const capaMatch = pCapaLower === "qualquer" || capasElegiveis.some(c => c === coverNameLower);
+            const mioloMatch = pMioloLower === "qualquer" || miolosElegiveis.some(m => m === interiorNameLower);
+            
+            if (capaMatch && mioloMatch) {
+              const nome = p.Nome;
+              if (!itemsPorPromo[nome]) {
+                itemsPorPromo[nome] = { promoObj: p, items: [] };
+              }
+              itemsPorPromo[nome].items.push(item);
+              matched = true;
+              break;
+            }
+          }
+        }
+        
+        if (!matched) {
+          itemsNormais.push(item);
+        }
+      });
+      
+      totalQtyNormais = itemsNormais.reduce((acc, item) => acc + item.qty, 0);
+      const productTotalNormais = calculateTotal(totalQtyNormais);
+      
+      Object.keys(itemsPorPromo).forEach(nomePromo => {
+        const promoInfo = itemsPorPromo[nomePromo];
+        const p = promoInfo.promoObj;
+        const matchingItems = promoInfo.items;
+        
+        const normalValue = matchingItems.reduce((acc, item) => acc + (15 * item.qty), 0);
+        const val = Number(p.Valor) || 0;
+        
+        let discount = 0;
+        if (String(p.Tipo_Valor).trim().toLowerCase() === "percentual") {
+          discount = normalValue * (val / 100);
+        } else if (String(p.Tipo_Valor).trim().toLowerCase() === "fixo") {
+          discount = Math.min(val, normalValue);
+        }
+        
+        promocoesAplicadasMap[nomePromo] = discount;
+        totalPromocionais += (normalValue - discount);
+        totalDescontoPromocionais += discount;
+      });
+      
+      const productTotal = productTotalNormais + totalPromocionais;
+      const precoCheio = totalQty * 15;
+      const descontoValor = precoCheio - productTotal;
+      const descontoPercentual = precoCheio > 0 ? Math.round((descontoValor / precoCheio) * 100) : 0;
+      const descontoKitNormais = (totalQtyNormais * 15) - productTotalNormais;
+      
+      return {
+        totalQty,
+        totalQtyNormais,
+        productTotalNormais,
+        totalPromocionais,
+        totalDescontoPromocionais,
+        promocoesAplicadasMap,
+        productTotal,
+        precoCheio,
+        descontoValor,
+        descontoPercentual,
+        descontoKitNormais
+      };
+    }
+
+    // ==========================================================================
+    // CONTROLE DO CARRINHO (CART)
+    // ==========================================================================
+    
+    // Adicionar Item
+    document.getElementById("addItem").addEventListener("click", () => {
+      const qty = normalizeQuantity();
+      const existing = cart.find(item => item.coverName === state.coverName && item.interiorName === state.interiorName);
+      if (existing) {
+        existing.qty += qty;
+      } else {
+        cart.push({
+          coverName: state.coverName,
+          coverThumb: state.coverThumb,
+          interiorName: state.interiorName,
+          qty
+        });
+      }
+      quantityInput.value = 1;
+      updateSummary();
+      autoRecalculateShipping();
+      openDrawer();
+
+      // Modal de confirmação
+      confirmModal.classList.add("is-open");
+      confirmModal.setAttribute("aria-hidden", "false");
+    });
+
+    function getTotalQuantity() {
+      return cart.reduce((sum, item) => sum + item.qty, 0);
+    }
+
+    function renderCart() {
+      cartList.innerHTML = "";
+
+      if (cart.length === 0) {
+        cartBadge.style.display = "none";
+        cartBadge.textContent = "0";
+        const empty = document.createElement("p");
+        empty.className = "empty-cart";
+        empty.textContent = "Seu Kit está vazio. Escolha uma capa e um miolo e clique em “Adicionar ao Kit”.";
+        cartList.appendChild(empty);
+      } else {
+        const totalItems = getTotalQuantity();
+        cartBadge.style.display = "flex";
+        cartBadge.textContent = totalItems;
+
+        cart.forEach((item, index) => {
+          const row = document.createElement("div");
+          row.className = "cart-item";
+          row.innerHTML = `
+            <div class="cart-item-info" role="button" tabindex="0" title="Ver imagem ampliada">
+              <div class="cart-item-thumb">
+                <img src="${item.coverThumb}" alt="${item.coverName}">
+              </div>
+              <div class="cart-item-details">
+                <strong>${item.coverName}</strong>
+                <span>Miolo: ${item.interiorName}</span>
+                <div class="cart-item-qty">
+                  <button class="qty-btn minus" type="button" title="Diminuir">-</button>
+                  <span class="qty-val">${item.qty}</span>
+                  <button class="qty-btn plus" type="button" title="Aumentar">+</button>
+                </div>
+              </div>
+            </div>
+            <button class="remove-item" type="button" aria-label="Remover">×</button>
+          `;
+
+          const infoEl = row.querySelector(".cart-item-info");
+          const showZoom = () => {
+            const cover = covers.find(c => c.name === item.coverName);
+            if (cover) openZoomSingleImage(cover.src, cover.name);
+          };
+          infoEl.addEventListener("click", showZoom);
+
+          const minusBtn = row.querySelector(".minus");
+          const plusBtn = row.querySelector(".plus");
+          const removeBtn = row.querySelector(".remove-item");
+
+          minusBtn.addEventListener("click", event => {
+            event.stopPropagation();
+            if (isOrderSaved) return;
+            if (item.qty > 1) {
+              item.qty--;
+              updateSummary();
+              autoRecalculateShipping();
+            }
+          });
+
+          plusBtn.addEventListener("click", event => {
+            event.stopPropagation();
+            if (isOrderSaved) return;
+            if (item.qty < 50) {
+              item.qty++;
+              updateSummary();
+              autoRecalculateShipping();
+            }
+          });
+
+          removeBtn.addEventListener("click", event => {
+            event.stopPropagation();
+            if (isOrderSaved) return;
+            openDeleteConfirm(index);
+          });
+
+          cartList.appendChild(row);
+        });
+      }
+    }
+
+    // ==========================================================================
+    // CÁLCULO DE FRETE (SUPERFRETE & VIACEP)
+    // ==========================================================================
+    const cepInput = document.getElementById("cep");
+    const calcShippingBtn = document.getElementById("calcShipping");
+    const shippingOptionsField = document.getElementById("shippingOptionsField");
+    const shippingOptionsList = document.getElementById("shippingOptionsList");
+
+    function formatCep(val) {
+      let digits = val.replace(/\D/g, "").substring(0, 8);
+      if (digits.length <= 5) return digits;
+      return digits.substring(0, 5) + "-" + digits.substring(5);
+    }
+
+    cepInput.addEventListener("input", async () => {
+      const formatted = formatCep(cepInput.value);
+      cepInput.value = formatted;
+
+      isCepValid = false;
+      selectedShipping = null;
+      state.cpf = "";
+      lastCalculatedServices = [];
+      lastCepResponseData = null;
+      shippingOptionsList.innerHTML = "";
+      shippingOptionsField.style.display = "none";
+      updateSummary();
+
+      const cleanCep = formatted.replace(/\D/g, "");
+      if (cleanCep.length === 8) {
+        await lookupCep(cleanCep);
+      }
+    });
+
+    async function lookupCep(cep) {
+      try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        if (!response.ok) {
+          isCepValid = true;
+          return;
+        }
+        const data = await response.json();
+        if (data.erro) {
+          showCustomAlert("CEP não encontrado", "O CEP informado não foi localizado. Confira os números.", cepInput);
+          isCepValid = false;
+          updateSummary();
+          return;
+        }
+
+        lastCepResponseData = data;
+        isCepValid = true;
+        updateSummary();
+        openAddressModal(cep, data);
+      } catch (e) {
+        console.error("Erro no ViaCEP:", e);
+        isCepValid = true;
+        updateSummary();
+      }
+    }
+
+    async function calculateShipping(silent = false) {
+      const cepVal = cepInput.value.replace(/\D/g, "");
+      const totalQty = getTotalQuantity();
+
+      if (totalQty === 0) {
+        if (!silent) showCustomAlert("Kit vazio", "Adicione cadernos ao seu kit antes de calcular o frete.", null);
+        return;
+      }
+
+      if (cepVal.length !== 8 || !isCepValid) {
+        if (!silent) showCustomAlert("CEP necessário", "Informe um CEP válido para calcular o frete.", cepInput);
+        return;
+      }
+
+      if (!deliveryNumero || !deliveryRua) {
+        if (!silent) openAddressModal(cepVal, lastCepResponseData || {});
+        return;
+      }
+
+      if (checkIfLocalDelivery()) {
+        renderShippingOptions([
+          { id: "LOCAL_GRATIS", name: "Entrega Local (Grátis)", price: 0, discountPrice: 0, deliveryTime: 1 }
+        ]);
+        return;
+      }
+
+      if (!BACKEND_URL) {
+        if (!silent) showCustomAlert("Frete de Teste", "Backend não configurado. Carregando fretes simulados para testes.", null);
+        renderSimulatedShippingOptions();
+        return;
+      }
+
+      calcShippingBtn.disabled = true;
+      calcShippingBtn.textContent = "Calculando...";
+      shippingOptionsField.style.display = "block";
+      shippingOptionsList.innerHTML = `<div style="text-align: center; padding: 12px; font-size: 13px; color: var(--muted);">Buscando opções de envio...</div>`;
+
+      selectedShipping = null;
+      updateSummary();
+
+      try {
+        const calcResult = calcularTotalProdutosCarrinho();
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "calcular_frete",
+            cep_destino: cepVal,
+            quantidade: totalQty,
+            valor_produtos: Math.max(0, calcResult.productTotal - (activeCoupon && activeCoupon.tipo_desconto !== "frete" ? couponDiscountValue : 0))
+          })
+        });
+
+        if (!response.ok) throw new Error("Erro de servidor.");
+        const data = await response.json();
+
+        if (data.success) {
+          renderShippingOptions(data.services);
+        } else {
+          if (!silent) showCustomAlert("Erro de frete", data.error, null);
+          shippingOptionsField.style.display = "none";
+        }
+      } catch (err) {
+        console.error("Erro frete:", err);
+        renderSimulatedShippingOptions();
+      } finally {
+        calcShippingBtn.disabled = false;
+        calcShippingBtn.textContent = "Calcular Frete";
+      }
+    }
+
+    calcShippingBtn.addEventListener("click", () => calculateShipping(false));
+
+    function autoRecalculateShipping() {
+      const cepVal = cepInput.value.replace(/\D/g, "");
+      if (isCepValid && cepVal.length === 8 && lastCalculatedServices.length > 0) {
+        calculateShipping(true);
+      }
+    }
+
+    function isLocalDeliveryNeighborhood(bairro) {
+      if (!bairro) return false;
+      const normalized = bairro.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return normalized === "grajau" || normalized === "andarai";
+    }
+
+    function checkIfLocalDelivery() {
+      if (isLocalDeliveryNeighborhood(deliveryBairro)) return true;
+      const deliveryVal = document.getElementById("delivery").value;
+      if (deliveryVal) {
+        const cleanVal = deliveryVal.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        if (cleanVal.includes("grajau") || cleanVal.includes("andarai")) return true;
+      }
+      return false;
+    }
+
+    function renderShippingOptions(services) {
+      lastCalculatedServices = services.filter(s => s.id !== "LOCAL_GRATIS");
+      shippingOptionsList.innerHTML = "";
+      
+      let displayServices = [...lastCalculatedServices];
+      if (checkIfLocalDelivery()) {
+        displayServices = [
+          { id: "LOCAL_GRATIS", name: "Entrega Local (Grátis)", price: 0, discountPrice: 0, deliveryTime: 1 }
+        ];
+      }
+      
+      displayServices.sort((a, b) => {
+        const priceA = a.discountPrice !== undefined ? a.discountPrice : a.price;
+        const priceB = b.discountPrice !== undefined ? b.discountPrice : b.price;
+        return priceA - priceB;
+      });
+
+      if (displayServices.length === 0) {
+        shippingOptionsList.innerHTML = `<p style="font-size: 13px; color: var(--muted);">Região não atendida pelas transportadoras padrão.</p>`;
+        return;
+      }
+
+      displayServices.forEach((service, idx) => {
+        const card = document.createElement("label");
+        card.className = "shipping-option-card";
+        const isSelected = selectedShipping && selectedShipping.id === service.id;
+        const finalPrice = service.discountPrice !== undefined ? service.discountPrice : service.price;
+        
+        let priceHtml = finalPrice === 0 
+          ? `<span style="color: #28a745; font-weight: 800;">Grátis</span>` 
+          : `<span>${currency.format(finalPrice)}</span>`;
+
+        card.innerHTML = `
+          <input type="radio" name="shipping_option" value="${service.id}" ${idx === 0 && !selectedShipping ? "checked" : isSelected ? "checked" : ""}>
+          <div class="shipping-option-details">
+            <div>
+              <span class="shipping-option-name">${service.name}</span>
+              <span class="shipping-option-time" style="display: block;">Prazo: ${service.deliveryTime} dia(s)</span>
+            </div>
+            <span class="shipping-option-price">${priceHtml}</span>
+          </div>
+        `;
+        
+        if (idx === 0 && !selectedShipping) {
+          selectedShipping = { id: service.id, name: service.name, price: finalPrice, deliveryTime: service.deliveryTime };
+        }
+
+        card.querySelector('input').addEventListener("change", () => {
+          selectedShipping = { id: service.id, name: service.name, price: finalPrice, deliveryTime: service.deliveryTime };
+          if (selectedShipping.id === "LOCAL_GRATIS") state.cpf = "";
+          updateSummary();
+        });
+
+        shippingOptionsList.appendChild(card);
+      });
+
+      shippingOptionsField.style.display = "block";
+      updateSummary();
+    }
+
+    function renderSimulatedShippingOptions() {
+      renderShippingOptions([
+        { id: "PAC", name: "PAC (Correios)", price: 14.90, discountPrice: 14.90, deliveryTime: 8 },
+        { id: "SEDEX", name: "SEDEX (Correios)", price: 23.50, discountPrice: 23.50, deliveryTime: 3 }
+      ]);
+    }
+
+    // Reabrir o modal de endereço ao clicar no campo read-only
+    document.getElementById("delivery").addEventListener("click", () => {
+      if (isOrderSaved) return;
+      const cepVal = cepInput.value.replace(/\D/g, "");
+      if (cepVal.length === 8 && isCepValid) {
+        openAddressModal(cepVal, lastCepResponseData || {});
+        if (deliveryNumero) addressModalNum.value = deliveryNumero;
+        if (deliveryComplemento) addressModalComp.value = deliveryComplemento;
+      } else {
+        showCustomAlert("CEP necessário", "Informe seu CEP primeiro para cadastrar o endereço de entrega.", cepInput);
+      }
+    });
+
+    // ==========================================================================
+    // ATUALIZAÇÃO DO RESUMO E VALIDAÇÃO DOS BOTÕES
+    // ==========================================================================
+    function updateSummary() {
+      updateCurrentSelection();
+      renderCart();
+
+      const calcResult = calcularTotalProdutosCarrinho();
+      const totalQty = calcResult.totalQty;
+      const productTotal = calcResult.productTotal;
+      const precoCheio = calcResult.precoCheio;
+      const descontoValor = calcResult.descontoValor;
+      const descontoKitNormais = calcResult.descontoKitNormais;
+
+      // Desconto de volume
+      const fullPriceLine = document.getElementById("fullPriceLine");
+      const kitDiscountLine = document.getElementById("kitDiscountLine");
+      const summaryFullPrice = document.getElementById("summaryFullPrice");
+      const summaryKitDiscount = document.getElementById("summaryKitDiscount");
+      const kitDiscountPercent = document.getElementById("kitDiscountPercent");
+
+      if (descontoValor > 0) {
+        fullPriceLine.style.display = "flex";
+        summaryFullPrice.textContent = currency.format(precoCheio);
+      } else {
+        fullPriceLine.style.display = "none";
+      }
+
+      if (descontoKitNormais > 0) {
+        kitDiscountLine.style.display = "flex";
+        summaryKitDiscount.textContent = "-" + currency.format(descontoKitNormais);
+        const percentKit = Math.round(descontoKitNormais / (calcResult.totalQtyNormais * 15) * 100);
+        kitDiscountPercent.textContent = `${percentKit}%`;
+      } else {
+        kitDiscountLine.style.display = "none";
+      }
+
+      // Promoções automáticas
+      const autoPromosContainer = document.getElementById("autoPromotionsContainer");
+      autoPromosContainer.innerHTML = "";
+      Object.keys(calcResult.promocoesAplicadasMap).forEach(nomePromo => {
+        const descVal = calcResult.promocoesAplicadasMap[nomePromo];
+        if (descVal > 0) {
+          const promoLine = document.createElement("div");
+          promoLine.className = "summary-line";
+          promoLine.style.cssText = "display: flex; justify-content: space-between; padding: 6px 0; color: #28a745; font-weight: 600;";
+          promoLine.innerHTML = `<span>Promoção: ${nomePromo}</span><strong>-${currency.format(descVal)}</strong>`;
+          autoPromosContainer.appendChild(promoLine);
+        }
+      });
+
+      // Frete no resumo
+      let grandTotal = productTotal;
+      const shippingSummaryLine = document.getElementById("shippingSummaryLine");
+      if (selectedShipping) {
+        grandTotal += selectedShipping.price;
+        shippingSummaryLine.style.display = "flex";
+        document.getElementById("shippingMethodName").textContent = selectedShipping.name;
+        document.getElementById("summaryShippingPrice").textContent = selectedShipping.price === 0 ? "Grátis" : currency.format(selectedShipping.price);
+      } else {
+        shippingSummaryLine.style.display = "none";
+      }
+
+      // Cupom no resumo
+      couponDiscountValue = 0;
+      const couponSummaryLine = document.getElementById("couponSummaryLine");
+      if (activeCoupon) {
+        const type = activeCoupon.tipo_desconto;
+        const valType = activeCoupon.tipo_valor;
+        const val = activeCoupon.valor;
+        let valorElegivel = type === "frete" && selectedShipping ? selectedShipping.price : productTotal;
+
+        if (valType === "percentual") {
+          couponDiscountValue = valorElegivel * (val / 100);
+        } else {
+          couponDiscountValue = Math.min(val, valorElegivel);
+        }
+
+        couponDiscountValue = Math.max(0, Math.min(couponDiscountValue, grandTotal));
+        grandTotal -= couponDiscountValue;
+
+        couponSummaryLine.style.display = "flex";
+        document.getElementById("couponSummaryCode").textContent = activeCoupon.codigo;
+        document.getElementById("couponSummaryDiscount").textContent = "-" + currency.format(couponDiscountValue);
+      } else {
+        couponSummaryLine.style.display = "none";
+      }
+
+      summaryQty.textContent = totalQty;
+      summaryTotal.textContent = currency.format(grandTotal);
+
+      // Nota dos Kits Progressivos
+      let noteText = "";
+      const totalQtyNormais = calcResult.totalQtyNormais;
+      if (totalQtyNormais === 0) {
+        noteText = "Adicione cadernos para aproveitar os descontos progressivos nos Kits!";
+      } else if (totalQtyNormais === 1) {
+        noteText = "Adicione mais 1 caderno e leve o Kit com 2 por R$ 28 (economize R$ 2)!";
+      } else if (totalQtyNormais === 2) {
+        noteText = "Kit 2 active! Adicione mais 2 cadernos e aproveite o Kit com 4 por R$ 45!";
+      } else if (totalQtyNormais === 3) {
+        noteText = "Dica: Adicione mais 1 caderno e leve o Kit com 4 pelo mesmo preço (R$ 45)!";
+      } else if (totalQtyNormais >= 4 && totalQtyNormais < 8) {
+        const falta = 8 - totalQtyNormais;
+        noteText = `Adicione mais ${falta} caderno(s) para atingir o Kit de 8 por R$ 79 (R$ 9,88/cada)!`;
+      } else if (totalQtyNormais >= 8 && totalQtyNormais < 12) {
+        const falta = 12 - totalQtyNormais;
+        noteText = `Adicione mais ${falta} caderno(s) para o Kit definitivo de 12 por R$ 109 (R$ 9,08/cada)!`;
+      } else {
+        noteText = "Melhor preço por unidade aplicado! Kit com 12 ou mais cadernos ativo.";
+      }
+      discountNote.textContent = noteText;
+
+      // Validação do botão final do WhatsApp
+      const nameVal = document.getElementById("name").value.trim();
+      const deliveryVal = document.getElementById("delivery").value.trim();
+      const cepVal = document.getElementById("cep").value.trim();
+      const isCartEmpty = cart.length === 0;
+      const isNameIncomplete = nameVal.split(/\s+/).length < 2;
+      const isDeliveryIncomplete = deliveryVal.length === 0 || /,\s*(nº\s*)?$/i.test(deliveryVal);
+      const isShippingEmpty = !selectedShipping;
+
+      const isDisabled = isCartEmpty || !nameVal || isNameIncomplete || isDeliveryIncomplete || !cepVal || !isCepValid || isShippingEmpty;
+      whatsappButton.classList.toggle("is-disabled", isDisabled);
+
+      if (isCartEmpty) whatsappButton.textContent = "Adicione cadernos ao pedido";
+      else if (!nameVal) whatsappButton.textContent = "Preencha seu Nome";
+      else if (isNameIncomplete) whatsappButton.textContent = "Preencha Nome e Sobrenome";
+      else if (!cepVal) whatsappButton.textContent = "Preencha o CEP";
+      else if (!isCepValid) whatsappButton.textContent = "CEP inválido";
+      else if (isShippingEmpty) whatsappButton.textContent = "Selecione a opção de Frete";
+      else if (isDeliveryIncomplete) whatsappButton.textContent = "Informe o Número da Entrega";
+      else whatsappButton.textContent = isOrderSaved ? "Reenviar pedido pelo WhatsApp" : "Enviar pedido pelo WhatsApp";
+      
+      updateDisabledState();
+    }
+
+    function updateDisabledState() {
+      const elements = ["name", "phone", "cep", "calcShipping", "notes", "couponInput", "applyCouponBtn"];
+      elements.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = isOrderSaved;
+      });
+    }
+
+    // ==========================================================================
+    // ENVIO E FINALIZAÇÃO DO PEDIDO (WHATSAPP E PIX)
+    // ==========================================================================
+    
+    function getOrderKey() {
+      const nameVal = document.getElementById("name") ? document.getElementById("name").value.trim() : "";
+      const phoneVal = document.getElementById("phone") ? document.getElementById("phone").value.trim() : "";
+      const deliveryVal = document.getElementById("delivery") ? document.getElementById("delivery").value.trim() : "";
+      const cepVal = document.getElementById("cep") ? document.getElementById("cep").value.trim() : "";
+      const notesVal = document.getElementById("notes") ? document.getElementById("notes").value.trim() : "";
+      const shippingId = selectedShipping ? selectedShipping.id : null;
+      const cartItems = cart.map(item => `${item.coverName}-${item.interiorName}-${item.qty}`).join("|");
+      return `${nameVal};${phoneVal};${deliveryVal};${cepVal};${notesVal};${shippingId};${cartItems};${state.cpf}`;
+    }
+
+    whatsappButton.addEventListener("click", async () => {
+      if (isOrderSaved) {
+        // Apenas reabre o Pix e WhatsApp
+        const calcResult = calcularTotalProdutosCarrinho();
+        const grandTotal = Math.max(0, calcResult.productTotal + (selectedShipping ? selectedShipping.price : 0) - couponDiscountValue);
+        const msg = getOrderMessage(lastOrderId);
+        window.open(`https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+        openPixModal(grandTotal);
+        return;
+      }
+
+      const nameVal = document.getElementById("name").value.trim();
+      const phoneVal = document.getElementById("phone").value.trim();
+      const deliveryVal = document.getElementById("delivery").value.trim();
+      const cepVal = document.getElementById("cep").value.trim();
+
+      if (cart.length === 0) return;
+      if (!nameVal || nameVal.split(/\s+/).length < 2) {
+        showCustomAlert("Nome incompleto", "Por favor, preencha seu Nome e Sobrenome para envio postal.", document.getElementById("name"));
+        return;
+      }
+      if (phoneVal.replace(/\D/g, "").length < 10) {
+        showCustomAlert("WhatsApp inválido", "Informe o celular com DDD.", document.getElementById("phone"));
+        return;
+      }
+      if (cepVal.replace(/\D/g, "").length !== 8 || !isCepValid) {
+        showCustomAlert("CEP inválido", "Preencha o CEP de forma correta.", document.getElementById("cep"));
+        return;
+      }
+      if (!selectedShipping) {
+        showCustomAlert("Escolha o envio", "Selecione uma modalidade de frete para continuar.", document.getElementById("calcShipping"));
+        return;
+      }
+      if (deliveryVal.length === 0 || /,\s*(nº\s*)?$/i.test(deliveryVal) || !deliveryVal.includes(",") || !deliveryVal.includes("-")) {
+        showCustomAlert("Número necessário", "Informe o número e complemento no campo de entrega no formato: Rua, Nº, complemento - Bairro - Cidade/UF", document.getElementById("delivery"));
+        return;
+      }
+
+      // CPF para envios nacionais
+      if (selectedShipping.id !== "LOCAL_GRATIS" && !state.cpf) {
+        openCpfModal();
+        return;
+      }
+
+      await processOrderSubmission();
+    });
+
+    async function processOrderSubmission() {
+      const nameVal = document.getElementById("name").value.trim();
+      const phoneVal = document.getElementById("phone").value.trim();
+      const deliveryVal = document.getElementById("delivery").value.trim();
+      const cepVal = document.getElementById("cep").value.trim();
+      
+      const calcResult = calcularTotalProdutosCarrinho();
+      const grandTotal = Math.max(0, calcResult.productTotal + selectedShipping.price - couponDiscountValue);
+      const itemLines = cart.map(item => `${item.qty}x ${item.coverName} (${item.interiorName})`).join(", ");
+
+      const pedido = {
+        nome: nameVal,
+        whatsapp: phoneVal,
+        cpf: state.cpf ? formatCpf(state.cpf) : "",
+        cep: cepVal.replace(/\D/g, ""),
+        entrega_rua: deliveryRua || deliveryVal,
+        entrega_numero: deliveryNumero || "S/N",
+        entrega_complemento: deliveryComplemento || "",
+        entrega_bairro: deliveryBairro || "",
+        entrega_cidade: deliveryCidade || "",
+        entrega_estado: deliveryEstado || "",
+        itens: itemLines,
+        qtd_total: calcResult.totalQty,
+        valor_produtos: calcResult.productTotal,
+        frete_metodo: selectedShipping.name,
+        valor_frete: selectedShipping.price,
+        total_geral: grandTotal,
+        observacoes: document.getElementById("notes").value.trim(),
+        pix_payload: generatePixCopiaCola(grandTotal),
+        cupom_codigo: activeCoupon ? activeCoupon.codigo : "",
+        cupom_desconto_valor: couponDiscountValue
+      };
+
+      if (!BACKEND_URL) {
+        showCustomAlert("Simulação", "Backend não configurado. Abrindo WhatsApp com dados de teste.", null);
+        const msg = getOrderMessage();
+        window.open(`https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+        isOrderSaved = true;
+        lastSavedOrderKey = getOrderKey();
+        openPixModal(grandTotal);
+        return;
+      }
+
+      whatsappButton.disabled = true;
+      whatsappButton.textContent = "Salvando pedido...";
+
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "salvar_pedido", pedido: pedido })
+        });
+        const data = await response.json();
+        if (data.success) {
+          lastOrderId = data.orderId;
+          isOrderSaved = true;
+          lastSavedOrderKey = getOrderKey();
+          
+          const msg = getOrderMessage(data.orderId);
+          window.open(`https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+          openPixModal(grandTotal);
+        } else {
+          showCustomAlert("Erro", "Falha ao gravar pedido: " + data.error, null);
+        }
+      } catch (err) {
+        console.error("Erro salvamento:", err);
+        showCustomAlert("Erro", "Erro ao conectar com servidor. Direcionando direto para o WhatsApp.", null);
+        const msg = getOrderMessage();
+        window.open(`https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+        isOrderSaved = true;
+        lastSavedOrderKey = getOrderKey();
+        openPixModal(grandTotal);
+      } finally {
+        whatsappButton.disabled = false;
+        updateSummary();
+      }
+    }
+
+    function getOrderMessage(orderId) {
+      const calcResult = calcularTotalProdutosCarrinho();
+      const grandTotal = Math.max(0, calcResult.productTotal + (selectedShipping ? selectedShipping.price : 0) - couponDiscountValue);
+      const header = orderId ? `Novo pedido FigTree (Pedido #${orderId})` : `Novo pedido FigTree`;
+      
+      const lines = [
+        header,
+        "",
+        `Nome: ${document.getElementById("name").value.trim()}`,
+        `WhatsApp: ${document.getElementById("phone").value.trim()}`
+      ];
+      
+      if (state.cpf) lines.push(`CPF: ${formatCpf(state.cpf)}`);
+      
+      lines.push(
+        "",
+        "Itens do Kit:",
+        ...cart.map((item, idx) => `${idx + 1}. ${item.qty}x ${item.coverName} - Miolo: ${item.interiorName}`),
+        "",
+        `Total de Caderninhos: ${calcResult.totalQty}`,
+        `Subtotal: ${currency.format(calcResult.precoCheio)}`
+      );
+
+      if (selectedShipping) lines.push(`Frete: ${selectedShipping.name} (${currency.format(selectedShipping.price)})`);
+      if (calcResult.descontoKitNormais > 0) lines.push(`Desconto Kit: -${currency.format(calcResult.descontoKitNormais)}`);
+      if (activeCoupon) lines.push(`Cupom: ${activeCoupon.codigo} (-${currency.format(couponDiscountValue)})`);
+      
+      lines.push(
+        `Total Geral: ${currency.format(grandTotal)}`,
+        "",
+        `Entrega: ${document.getElementById("delivery").value.trim()}`,
+        `Obs: ${document.getElementById("notes").value.trim() || "Nenhuma"}`,
+        "",
+        "Código PIX para Pagamento:",
+        "",
+        generatePixCopiaCola(grandTotal, orderId)
+      );
+
+      return lines.join("\n");
+    }
+
+    // --- COPIA E COLA PIX (CRC16) ---
+    function crc16(data) {
+      let crc = 0xFFFF;
+      for (let i = 0; i < data.length; i++) {
+        crc ^= data.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
+          if ((crc & 0x8000) !== 0) crc = ((crc << 1) ^ 0x1021) & 0xFFFF;
+          else crc = (crc << 1) & 0xFFFF;
+        }
+      }
+      return crc.toString(16).toUpperCase().padStart(4, "0");
+    }
+
+    function generateMerchantAccountInfo(orderId) {
+      const ddi = "0014BR.GOV.BCB.PIX";
+      const key = "0136ba2d7d8e-3a98-4379-8a26-0f97f45375c9";
+      let desc = "0208Cadernos";
+      if (orderId) {
+        const descText = `Pedido${orderId}`;
+        desc = `02${String(descText.length).padStart(2, "0")}${descText}`;
+      }
+      return `26${String((ddi + key + desc).length).padStart(2, "0")}${ddi + key + desc}`;
+    }
+
+    function generatePixCopiaCola(amount, orderId) {
+      const part1 = "000201" + generateMerchantAccountInfo(orderId) + "520400005303986";
+      let amountField = amount > 0 ? `54${String(amount.toFixed(2).length).padStart(2, "0")}${amount.toFixed(2)}` : "";
+      const part2 = "5802BR5922ANDRE MARTINS FIGUEIRA6009Sao Paulo62070503***6304";
+      const combined = part1 + amountField + part2;
+      return combined + crc16(combined);
+    }
+
+    // ==========================================================================
+    // CUPONS DE DESCONTO
+    // ==========================================================================
+    const couponInput = document.getElementById("couponInput");
+    const applyCouponBtn = document.getElementById("applyCouponBtn");
+    const couponFeedback = document.getElementById("couponFeedback");
+
+    async function handleCouponAction() {
+      if (activeCoupon) {
+        // Remover cupom
+        activeCoupon = null;
+        couponDiscountValue = 0;
+        couponInput.value = "";
+        couponInput.disabled = false;
+        applyCouponBtn.textContent = "Aplicar";
+        applyCouponBtn.style.background = "var(--ink)";
+        couponFeedback.style.display = "none";
+        updateSummary();
+        return;
+      }
+
+      const code = couponInput.value.trim().toUpperCase();
+      if (!code) return;
+
+      applyCouponBtn.disabled = true;
+      couponInput.disabled = true;
+      applyCouponBtn.textContent = "...";
+
+      try {
+        if (!BACKEND_URL) throw new Error("Sem backend.");
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "validar_cupom", cupom: code })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+          activeCoupon = data.cupom;
+          applyCouponBtn.textContent = "Remover";
+          applyCouponBtn.style.background = "#dc3545";
+          couponFeedback.style.display = "block";
+          couponFeedback.style.color = "#28a745";
+          couponFeedback.textContent = `Cupom "${activeCoupon.codigo}" aplicado!`;
+        } else {
+          showCouponError(data.error || "Cupom inválido.");
+        }
+      } catch (err) {
+        showCouponError("Erro de conexão ao validar cupom.");
+      } finally {
+        applyCouponBtn.disabled = false;
+        updateSummary();
+      }
+    }
+
+    function showCouponError(msg) {
+      activeCoupon = null;
+      couponInput.disabled = false;
+      applyCouponBtn.textContent = "Aplicar";
+      couponFeedback.style.display = "block";
+      couponFeedback.style.color = "#dc3545";
+      couponFeedback.textContent = msg;
+    }
+
+    applyCouponBtn.addEventListener("click", handleCouponAction);
+    couponInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleCouponAction();
+      }
+    });
+
+    // ==========================================================================
+    // CARREGAR PROMOÇÕES DO BACKEND
+    // ==========================================================================
+    async function carregarPromocoes() {
+      if (!BACKEND_URL) return;
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "get_promocoes" })
+        });
+        const data = await response.json();
+        if (data.success && data.promocoes) {
+          promocoesAtivas = data.promocoes.filter(p => String(p.Ativa).trim().toLowerCase() === "sim");
+          updateSummary();
+        }
+      } catch (e) {
+        console.error("Erro promoções:", e);
+      }
+    }
+
+    // ==========================================================================
+    // MODAIS E CAROUSEL DE ZOOM
+    // ==========================================================================
+    const confirmModal = document.getElementById("confirmModal");
+    const confirmClose = document.getElementById("confirmClose");
+    const confirmYes = document.getElementById("confirmYes");
+    const confirmNo = document.getElementById("confirmNo");
+
+    confirmClose.addEventListener("click", () => confirmModal.classList.remove("is-open"));
+    confirmYes.addEventListener("click", () => {
+      confirmModal.classList.remove("is-open");
+      document.getElementById("customizer").scrollIntoView({ behavior: "smooth" });
+    });
+    confirmNo.addEventListener("click", () => {
+      confirmModal.classList.remove("is-open");
+      openDrawer();
+    });
+
+    // Modal Exclusão
+    const deleteConfirmModal = document.getElementById("deleteConfirmModal");
+    const deleteConfirmClose = document.getElementById("deleteConfirmClose");
+    const deleteConfirmNo = document.getElementById("deleteConfirmNo");
+    const deleteConfirmYes = document.getElementById("deleteConfirmYes");
+    let itemToDeleteIdx = null;
+
+    function openDeleteConfirm(index) {
+      itemToDeleteIdx = index;
+      deleteConfirmModal.classList.add("is-open");
+    }
+
+    function closeDeleteConfirm() {
+      itemToDeleteIdx = null;
+      deleteConfirmModal.classList.remove("is-open");
+    }
+
+    deleteConfirmClose.addEventListener("click", closeDeleteConfirm);
+    deleteConfirmNo.addEventListener("click", closeDeleteConfirm);
+    deleteConfirmYes.addEventListener("click", () => {
+      if (itemToDeleteIdx !== null) {
+        cart.splice(itemToDeleteIdx, 1);
+        updateSummary();
+        autoRecalculateShipping();
+      }
+      closeDeleteConfirm();
+    });
+
+    // Modal de Alerta
+    const alertModal = document.getElementById("alertModal");
+    const alertClose = document.getElementById("alertClose");
+    const alertOk = document.getElementById("alertOk");
+    const alertMessage = document.getElementById("alertMessage");
+
+    function showCustomAlert(title, message, focusElement) {
+      document.getElementById("alertTitle").textContent = title;
+      alertMessage.innerHTML = message;
+      alertModal.classList.add("is-open");
+      alertOk.focus();
+      alertOk.onclick = () => {
+        alertModal.classList.remove("is-open");
+        if (focusElement) {
+          focusElement.scrollIntoView({ behavior: "smooth", block: "center" });
+          focusElement.focus();
+        }
+      };
+    }
+    alertClose.addEventListener("click", () => alertModal.classList.remove("is-open"));
+
+    // Modal do Endereço (Número e Complemento)
+    const addressModal = document.getElementById("addressModal");
+    const addressClose = document.getElementById("addressClose");
+    const addressModalSummary = document.getElementById("addressModalSummary");
+    const addressModalNum = document.getElementById("addressModalNum");
+    const addressModalComp = document.getElementById("addressModalComp");
+    const addressModalConfirm = document.getElementById("addressModalConfirm");
+    const addressModalCancel = document.getElementById("addressModalCancel");
+
+    function openAddressModal(cep, data) {
+      addressModalNum.value = "";
+      addressModalComp.value = "";
+      if (data.logradouro) {
+        addressModalSummary.innerHTML = `<strong>Endereço do CEP ${cep}:</strong> ${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}`;
+      } else {
+        addressModalSummary.innerHTML = `<strong>CEP ${cep}:</strong> Geral para ${data.localidade}/${data.uf}`;
+      }
+      addressModal.classList.add("is-open");
+      setTimeout(() => addressModalNum.focus(), 80);
+    }
+
+    function closeAddressModal() {
+      addressModal.classList.remove("is-open");
+    }
+
+    addressClose.addEventListener("click", closeAddressModal);
+    addressModalCancel.addEventListener("click", closeAddressModal);
+
+    addressModalConfirm.addEventListener("click", () => {
+      const num = addressModalNum.value.trim();
+      const comp = addressModalComp.value.trim();
+      if (!num) {
+        showCustomAlert("Número em falta", "O número é necessário para entrega postal.", addressModalNum);
+        return;
+      }
+
+      let rua = (lastCepResponseData.logradouro || "").trim();
+      let bairro = (lastCepResponseData.bairro || "").trim();
+      let localidade = (lastCepResponseData.localidade || "").trim();
+      let uf = (lastCepResponseData.uf || "").trim();
+
+      deliveryRua = rua;
+      deliveryNumero = num;
+      deliveryComplemento = comp;
+      deliveryBairro = bairro;
+      deliveryCidade = localidade;
+      deliveryEstado = uf;
+
+      let addressText = `${rua}, Nº ${num}`;
+      if (comp) addressText += ` - ${comp}`;
+      addressText += ` - ${bairro} - ${localidade}/${uf}`;
+
+      document.getElementById("delivery").value = addressText;
+      closeAddressModal();
+      updateSummary();
+    });
+
+    // Pix Modal
+    const pixModal = document.getElementById("pixModal");
+    const pixClose = document.getElementById("pixClose");
+    const pixCloseBtn = document.getElementById("pixCloseBtn");
+    const copyPixCodeBtn = document.getElementById("copyPixCodeBtn");
+    const pixCodeText = document.getElementById("pixCodeText");
+    const reopenPixButton = document.getElementById("reopenPixButton");
+
+    function openPixModal(amount) {
+      const payload = generatePixCopiaCola(amount, lastOrderId);
+      pixCodeText.value = payload;
+      
+      if (typeof QRCode !== "undefined") {
+        document.getElementById("qrcode").innerHTML = "";
+        new QRCode(document.getElementById("qrcode"), {
+          text: payload,
+          width: 150,
+          height: 150,
+          colorDark: "#261512",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      }
+      
+      pixModal.classList.add("is-open");
+      reopenPixButton.style.display = "inline-flex";
+    }
+
+    pixClose.addEventListener("click", () => pixModal.classList.remove("is-open"));
+    pixCloseBtn.addEventListener("click", () => pixModal.classList.remove("is-open"));
+    
+    copyPixCodeBtn.addEventListener("click", () => {
+      pixCodeText.select();
+      navigator.clipboard.writeText(pixCodeText.value).then(() => {
+        const orig = copyPixCodeBtn.textContent;
+        copyPixCodeBtn.textContent = "Copiado com Sucesso!";
+        copyPixCodeBtn.style.background = "#28a745";
+        setTimeout(() => {
+          copyPixCodeBtn.textContent = orig;
+          copyPixCodeBtn.style.background = "#32BCAD";
+        }, 1500);
+      });
+    });
+
+    reopenPixButton.addEventListener("click", () => {
+      const calcResult = calcularTotalProdutosCarrinho();
+      const grandTotal = Math.max(0, calcResult.productTotal + (selectedShipping ? selectedShipping.price : 0) - couponDiscountValue);
+      openPixModal(grandTotal);
+    });
+
+    // CPF Modal
+    const cpfModal = document.getElementById("cpfModal");
+    const cpfClose = document.getElementById("cpfClose");
+    const cpfInputModal = document.getElementById("cpfInputModal");
+    const cpfModalConfirm = document.getElementById("cpfModalConfirm");
+    const cpfModalCancel = document.getElementById("cpfModalCancel");
+
+    function openCpfModal() {
+      cpfInputModal.value = state.cpf ? formatCpf(state.cpf) : "";
+      cpfModal.classList.add("is-open");
+      setTimeout(() => cpfInputModal.focus(), 80);
+    }
+
+    function closeCpfModal() {
+      cpfModal.classList.remove("is-open");
+    }
+
+    cpfClose.addEventListener("click", closeCpfModal);
+    cpfModalCancel.addEventListener("click", closeCpfModal);
+
+    function formatCpf(val) {
+      let digits = val.replace(/\D/g, "").substring(0, 11);
+      if (digits.length <= 3) return digits;
+      if (digits.length <= 6) return digits.substring(0, 3) + "." + digits.substring(3);
+      if (digits.length <= 9) return digits.substring(0, 3) + "." + digits.substring(3, 6) + "." + digits.substring(6);
+      return digits.substring(0, 3) + "." + digits.substring(3, 6) + "." + digits.substring(6, 9) + "-" + digits.substring(9);
+    }
+
+    cpfInputModal.addEventListener("input", () => {
+      cpfInputModal.value = formatCpf(cpfInputModal.value);
+    });
+
+    function validateCpf(cpf) {
+      const clean = cpf.replace(/\D/g, "");
+      if (clean.length !== 11 || /^(\d)\1{10}$/.test(clean)) return false;
+      
+      let sum = 0, rem;
+      for (let i = 1; i <= 9; i++) sum += parseInt(clean.substring(i-1, i)) * (11 - i);
+      rem = (sum * 10) % 11;
+      if (rem === 10 || rem === 11) rem = 0;
+      if (rem !== parseInt(clean.substring(9, 10))) return false;
+      
+      sum = 0;
+      for (let i = 1; i <= 10; i++) sum += parseInt(clean.substring(i-1, i)) * (12 - i);
+      rem = (sum * 10) % 11;
+      if (rem === 10 || rem === 11) rem = 0;
+      return rem === parseInt(clean.substring(10, 11));
+    }
+
+    cpfModalConfirm.addEventListener("click", async () => {
+      const val = cpfInputModal.value.trim();
+      if (!val || !validateCpf(val)) {
+        showCustomAlert("CPF inválido", "Preencha um número de CPF válido para etiquetas de envio.", cpfInputModal);
+        return;
+      }
+      state.cpf = val.replace(/\D/g, "");
+      closeCpfModal();
+      await processOrderSubmission();
+    });
+
+    // Zoom Carousel
+    let zoomItems = [];
+    function openZoomCarousel(type, startIndex) {
+      zoomItems = type === "covers" ? covers : interiors;
+      previewTitle.textContent = zoomItems[startIndex].name;
+
+      let html = `
+        <button class="carousel-btn prev-btn" id="carouselPrev" type="button" aria-label="Anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <div class="preview-carousel" id="previewCarousel">
+      `;
+
+      zoomItems.forEach((item, idx) => {
+        html += `<div class="preview-slide" data-index="${idx}">`;
+        if (type === "covers") {
+          html += `<div class="preview-cover-large"><img src="${item.src}" alt="${item.name}"></div>`;
+        } else {
+          html += `<img class="preview-interior-large" src="${item.src}" alt="${item.name}">`;
+        }
+        html += `</div>`;
+      });
+
+      html += `
+        </div>
+        <button class="carousel-btn next-btn" id="carouselNext" type="button" aria-label="Próximo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      `;
+
+      previewBody.innerHTML = html;
+      previewModal.classList.add("is-open");
+
+      const carousel = document.getElementById("previewCarousel");
+      const prev = document.getElementById("carouselPrev");
+      const next = document.getElementById("carouselNext");
+
+      const scrollToActive = () => {
+        const slide = carousel.querySelector(`.preview-slide[data-index="${startIndex}"]`);
+        if (slide) carousel.scrollLeft = slide.offsetLeft;
+      };
+      scrollToActive();
+
+      const updateButtons = (idx) => {
+        prev.style.display = idx === 0 ? "none" : "flex";
+        next.style.display = idx === zoomItems.length - 1 ? "none" : "flex";
+      };
+      updateButtons(startIndex);
+
+      carousel.addEventListener("scroll", () => {
+        const idx = Math.round(carousel.scrollLeft / carousel.clientWidth);
+        if (idx >= 0 && idx < zoomItems.length) {
+          updateButtons(idx);
+          previewTitle.textContent = zoomItems[idx].name;
+        }
+      });
+
+      prev.addEventListener("click", () => {
+        const idx = Math.round(carousel.scrollLeft / carousel.clientWidth);
+        if (idx > 0) carousel.scrollLeft = (idx - 1) * carousel.clientWidth;
+      });
+
+      next.addEventListener("click", () => {
+        const idx = Math.round(carousel.scrollLeft / carousel.clientWidth);
+        if (idx < zoomItems.length - 1) carousel.scrollLeft = (idx + 1) * carousel.clientWidth;
+      });
+    }
+
+    function openZoomSingleImage(src, title) {
+      previewTitle.textContent = title;
+      previewBody.innerHTML = `
+        <div style="padding: 10px; display: flex; justify-content: center; align-items: center; height: 380px;">
+          <div class="preview-cover-large">
+            <img src="${src}" alt="${title}">
+          </div>
+        </div>
+      `;
+      previewModal.classList.add("is-open");
+    }
+
+    previewClose.addEventListener("click", () => previewModal.classList.remove("is-open"));
+
+    // Máscara WhatsApp
+    function formatPhone(val) {
+      let digits = val.replace(/\D/g, "").substring(0, 11);
+      if (digits.length <= 2) return digits.length > 0 ? "(" + digits : "";
+      if (digits.length <= 6) return "(" + digits.substring(0, 2) + ") " + digits.substring(2);
+      if (digits.length <= 10) return "(" + digits.substring(0, 2) + ") " + digits.substring(2, 6) + "-" + digits.substring(6);
+      return "(" + digits.substring(0, 2) + ") " + digits.substring(2, 7) + "-" + digits.substring(7, 11);
+    }
+    const phoneInput = document.getElementById("phone");
+    phoneInput.addEventListener("input", () => {
+      phoneInput.value = formatPhone(phoneInput.value);
+    });
+
+    // Triggers gerais para inputs mudarem o resumo
+    ["name", "notes", "phone"].forEach(id => {
+      document.getElementById(id).addEventListener("input", () => {
+        updateSummary();
+      });
+    });
+
+    // ==========================================================================
+    // CONSTRUÇÃO E INICIALIZAÇÃO DA PÁGINA
+    // ==========================================================================
+    renderCovers();
+    renderInteriors();
+    updateSummary();
+    carregarPromocoes();
+  </script>
+</body>
+</html>
