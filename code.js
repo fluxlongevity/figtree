@@ -357,6 +357,7 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
+
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: "Ação desconhecida" }))
       .setMimeType(ContentService.MimeType.JSON);
 
