@@ -2302,6 +2302,18 @@
     const cartTrigger = document.getElementById("cartTrigger");
     const drawerClose = document.getElementById("drawerClose");
 
+    // Modal Zoom Carousel
+    const previewModal = document.getElementById("previewModal");
+    const previewTitle = document.getElementById("previewTitle");
+    const previewBody = document.getElementById("previewBody");
+    const previewClose = document.getElementById("previewClose");
+
+    // Modal Endereço
+    const addressModalSummary = document.getElementById("addressModalSummary");
+    const addressModalManualFields = document.getElementById("addressModalManualFields");
+    const addressModalStreet = document.getElementById("addressModalStreet");
+    const addressModalDistrict = document.getElementById("addressModalDistrict");
+
     const currency = new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL"
@@ -3344,7 +3356,6 @@
     // Modal Endereço
     const addressModal = document.getElementById("addressModal");
     const addressClose = document.getElementById("addressClose");
-    const addressModalSummary = document.getElementById("addressModalSummary");
     const addressModalNum = document.getElementById("addressModalNum");
     const addressModalComp = document.getElementById("addressModalComp");
     const addressModalConfirm = document.getElementById("addressModalConfirm");
@@ -3354,17 +3365,36 @@
       addressModalNum.value = "";
       addressModalComp.value = "";
       if (data.logradouro) {
+        addressModalManualFields.style.display = "none";
         addressModalSummary.innerHTML = `<strong>CEP ${cep}:</strong> ${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}`;
       } else {
+        addressModalStreet.value = "";
+        addressModalDistrict.value = "";
+        addressModalManualFields.style.display = "flex";
         addressModalSummary.innerHTML = `<strong>CEP ${cep}:</strong> Geral para ${data.localidade}/${data.uf}`;
       }
       addressModal.classList.add("is-open");
-      setTimeout(() => addressModalNum.focus(), 80);
+      
+      setTimeout(() => {
+        if (data.logradouro) {
+          addressModalNum.focus();
+        } else {
+          addressModalStreet.focus();
+        }
+      }, 80);
     }
 
-    addressClose.addEventListener("click", () => addressModal.classList.remove("is-open"));
-    addressModalCancel.addEventListener("click", () => addressModal.classList.remove("is-open"));
+    function closeAddressModal() {
+      const cepInput = document.getElementById("cep");
+      if (cepInput) cepInput.focus();
+      addressModal.classList.remove("is-open");
+    }
+
+    addressClose.addEventListener("click", closeAddressModal);
+    addressModalCancel.addEventListener("click", closeAddressModal);
     addressModalConfirm.addEventListener("click", () => {
+      if (!lastCepResponseData) return;
+
       const num = addressModalNum.value.trim();
       const comp = addressModalComp.value.trim();
       if (!num) {
@@ -3376,6 +3406,20 @@
       let bairro = (lastCepResponseData.bairro || "").trim();
       let localidade = (lastCepResponseData.localidade || "").trim();
       let uf = (lastCepResponseData.uf || "").trim();
+
+      if (!lastCepResponseData.logradouro) {
+        rua = addressModalStreet.value.trim();
+        bairro = addressModalDistrict.value.trim();
+        
+        if (!rua) {
+          showCustomAlert("Rua obrigatória", "Por favor, preencha o nome da sua rua.", addressModalStreet);
+          return;
+        }
+        if (!bairro) {
+          showCustomAlert("Bairro obrigatório", "Por favor, preencha o nome do seu bairro.", addressModalDistrict);
+          return;
+        }
+      }
 
       deliveryRua = rua;
       deliveryNumero = num;
