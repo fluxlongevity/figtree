@@ -1155,12 +1155,11 @@
       });
       kpiCancelados.textContent = canceladosList.length;
       
-      // 7. Pagos (todos exceto pendentes e cancelados)
+      // 7. Pagos (todos com status que indica pagamento ativo ou envio/entrega)
       const pagosList = allOrders.filter(o => {
-        const s = String(o.Status).toLowerCase();
-        const isPendente = s.includes("pendente");
-        const isCancelado = s.includes("cancelado") || s.includes("desistência") || s.includes("desistencia");
-        return !isPendente && !isCancelado;
+        const s = String(o.Status).toLowerCase().trim();
+        const statusPagosValidos = ["pago", "em produção", "em producao", "pronto para envio", "etiqueta gerada", "enviado", "em trânsito", "em transito", "recebido (finalizado)", "recebido"];
+        return statusPagosValidos.includes(s);
       });
       kpiPagos.textContent = pagosList.length;
       
