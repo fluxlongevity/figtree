@@ -822,10 +822,37 @@
       currency: "BRL"
     });
 
+    function safeParseFloat(val) {
+      if (val === null || val === undefined) return 0;
+      const str = String(val).trim();
+      if (!str) return 0;
+      
+      // Se for uma data ISO antiga (ex: "1900-01-09T16:32:52.000Z"), reconverte para o número decimal original do Sheets
+      if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+        try {
+          const d = new Date(str);
+          if (!isNaN(d.getTime())) {
+            const ano = d.getFullYear();
+            if (ano < 1970) {
+              const baseDate = new Date(Date.UTC(1899, 11, 30));
+              const diffMs = d.getTime() - baseDate.getTime();
+              const valOriginal = diffMs / 86400000;
+              return Math.round(valOriginal * 100) / 100;
+            }
+          }
+        } catch (e) {
+          console.error("Erro no safeParseFloat:", e);
+        }
+      }
+      
+      const parsed = parseFloat(str);
+      return isNaN(parsed) ? 0 : parsed;
+    }
+
     function obterCustoEmbalagem(qtd, isLocal = false) {
       if (isLocal) {
         const insSaco = stateInsumos.find(i => i.ID_Insumo.trim() === 'saco_organza_16x23');
-        const sacoCusto = insSaco ? (parseFloat(insSaco.Custo_Unitario_Atual) || 0) : 1.70;
+        const sacoCusto = insSaco ? (safeParseFloat(insSaco.Custo_Unitario_Atual) || 0) : 1.70;
         return Math.ceil(qtd / 8) * sacoCusto;
       }
       
@@ -833,7 +860,7 @@
       
       const caixas = [...stateGrade].map(cx => {
         const ins = stateInsumos.find(i => i.ID_Insumo === cx.ID_Insumo);
-        const custo = ins ? (parseFloat(ins.Custo_Unitario_Atual) || 0) : 0;
+        const custo = ins ? (safeParseFloat(ins.Custo_Unitario_Atual) || 0) : 0;
         return {
           capacidade: parseInt(cx.Capacidade_Max_Cadernos) || 1,
           custo: custo
@@ -871,7 +898,7 @@
     }
 
     function obterLucroLiquido(o) {
-      const totalGeral = parseFloat(o.Total_Geral) || 0;
+      const totalGeral = safeParseFloat(o.Total_Geral);
       const qtd = parseInt(o.Qtd_Total) || 0;
       const custoProd = qtd * custoProdUnitario;
       
@@ -881,8 +908,8 @@
       let custoEmb = obterCustoEmbalagem(qtd, isLocal);
       
       // Se tiver frete pago real (etiqueta emitida), usamos ele. Caso contrário, usamos o frete cobrado do cliente como estimativa de custo.
-      const freteCobrado = parseFloat(o.Valor_Frete) || 0;
-      const fretePago = parseFloat(o.Valor_Frete_Pago) || 0;
+      const freteCobrado = safeParseFloat(o.Valor_Frete);
+      const fretePago = safeParseFloat(o.Valor_Frete_Pago);
       const freteCusto = !isLocal ? (fretePago > 0 ? fretePago : freteCobrado) : 0;
       
       if (!isLocal && freteCusto > 0) {
@@ -890,9 +917,9 @@
         const insAdesivo = stateInsumos.find(i => i.ID_Insumo.trim() === 'adesivo_hot_melt');
         const insTinta = stateInsumos.find(i => i.ID_Insumo.trim() === 'tinta');
         
-        const fitaCusto = insFita ? (parseFloat(insFita.Custo_Unitario_Atual) || 0) : 0.598;
-        const TalkAdesivo = insAdesivo ? (parseFloat(insAdesivo.Custo_Unitario_Atual) || 0) : 0.58;
-        const tintaCusto = insTinta ? (parseFloat(insTinta.Custo_Unitario_Atual) || 0) : 0.01;
+        const fitaCusto = insFita ? (safeParseFloat(insFita.Custo_Unitario_Atual) || 0) : 0.598;
+        const TalkAdesivo = insAdesivo ? (safeParseFloat(insAdesivo.Custo_Unitario_Atual) || 0) : 0.58;
+        const tintaCusto = insTinta ? (safeParseFloat(insTinta.Custo_Unitario_Atual) || 0) : 0.01;
         
         const custoAdicionalFulfillment = (0.53 * fitaCusto) + (0.5 * TalkAdesivo) + (2 * tintaCusto);
         custoEmb += custoAdicionalFulfillment;
@@ -1053,7 +1080,7 @@
               let totalFicha = 0;
               stateFicha.forEach(item => {
                 const ins = stateInsumos.find(i => i.ID_Insumo === item.ID_Insumo);
-                const cost = ins ? (parseFloat(ins.Custo_Unitario_Atual) || 0) : 0;
+                const cost = ins ? (safeParseFloat(ins.Custo_Unitario_Atual) || 0) : 0;
                 totalFicha += item.Quantidade_Consumida * cost;
               });
               custoProdUnitario = totalFicha;
@@ -1138,15 +1165,15 @@
       kpiPagos.textContent = pagosList.length;
       
       // 8. Faturamento Pendente
-      const fatPendente = pendentesList.reduce((sum, o) => sum + (parseFloat(o.Valor_Produtos) || 0), 0);
+      const fatPendente = pendentesList.reduce((sum, o) => sum + (safeParseFloat(o.Valor_Produtos) || 0), 0);
       kpiFaturamentoPendente.textContent = currency.format(fatPendente);
       
       // 9. Faturamento Cancelado
-      const fatCancelado = canceladosList.reduce((sum, o) => sum + (parseFloat(o.Valor_Produtos) || 0), 0);
+      const fatCancelado = canceladosList.reduce((sum, o) => sum + (safeParseFloat(o.Valor_Produtos) || 0), 0);
       kpiFaturamentoCancelado.textContent = currency.format(fatCancelado);
       
       // 10. Faturamento Total (todos exceto pendentes e cancelados)
-      const fatTotal = pagosList.reduce((sum, o) => sum + (parseFloat(o.Valor_Produtos) || 0), 0);
+      const fatTotal = pagosList.reduce((sum, o) => sum + (safeParseFloat(o.Valor_Produtos) || 0), 0);
       kpiFaturamentoTotal.textContent = currency.format(fatTotal);
       
       // 11. Lucro Líquido Real Total (pedidos pagos)
@@ -1244,7 +1271,7 @@
 
         // Botões de ação baseados no status e frete
         const isLocalDelivery = String(o.Frete_Metodo || "").toLowerCase().includes("local");
-        const isFreeForClient = parseFloat(o.Valor_Frete) === 0 || String(o.Frete_Metodo || "").toLowerCase().includes("grátis") || String(o.Frete_Metodo || "").toLowerCase().includes("gratis") || isLocalDelivery;
+        const isFreeForClient = safeParseFloat(o.Valor_Frete) === 0 || String(o.Frete_Metodo || "").toLowerCase().includes("grátis") || String(o.Frete_Metodo || "").toLowerCase().includes("gratis") || isLocalDelivery;
         const hasLabel = o.Codigo_Rastreio && o.Etiqueta_PDF_URL;
         
         let actionBtnHtml = "";
@@ -1364,21 +1391,21 @@
             <div class="price-summary">
               <div class="price-row">
                 <span>Produtos:</span>
-                <span>${currency.format(parseFloat(o.Valor_Produtos) || 0)}</span>
+                <span>${currency.format(safeParseFloat(o.Valor_Produtos) || 0)}</span>
               </div>
               <div class="price-row">
                 <span>Frete:</span>
-                <span>${isFreeForClient ? "Grátis" : currency.format(parseFloat(o.Valor_Frete) || 0)}</span>
+                <span>${isFreeForClient ? "Grátis" : currency.format(safeParseFloat(o.Valor_Frete) || 0)}</span>
               </div>
               ${o.Cupom_Codigo ? `
               <div class="price-row" style="color: var(--status-cancelado); font-weight: bold;">
                 <span>Cupom (${o.Cupom_Codigo}):</span>
-                <span>-${currency.format(parseFloat(o.Cupom_Desconto_Valor) || 0)}</span>
+                <span>-${currency.format(safeParseFloat(o.Cupom_Desconto_Valor) || 0)}</span>
               </div>
               ` : ""}
               <div class="price-row grand-total">
                 <span>Total:</span>
-                <span>${currency.format(parseFloat(o.Total_Geral) || 0)}</span>
+                <span>${currency.format(safeParseFloat(o.Total_Geral) || 0)}</span>
               </div>
               <div style="font-size: 11.5px; color: var(--muted); text-align: right; margin-top: 2px;">
                 Método: ${o.Frete_Metodo}
@@ -1395,10 +1422,10 @@
                 <span>Embalagem (${obterCaixaGrade(parseInt(o.Qtd_Total))}):</span>
                 <span>${currency.format(obterCustoEmbalagem(parseInt(o.Qtd_Total)))}</span>
               </div>
-              ${parseFloat(o.Valor_Frete_Pago) ? `
+              ${safeParseFloat(o.Valor_Frete_Pago) ? `
               <div class="price-row" style="color: var(--muted);">
                 <span>Frete Pago (Real):</span>
-                <span>${currency.format(parseFloat(o.Valor_Frete_Pago))}</span>
+                <span>${currency.format(safeParseFloat(o.Valor_Frete_Pago))}</span>
               </div>
               ` : ""}
               <div class="price-row" style="font-weight: 700; color: ${obterLucroLiquido(o) >= 0 ? 'var(--status-pago)' : 'var(--status-cancelado)'};">
@@ -1602,7 +1629,7 @@
       document.getElementById("confirmCustomer").textContent = order.Nome;
       document.getElementById("confirmCpf").textContent = order.CPF || "Não informado";
       document.getElementById("confirmMethod").textContent = order.Frete_Metodo;
-      document.getElementById("confirmValue").textContent = currency.format(parseFloat(order.Valor_Frete) || 0);
+      document.getElementById("confirmValue").textContent = currency.format(safeParseFloat(order.Valor_Frete) || 0);
       
       confirmLabelModal.classList.add("is-open");
       confirmLabelModal.setAttribute("aria-hidden", "false");
