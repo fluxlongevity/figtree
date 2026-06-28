@@ -550,6 +550,154 @@
     }
 
     /* ============================================ */
+    /*  4.5. FICHA TÉCNICA (THE SPECS - MOBILE-FIRST) */
+    /* ============================================ */
+    .specs-section {
+      background-color: var(--paper);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .specs-layout {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .specs-info-col {
+      width: 62%;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .specs-title-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .specs-title {
+      font-family: var(--serif);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+
+    .specs-intro-text {
+      display: none;
+    }
+
+    .specs-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    .specs-row {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .specs-row:first-child {
+      border-top: 1px solid var(--ink);
+    }
+
+    .specs-row:last-child {
+      border-bottom: 1px solid var(--ink);
+    }
+
+    .specs-label {
+      padding: 5px 2px;
+      font-family: var(--serif);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink);
+      width: 25%;
+      vertical-align: middle;
+      text-align: left;
+    }
+
+    .specs-value {
+      padding: 5px 2px;
+      color: var(--muted);
+      width: 75%;
+      vertical-align: middle;
+    }
+
+    .specs-value strong {
+      color: var(--ink);
+    }
+
+    .specs-desc-detail {
+      display: none;
+    }
+
+    .specs-image-col {
+      width: 34%;
+      max-width: 120px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(66, 39, 22, 0.04);
+      border: 1px solid var(--line);
+    }
+
+    .specs-image-col img {
+      width: 100%;
+      display: block;
+      height: auto;
+    }
+
+    @media (min-width: 769px) {
+      .specs-layout {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 80px;
+        align-items: flex-start;
+      }
+      .specs-info-col {
+        width: 100%;
+        gap: 16px;
+      }
+      .specs-title-label {
+        font-size: 12px;
+      }
+      .specs-title {
+        font-size: clamp(24px, 3.5vw, 34px);
+      }
+      .specs-intro-text {
+        display: block;
+        font-size: 14px;
+        line-height: 1.55;
+        color: var(--muted);
+      }
+      .specs-table {
+        font-size: 13.5px;
+      }
+      .specs-label {
+        padding: 16px 8px;
+        font-size: 16px;
+        width: 25%;
+      }
+      .specs-value {
+        padding: 16px 8px;
+        width: 75%;
+        line-height: 1.5;
+      }
+      .specs-desc-detail {
+        display: inline;
+      }
+      .specs-image-col {
+        width: 100%;
+        max-width: 380px;
+        border-radius: 12px;
+      }
+    }
+
+    /* ============================================ */
     /*  5. PRODUCT GRID (MIOLOS - MOBILE-FIRST)     */
     /* ============================================ */
     .product-grid-section {
@@ -1165,6 +1313,7 @@
     <div class="nav-links">
       <a href="#kits" class="nav-link">Kits</a>
       <a href="#diferenciais" class="nav-link">Diferenciais</a>
+      <a href="#specs" class="nav-link">Ficha Técnica</a>
       <a href="#miolos" class="nav-link">Miolos</a>
       <a href="#depoimentos" class="nav-link">Depoimentos</a>
     </div>
@@ -1276,6 +1425,60 @@
       <!-- Image rounded -->
       <div class="split-image-col">
         <img src="assets/mockup-produto-frente-verso.webp" alt="Dois caderninhos de bolso Kraft de 14x9 cm expostos em um tablecloth de linho com sombras de folhas, mostrando a ilustração da capa e os detalhes da contra-capa" />
+      </div>
+    </div>
+  </section>
+
+  <!-- 4.5. FICHA TÉCNICA (THE SPECS - DAPPER STYLE) -->
+  <section class="section-padding specs-section" id="specs">
+    <div class="container specs-layout">
+      <!-- Left (no desktop) / Left (no mobile): Info & Tabela -->
+      <div class="specs-info-col">
+        <span class="specs-title-label">Ficha Técnica</span>
+        <h2 class="specs-title">Os Detalhes do Produto</h2>
+        <p class="specs-intro-text">
+          Nossos cadernos de bolso são projetados para durabilidade no uso diário. Detalhamos abaixo as especificações exatas de cada caderno para ajudar você a entender a qualidade envolvida.
+        </p>
+        
+        <table class="specs-table">
+          <tbody>
+            <tr class="specs-row">
+              <th class="specs-label">Tamanho</th>
+              <td class="specs-value">
+                <strong>9 cm × 14 cm</strong> <span class="specs-desc-detail">(Tamanho de bolso clássico Pocket, ideal para te acompanhar em qualquer lugar).</span>
+              </td>
+            </tr>
+            <tr class="specs-row">
+              <th class="specs-label">Capa</th>
+              <td class="specs-value">
+                <strong>Kraft 240 g/m²</strong> <span class="specs-desc-detail">(Capa flexível robusta contra rasgos com line art elegante).</span>
+              </td>
+            </tr>
+            <tr class="specs-row">
+              <th class="specs-label">Miolo</th>
+              <td class="specs-value">
+                <strong>60 págs Pólen Bold 90g</strong> <span class="specs-desc-detail">(Papel amarelado agradável aos olhos e macio, fountain pen friendly).</span>
+              </td>
+            </tr>
+            <tr class="specs-row">
+              <th class="specs-label">Acabamento</th>
+              <td class="specs-value">
+                <strong>Grampos de aço</strong> <span class="specs-desc-detail">(Cantos arredondados um a um para proteger o bolso contra rasgos).</span>
+              </td>
+            </tr>
+            <tr class="specs-row">
+              <th class="specs-label">Produção</th>
+              <td class="specs-value">
+                <strong>Artesanal no Rio (BR)</strong> <span class="specs-desc-detail">(Produzido, montado e embalado localmente com cuidado e carinho).</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Right (no desktop) / Right (no mobile): Imagem do Grampo -->
+      <div class="specs-image-col">
+        <img src="assets/stapled_detail.png" alt="Close-up do miolo com grampos FigTree" />
       </div>
     </div>
   </section>
