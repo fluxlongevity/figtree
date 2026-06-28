@@ -286,22 +286,22 @@
 
     .categories-grid {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
     }
 
     .category-card {
       background: #ffffff;
       border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 28px 20px;
+      border-radius: 12px;
+      padding: 16px 8px 12px;
       text-align: center;
       box-shadow: 0 6px 20px rgba(66, 39, 22, 0.02);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 250px;
+      min-height: 120px;
       position: relative;
     }
 
@@ -311,40 +311,37 @@
     }
 
     .card-icon {
-      font-size: 28px;
-      margin-bottom: 8px;
+      font-size: 18px;
+      margin-bottom: 4px;
     }
 
     .card-title {
       font-family: var(--serif);
-      font-size: 20px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--ink);
-      margin-bottom: 4px;
+      margin-bottom: 2px;
+      white-space: nowrap;
     }
 
     .card-desc {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.45;
-      margin-bottom: 16px;
-      max-width: 220px;
+      display: none; /* Oculto no mobile */
     }
 
     .card-price {
-      font-size: 24px;
+      font-size: 17px;
       font-weight: 800;
       color: var(--ink);
       margin-top: auto;
     }
 
     .card-action-link {
-      font-size: 12px;
+      font-size: 9px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.5px;
       color: var(--accent);
-      margin-top: 10px;
+      margin-top: 4px;
       transition: color 0.2s ease;
     }
 
@@ -356,16 +353,17 @@
 
     .deal-badge {
       position: absolute;
-      top: -11px;
+      top: -9px;
       background-color: var(--accent);
       color: #ffffff;
-      font-size: 9px;
+      font-size: 7px;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
-      padding: 3px 10px;
+      letter-spacing: 0.5px;
+      padding: 2px 6px;
       border-radius: 99px;
       box-shadow: 0 4px 10px rgba(200, 121, 85, 0.15);
+      white-space: nowrap;
     }
 
     .category-note {
@@ -385,18 +383,37 @@
         margin-bottom: 48px;
       }
       .categories-grid {
-        grid-template-columns: repeat(4, 1fr); /* 4 colunas para mostrar Kit 1, 4, 8, 12 */
+        grid-template-columns: repeat(3, 1fr);
         gap: 20px;
       }
       .category-card {
         padding: 32px 20px;
         min-height: 270px;
+        border-radius: 16px;
+      }
+      .card-icon {
+        font-size: 28px;
+        margin-bottom: 8px;
       }
       .card-title {
         font-size: 21px;
+        white-space: normal;
+        margin-bottom: 4px;
+      }
+      .card-desc {
+        display: block;
       }
       .card-price {
         font-size: 26px;
+      }
+      .card-action-link {
+        font-size: 12px;
+        margin-top: 10px;
+      }
+      .deal-badge {
+        top: -11px;
+        font-size: 9px;
+        padding: 3px 10px;
       }
     }
 
@@ -1175,15 +1192,6 @@
         <h3 class="card-title">Kit com 8</h3>
         <p class="card-desc">Super desconto! Leve 8 pagando R$ 11 a MENOS. Acompanha Frete Grátis.</p>
         <div class="card-price">R$ 79</div>
-        <a href="#order-form" class="card-action-link">Montar Kit →</a>
-      </div>
-      
-      <!-- Card 4: Kit 12 -->
-      <div class="category-card">
-        <span class="card-icon">📦</span>
-        <h3 class="card-title">Kit com 12</h3>
-        <p class="card-desc">Mega desconto! Leve 12 pagando R$ 15 a MENOS. Acompanha Frete Grátis.</p>
-        <div class="card-price">R$ 109</div>
         <a href="#order-form" class="card-action-link">Montar Kit →</a>
       </div>
     </div>
