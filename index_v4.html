@@ -1364,7 +1364,888 @@
         font-size: 13px;
       }
     }
+  
+
+    /* ========================================================================= */
+    /*  ESTILOS DO CONFIGURADOR DE PEDIDO INTEGRADOS DO INDEX.HTML ORIGINAL      */
+    /* ========================================================================= */
+    .order-area {
+      display: grid;
+      gap: 18px;
+      margin-top: 30px;
+    }
+
+    .choice-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel,
+    .summary {
+      border: 1px solid rgba(89, 54, 34, .12);
+      border-radius: 16px;
+      background: rgba(255, 248, 235, .88);
+      box-shadow: 0 20px 48px rgba(70, 45, 29, .08);
+      padding: 24px;
+      backdrop-filter: blur(7px);
+      min-width: 0;
+    }
+
+    .panel + .panel {
+      margin-top: 18px;
+    }
+
+    .choice-row .panel + .panel {
+      margin-top: 0;
+    }
+
+    .section-title {
+      margin: 0 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--serif);
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    .step {
+      width: 34px;
+      height: 34px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--accent-dark);
+      color: #fff3e6;
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+
+    .cover-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .cover-option,
+    .interior-option {
+      border: 1px solid rgba(84, 51, 31, .16);
+      border-radius: 10px;
+      background: #fffaf1;
+      color: var(--ink);
+      cursor: pointer;
+      text-align: left;
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    }
+
+    .cover-option {
+      padding: 9px;
+    }
+
+    .cover-option:hover,
+    .interior-option:hover,
+    .cover-option:focus-visible,
+    .interior-option:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(78, 48, 30, .14);
+      outline: none;
+    }
+
+    .cover-option.is-selected,
+    .interior-option.is-selected {
+      border-color: #4b2118;
+      box-shadow: 0 0 0 3px rgba(189, 117, 79, .24);
+    }
+
+    .cover-thumb {
+      position: relative;
+      display: block;
+      aspect-ratio: 1024 / 1536;
+      border-radius: 8px;
+      background: #eee0cf;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(80, 48, 31, .08);
+    }
+
+    .cover-thumb img {
+      transition: transform 0.3s ease;
+    }
+
+    .cover-option:hover .cover-thumb img {
+      transform: scale(1.06);
+    }
+
+    .zoom-button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(58, 29, 22, .22);
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      background: rgba(255, 250, 241, .92);
+      color: var(--ink);
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(55, 31, 19, .16);
+      z-index: 4;
+      transition: transform .16s ease, background .16s ease;
+    }
+
+    .zoom-button:hover,
+    .zoom-button:focus-visible {
+      transform: scale(1.06);
+      background: #fff7e8;
+      outline: none;
+    }
+
+    .zoom-button svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.4;
+    }
+
+    .cover-thumb-base {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cover-name {
+      display: block;
+      margin-top: 8px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .01em;
+    }
+
+    .interior-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .interior-option {
+      padding: 12px;
+      position: relative;
+    }
+
+    .interior-preview {
+      position: relative;
+      display: block;
+    }
+
+    .interior-preview img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #eee0cc;
+    }
+
+    .interior-option strong {
+      display: block;
+      margin-top: 10px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .interior-option span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .preview-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(37, 21, 14, .62);
+      backdrop-filter: blur(5px);
+      overflow-y: auto;
+    }
+
+    .preview-modal.is-open {
+      display: flex;
+    }
+
+    .preview-dialog {
+      width: min(920px, 100%);
+      max-height: min(92vh, 900px);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      border: 1px solid rgba(255, 246, 232, .36);
+      border-radius: 14px;
+      background: #fff7ea;
+      box-shadow: 0 30px 80px rgba(30, 17, 10, .36);
+      overflow: hidden;
+      margin: auto;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(82, 48, 30, .15);
+    }
+
+    .preview-header h2 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .preview-close {
+      width: 40px;
+      height: 40px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--accent-dark);
+      color: #fff7ea;
+      cursor: pointer;
+      font-size: 25px;
+      line-height: 1;
+    }
+
+    .preview-body {
+      position: relative;
+      min-height: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(185, 197, 168, .24), transparent 22rem),
+        #f6ead9;
+    }
+
+    .preview-cover-large {
+      position: relative;
+      width: min(420px, 82vw);
+      aspect-ratio: 1024 / 1536;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 22px 52px rgba(52, 31, 19, .24);
+    }
+
+    .preview-cover-large img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .preview-interior-large {
+      width: min(860px, 100%);
+      max-height: 72vh;
+      object-fit: contain;
+      border-radius: 10px;
+      box-shadow: 0 20px 48px rgba(52, 31, 19, .20);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      margin: 0 0 7px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border: 1px solid rgba(89, 54, 34, .20);
+      border-radius: 10px;
+      padding: 13px 14px;
+      color: var(--ink);
+      background: var(--paper-strong);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(189, 117, 79, .18);
+    }
+
+    .qty-row {
+      display: grid;
+      grid-template-columns: minmax(0, 220px) minmax(180px, 1fr);
+      gap: 14px;
+      align-items: end;
+    }
+
+    .qty-control {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) 44px;
+      overflow: hidden;
+      border: 1px solid rgba(89, 54, 34, .20);
+      border-radius: 10px;
+      background: var(--paper-strong);
+    }
+
+    .qty-control input {
+      border: 0;
+      border-left: 1px solid rgba(89, 54, 34, .14);
+      border-right: 1px solid rgba(89, 54, 34, .14);
+      border-radius: 0;
+      text-align: center;
+      font-weight: 800;
+    }
+
+    .qty-button {
+      border: 0;
+      background: #fff3e2;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .add-item {
+      min-height: 52px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--accent-dark);
+      color: #fff5e8;
+      cursor: pointer;
+      font-weight: 900;
+      padding: 0 18px;
+      box-shadow: 0 12px 24px rgba(83, 37, 27, .18);
+      transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .add-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 32px rgba(83, 37, 27, 0.28);
+      background: var(--accent);
+    }
+
+    .add-item:active {
+      transform: scale(0.96) translateY(0);
+    }
+
+    .current-selection {
+      margin: 0 0 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: rgba(255, 252, 246, .72);
+      border: 1px solid rgba(89, 54, 34, .12);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .current-selection strong {
+      color: var(--ink);
+    }
+
+    .small-note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .summary {
+      position: static;
+    }
+
+    .summary h2 {
+      margin: 0 0 16px;
+      font-family: var(--serif);
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .cart-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .empty-cart {
+      margin: 0;
+      padding: 14px;
+      border: 1px dashed rgba(89, 54, 34, .22);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid rgba(89, 54, 34, .14);
+      border-radius: 10px;
+      background: rgba(255, 252, 246, .74);
+    }
+
+    .cart-item-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      cursor: pointer;
+      border-radius: 6px;
+      padding: 4px;
+      margin: -4px;
+      transition: background-color .15s ease;
+    }
+
+    .cart-item-info:hover,
+    .cart-item-info:focus-visible {
+      background-color: rgba(89, 54, 34, .08);
+      outline: none;
+    }
+
+    .cart-item-thumb {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #eaeaea;
+      border: 1px solid rgba(89, 54, 34, .12);
+      border-radius: 6px;
+      padding: 3px;
+      flex-shrink: 0;
+    }
+
+    .cart-item-thumb img {
+      display: block;
+      height: 100%;
+      width: auto;
+      margin: 0 auto;
+      object-fit: contain;
+    }
+
+    .cart-item-details {
+      min-width: 0;
+    }
+
+    .cart-item strong {
+      display: block;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+
+    .cart-item span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .remove-item {
+      border: 0;
+      border-radius: 999px;
+      width: 32px;
+      height: 32px;
+      background: #f1dfce;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 0;
+      border-top: 1px solid rgba(89, 54, 34, .12);
+      color: var(--muted);
+    }
+
+    .summary-line strong {
+      color: var(--ink);
+      text-align: right;
+    }
+
+    .total {
+      margin-top: 14px;
+      border-radius: 10px;
+      background: var(--accent-dark);
+      color: #fff4e6;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .total strong {
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .discount-note {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.45;
+      padding: 12px 14px;
+      background: rgba(182, 132, 85, 0.08); /* 8% Kraft */
+      border: 1px dashed rgba(182, 132, 85, 0.25);
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    .whatsapp-button {
+      width: 100%;
+      min-height: 54px;
+      margin-top: 18px;
+      border: 0;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      background: #1f7d43;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 900;
+      box-shadow: 0 14px 30px rgba(31, 125, 67, .22);
+      transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+    }
+
+    .whatsapp-button:hover:not(.is-disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 32px rgba(31, 125, 67, 0.32);
+      background: #269c54;
+    }
+
+    .whatsapp-button:active:not(.is-disabled) {
+      transform: scale(0.96) translateY(0);
+    }
+
+    .whatsapp-button.is-disabled {
+      background: #9a8c7b;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 980px) {
+      .choice-row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .choice-row .panel + .panel {
+        margin-top: 18px;
+      }
+
+      .cover-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        width: min(100% - 20px, 1120px);
+        padding-top: 12px;
+      }
+
+      .hero {
+        padding-top: 8px;
+      }
+
+      .product-stage {
+        width: 100%;
+        margin: 8px 0 -6px;
+      }
+
+      .price-art {
+        width: min(100%, 560px);
+        margin-top: -6px;
+      }
+
+      .benefits-art {
+        width: min(100%, 500px);
+        margin-top: 14px;
+      }
+
+      .showcase-gallery {
+        width: 100%;
+        margin-top: 24px;
+      }
+
+      .showcase-title {
+        margin-bottom: 14px;
+      }
+
+      .showcase-grid {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding: 0 2px 12px;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: thin;
+      }
+
+      .showcase-item {
+        flex: 0 0 min(78vw, 310px);
+        scroll-snap-align: center;
+      }
+
+      .details-head {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+      }
+
+      .details-seal {
+        width: 100%;
+        min-width: 0;
+        min-height: auto;
+        padding: 10px 16px;
+      }
+
+      .spec-token {
+        width: 58px;
+        height: 58px;
+      }
+
+      .spec-token svg {
+        width: 34px;
+        height: 34px;
+        stroke-width: 1.75;
+      }
+
+      .details-benefits {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .specs-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .panel,
+      .summary {
+        padding: 18px;
+      }
+
+      .cover-grid,
+      .interior-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .choice-row,
+      .form-grid,
+      .qty-row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 430px) {
+      .product-stage {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+      }
+    }
+
+    .preview-body-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-carousel {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      width: 100%;
+      height: 100%;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .preview-carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .preview-slide {
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      scroll-snap-align: center;
+      padding: 24px 52px;
+      box-sizing: border-box;
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(58, 29, 22, .22);
+      background: rgba(255, 250, 241, .92);
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 18px rgba(55, 31, 19, .16);
+      transition: transform .16s ease, background .16s ease;
+      z-index: 10;
+    }
+
+    .carousel-btn:hover {
+      transform: translateY(-50%) scale(1.06);
+      background: #fff7e8;
+    }
+
+    .carousel-btn svg {
+      width: 24px;
+      height: 24px;
+      stroke-width: 2.5;
+    }
+
+    .prev-btn {
+      left: 12px;
+    }
+
+    .next-btn {
+      right: 12px;
+    }
+
+    .shipping-option-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid rgba(89, 54, 34, .16);
+      border-radius: 10px;
+      background: #fffaf1;
+      cursor: pointer;
+      transition: transform .15s ease, border-color .15s ease;
+    }
+
+    .shipping-option-card:hover {
+      border-color: var(--accent);
+      background: #fffdfb;
+    }
+
+    .shipping-option-card input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent-dark);
+      cursor: pointer;
+      margin: 0;
+      flex-shrink: 0;
+    }
+
+    .shipping-option-details {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .shipping-option-name {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--ink);
+    }
+
+    .shipping-option-price {
+      font-weight: 800;
+      color: var(--accent-dark);
+      font-size: 16px;
+    }
+
+    .shipping-option-time {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    #reopenPixButton, #copyPixCodeBtn, #pixCloseBtn {
+      transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    }
+    #reopenPixButton:hover {
+      background: #2ba396 !important;
+      box-shadow: 0 14px 30px rgba(43, 163, 150, .32) !important;
+    }
+    #reopenPixButton:active, #copyPixCodeBtn:active, #pixCloseBtn:active {
+      transform: scale(0.98);
+    }
+    #copyPixCodeBtn:hover {
+      background: #2ba396 !important;
+      box-shadow: 0 8px 20px rgba(43, 163, 150, .35) !important;
+    }
+
+    @keyframes spin {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .qty-btn {
+      transition: background-color 0.2s ease, transform 0.1s ease, border-color 0.2s ease;
+    }
+    .qty-btn:hover {
+      background: #f1dfce !important;
+      border-color: rgba(89, 54, 34, 0.4) !important;
+    }
+    .qty-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* Oculta o botão flutuante padrão do CookieYes */
+    .cky-revisit-consent {
+      display: none !important;
+    }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -1664,6 +2545,131 @@
 
 
 
+  
+
+  <!-- ========================================================================= -->
+  <!--  CONFIGURADOR DE PEDIDO E CHECKOUT INTEGRADOS DO INDEX.HTML ORIGINAL    -->
+  <!-- ========================================================================= -->
+  <section class="order-area" aria-label="Formulário de pedido">
+      <div class="choice-row">
+        <section class="panel">
+          <h2 class="section-title"><span class="step">1</span>Escolha a capa</h2>
+          <div class="cover-grid" id="coverGrid"></div>
+        </section>
+
+        <section class="panel">
+          <h2 class="section-title"><span class="step">2</span>Escolha o miolo</h2>
+          <div class="interior-grid" id="interiorGrid"></div>
+        </section>
+      </div>
+
+      <section class="panel">
+        <h2 class="section-title"><span class="step">3</span>Adicione ao pedido</h2>
+        <p class="current-selection" id="currentSelection"></p>
+        <div class="qty-row">
+          <div class="field">
+            <label for="quantity">Quantidade desta configuração</label>
+            <div class="qty-control">
+              <button class="qty-button" type="button" id="minus" aria-label="Diminuir quantidade">−</button>
+              <input id="quantity" type="number" min="1" max="50" step="1" value="1" />
+              <button class="qty-button" type="button" id="plus" aria-label="Aumentar quantidade">+</button>
+            </div>
+          </div>
+          <button class="add-item" type="button" id="addItem">Adicionar esta configuração</button>
+        </div>
+        <p class="small-note">Depois de adicionar, você pode escolher outra capa ou outro miolo e adicionar mais cadernos ao mesmo pedido.</p>
+      </section>
+
+      <section class="panel" id="step4">
+        <h2 class="section-title"><span class="step">4</span>Seus dados</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label for="name">Nome *</label>
+            <input id="name" autocomplete="name" placeholder="Seu nome (obrigatório)" required />
+          </div>
+          <div class="field">
+            <label for="phone">WhatsApp</label>
+            <input id="phone" autocomplete="tel" inputmode="tel" placeholder="(21) 99999-9999" />
+          </div>
+          <div class="field">
+            <label for="cep">CEP *</label>
+            <div style="display: flex; gap: 8px;">
+              <input id="cep" inputmode="numeric" placeholder="00000-000" style="flex: 1;" required />
+              <button class="add-item" type="button" id="calcShipping" style="min-height: 48px; box-shadow: none; font-size: 14px; padding: 0 16px; flex-shrink: 0;">Calcular Frete</button>
+            </div>
+          </div>
+          <div class="field full" id="shippingOptionsField" style="display: none;">
+            <label>Opções de Envio *</label>
+            <div id="shippingOptionsList" style="display: grid; gap: 8px;"></div>
+          </div>
+          <div class="field full">
+            <label for="delivery">Entrega *</label>
+            <input id="delivery" placeholder="Rua, Nº, complemento - Bairro - Cidade/UF (obrigatório)" required readonly style="background-color: #f3e5d3; cursor: not-allowed;" />
+          </div>
+          <div class="field full">
+            <label for="notes">Observações</label>
+            <textarea id="notes" placeholder="Ex.: entregar à noite, chamar antes, etc."></textarea>
+          </div>
+        </div>
+      </section>
+
+      <aside class="summary" id="orderSummary" aria-label="Resumo do pedido">
+        <h2>Resumo do pedido</h2>
+        <div class="cart-list" id="cartList">
+          <p class="empty-cart">Escolha capa, miolo e quantidade. Depois clique em “Adicionar esta configuração”.</p>
+        </div>
+        <!-- Dica de promoção e upsell acima dos totais -->
+        <p class="discount-note" id="discountNote">A promoção 4 por R$ 45 é calculada pelo total de cadernos no pedido.</p>
+        <div class="summary-line"><span>Total de cadernos</span><strong id="summaryQty">0</strong></div>
+        
+        <!-- Economia de Kit no Resumo -->
+        <div class="summary-line" id="fullPriceLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; color: var(--muted); border-top: 1px solid rgba(89, 54, 34, .12);">
+          <span>Preço normal (sem promoções)</span>
+          <strong id="summaryFullPrice">R$ 0,00</strong>
+        </div>
+        <div class="summary-line" id="kitDiscountLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; color: #28a745; font-weight: 600;">
+          <span>Desconto do Kit (<span id="kitDiscountPercent">0%</span>)</span>
+          <strong id="summaryKitDiscount" style="color: inherit;">-R$ 0,00</strong>
+        </div>
+        
+        <!-- Promoções Automáticas por Item -->
+        <div id="autoPromotionsContainer"></div>
+        
+        <div class="summary-line" id="shippingSummaryLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid rgba(89, 54, 34, .12); color: var(--muted);"><span>Frete: <span id="shippingMethodName">-</span></span><strong id="shippingSummaryPrice">R$ 0</strong></div>
+        
+        <!-- Linha do Desconto do Cupom no Resumo -->
+        <div class="summary-line" id="couponSummaryLine" style="display: none; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid rgba(89, 54, 34, .12); color: #28a745; font-weight: 600;">
+          <span>Desconto Cupom (<span id="couponSummaryCode">-</span>)</span>
+          <strong id="couponSummaryDiscount" style="color: inherit;">-R$ 0,00</strong>
+        </div>
+
+        <!-- Seção do Cupom de Desconto (Input e Botão) -->
+        <div class="coupon-section" id="couponSection" style="margin: 14px 0; padding: 14px 0; border-top: 1px dashed var(--line); border-bottom: 1px dashed var(--line);">
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="text" id="couponInput" placeholder="CUPOM DE DESCONTO" style="flex: 1; padding: 10px 12px; border: 1px solid rgba(89, 54, 34, .25); border-radius: 8px; background: var(--paper-strong); font-size: 13px; text-transform: uppercase;" />
+            <button id="applyCouponBtn" type="button" class="add-item" style="min-height: 38px; box-shadow: none; font-size: 13px; padding: 0 14px; margin-top: 0; background: var(--kraft); color: #fff; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s;">Aplicar</button>
+          </div>
+          <div id="couponFeedback" style="display: none; font-size: 12px; margin-top: 6px; font-weight: 600;"></div>
+          <div style="font-size: 11px; color: var(--muted); margin-top: 5px; font-weight: 500; text-align: center;">Apenas um cupom por pedido (não acumulativo).</div>
+        </div>
+
+        <div class="total"><span>Total</span><strong id="summaryTotal">R$ 0</strong></div>
+        <div style="display: flex; gap: 10px; margin-top: 18px; width: 100%;">
+          <button class="whatsapp-button is-disabled" id="whatsappButton" type="button" style="margin-top: 0; flex: 1; min-width: 0;">Adicione itens ao pedido</button>
+          <button id="reopenPixButton" type="button" style="display: none; width: auto; min-height: 54px; border: 0; border-radius: 10px; align-items: center; justify-content: center; padding: 0 16px; background: #32BCAD; color: #fff; font-weight: 900; box-shadow: 0 14px 30px rgba(50, 188, 173, .22); cursor: pointer; gap: 6px; font-size: 14px; white-space: nowrap;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+              <rect x="14" y="14" width="3" height="3"></rect>
+              <rect x="18" y="18" width="3" height="3"></rect>
+            </svg>
+            Ver PIX
+          </button>
+        </div>
+      </aside>
+    </section>
+
   <!-- 9. CTA BANNER -->
   <section class="cta-banner" aria-label="Chamada para ação final">
     <div class="cta-banner-content">
@@ -1723,6 +2729,2810 @@
       </div>
     </div>
   </footer>
+
+
+
+  <!-- MODAIS DO CHECKOUT INTEGRADOS DO INDEX.HTML ORIGINAL -->
+  <div class="preview-modal" id="previewModal" aria-hidden="true">
+    <div class="preview-dialog" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+      <div class="preview-header">
+        <h2 id="previewTitle">Visualização</h2>
+        <button class="preview-close" type="button" id="previewClose" aria-label="Fechar visualização">×</button>
+      </div>
+      <div class="preview-body" id="previewBody"></div>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmação Customizado (Bonito) -->
+  <div class="preview-modal" id="confirmModal" aria-hidden="true">
+    <div class="preview-dialog" style="width: min(420px, 94%);" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div class="preview-header">
+        <h2 id="confirmTitle" style="font-size: 24px; font-family: var(--serif);">Adicionar outro caderno?</h2>
+      </div>
+      <div class="preview-body" style="padding: 24px; text-align: center; background: #fff8ec; flex-direction: column;">
+        <p style="margin: 0 0 22px; font-size: 16px; line-height: 1.55; color: var(--ink);">
+          O caderno foi adicionado ao seu pedido!<br><strong>Deseja escolher outro caderno com outra configuração?</strong>
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center; width: 100%;">
+          <button class="add-item" type="button" id="confirmYes" style="box-shadow: none; min-height: 44px; padding: 0 20px; font-size: 15px; font-weight: 800;">Sim, adicionar outro</button>
+          <button class="remove-item" type="button" id="confirmNo" style="width: auto; height: 44px; border-radius: 10px; padding: 0 20px; background: #f1dfce; font-size: 15px; font-weight: 800;">Não, finalizar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmação de Exclusão de Item -->
+  <div class="preview-modal" id="deleteConfirmModal" aria-hidden="true">
+    <div class="preview-dialog" style="width: min(420px, 94%);" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle">
+      <div class="preview-header">
+        <h2 id="deleteConfirmTitle" style="font-size: 24px; font-family: var(--serif);">Remover item?</h2>
+      </div>
+      <div class="preview-body" style="padding: 24px; text-align: center; background: #fff8ec; flex-direction: column;">
+        <p style="margin: 0 0 22px; font-size: 16px; line-height: 1.55; color: var(--ink);">
+          Deseja realmente remover este item do seu resumo de pedido?
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center; width: 100%;">
+          <button class="add-item" type="button" id="deleteConfirmYes" style="box-shadow: none; min-height: 44px; padding: 0 20px; font-size: 15px; font-weight: 800; background: #c63b2f; color: #fff;">Sim, remover</button>
+          <button class="remove-item" type="button" id="deleteConfirmNo" style="width: auto; height: 44px; border-radius: 10px; padding: 0 20px; background: #f1dfce; font-size: 15px; font-weight: 800; color: var(--ink);">Não, manter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Alerta Customizado (Bonito) -->
+  <div class="preview-modal" id="alertModal" style="z-index: 50;" aria-hidden="true">
+    <div class="preview-dialog" style="width: min(420px, 94%);" role="dialog" aria-modal="true" aria-labelledby="alertTitle">
+      <div class="preview-header">
+        <h2 id="alertTitle" style="font-size: 24px; font-family: var(--serif);">Atenção</h2>
+        <button class="preview-close" type="button" id="alertClose" aria-label="Fechar alerta">×</button>
+      </div>
+      <div class="preview-body" style="padding: 24px; text-align: center; background: #fff8ec; flex-direction: column;">
+        <p id="alertMessage" style="margin: 0 0 22px; font-size: 16px; line-height: 1.55; color: var(--ink);"></p>
+        <div style="display: flex; justify-content: center; width: 100%;">
+          <button class="add-item" type="button" id="alertOk" style="box-shadow: none; min-height: 44px; padding: 0 28px; font-size: 15px; font-weight: 800;">Entendido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Endereço Customizado (Número e Complemento) -->
+  <div class="preview-modal" id="addressModal" aria-hidden="true">
+    <div class="preview-dialog" style="width: min(460px, 94%);" role="dialog" aria-modal="true" aria-labelledby="addressTitle">
+      <div class="preview-header">
+        <h2 id="addressTitle" style="font-size: 24px; font-family: var(--serif);">Dados de Entrega</h2>
+        <button class="preview-close" type="button" id="addressClose" aria-label="Fechar janela">×</button>
+      </div>
+      <div class="preview-body" style="padding: 24px; display: flex; flex-direction: column; gap: 16px; align-items: stretch; background: #fff8ec; overflow-y: auto;">
+        <p style="margin: 0; font-size: 15px; line-height: 1.45; color: var(--ink);">
+          Por favor, complete as informações para a entrega:
+        </p>
+        
+        <div style="font-size: 14px; font-weight: 600; padding: 10px 12px; background: #f3e5d3; border-radius: 8px; color: var(--ink); border: 1px solid rgba(82, 48, 30, 0.12);" id="addressModalSummary"></div>
+        
+        <div id="addressModalManualFields" style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="field" style="margin: 0;">
+            <label for="addressModalStreet">Rua / Logradouro *</label>
+            <input id="addressModalStreet" type="text" placeholder="Ex: Rua das Flores" />
+          </div>
+          <div class="field" style="margin: 0;">
+            <label for="addressModalDistrict">Bairro *</label>
+            <input id="addressModalDistrict" type="text" placeholder="Ex: Centro" />
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; width: 100%;">
+          <div class="field" style="flex: 1; margin: 0;">
+            <label for="addressModalNum">Número *</label>
+            <input id="addressModalNum" inputmode="numeric" placeholder="Ex: 123" required />
+          </div>
+          <div class="field" style="flex: 1.5; margin: 0;">
+            <label for="addressModalComp">Complemento</label>
+            <input id="addressModalComp" type="text" placeholder="Ex: Apto 402, Bloco B" />
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 12px; justify-content: flex-end; width: 100%; margin-top: 6px;">
+          <button class="remove-item" type="button" id="addressModalCancel" style="width: auto; height: 44px; border-radius: 10px; padding: 0 20px; background: #f1dfce; font-size: 15px; font-weight: 800; cursor: pointer;">Cancelar</button>
+          <button class="add-item" type="button" id="addressModalConfirm" style="box-shadow: none; min-height: 44px; padding: 0 20px; font-size: 15px; font-weight: 800; cursor: pointer;">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal do Pix Copia e Cola -->
+  <div class="preview-modal" id="pixModal" aria-hidden="true">
+    <div class="preview-dialog" style="width: min(460px, 94%);" role="dialog" aria-modal="true" aria-labelledby="pixTitle">
+      <div class="preview-header">
+        <h2 id="pixTitle" style="font-size: 24px; font-family: var(--serif);">Pagamento PIX</h2>
+        <button class="preview-close" type="button" id="pixClose" aria-label="Fechar janela">×</button>
+      </div>
+      <div class="preview-body" style="padding: 24px; display: flex; flex-direction: column; gap: 16px; align-items: stretch; background: #fff8ec; text-align: center;">
+        <p style="margin: 0; font-size: 15px; line-height: 1.45; color: var(--ink);">
+          Seu pedido foi gerado! Para concluir a compra, copie o código <strong>Pix Copia e Cola</strong> abaixo e efetue o pagamento no aplicativo do seu banco:
+        </p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--muted); font-weight: 600; background: rgba(89, 54, 34, 0.05); padding: 10px 12px; border-radius: 8px; border: 1px dashed rgba(89, 54, 34, 0.2);">
+          ⚠️ <strong>Importante:</strong> Após realizar o pagamento, envie o comprovante pelo WhatsApp para confirmar o seu pedido!
+        </p>
+        
+        <!-- Container do QR Code -->
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 4px 0;">
+          <span style="font-size: 13.5px; font-weight: 700; color: var(--ink);">Ou aponte a câmera para pagar com o QR Code:</span>
+          <div id="qrcodeContainer" style="padding: 12px; background: #ffffff; border-radius: 12px; border: 1px solid rgba(82, 48, 30, 0.12); display: inline-flex; justify-content: center; align-items: center; box-shadow: 0 8px 24px rgba(78, 48, 30, 0.08);">
+            <div id="qrcode"></div>
+          </div>
+        </div>
+        
+        <div style="position: relative; width: 100%;">
+          <textarea id="pixCodeText" readonly style="width: 100%; height: 80px; padding: 12px; border-radius: 8px; border: 1px solid rgba(82, 48, 30, 0.18); background: rgba(255, 252, 246, 0.9); font-family: monospace; font-size: 12px; color: var(--ink); resize: none; word-break: break-all; margin: 0; outline: none;" aria-label="Código Pix Copia e Cola"></textarea>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 6px;">
+          <button class="add-item" type="button" id="copyPixCodeBtn" style="box-shadow: none; min-height: 44px; padding: 0 20px; font-size: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; background: #32BCAD; color: #fff; border: 0; border-radius: 10px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            Copiar Código PIX
+          </button>
+
+          <button class="remove-item" type="button" id="pixCloseBtn" style="width: auto; height: 44px; border-radius: 10px; padding: 0 20px; background: #f1dfce; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 4px;">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Solicitação de CPF para Envio -->
+  <div class="preview-modal" id="cpfModal" aria-hidden="true">
+    <div class="preview-dialog" style="width: min(450px, 94%);" role="dialog" aria-modal="true" aria-labelledby="cpfTitle">
+      <div class="preview-header">
+        <h2 id="cpfTitle" style="font-size: 24px; font-family: var(--serif);">Dados para Envio</h2>
+        <button class="preview-close" type="button" id="cpfClose" aria-label="Fechar janela">×</button>
+      </div>
+      <div class="preview-body" style="padding: 24px; display: flex; flex-direction: column; gap: 16px; align-items: stretch; background: #fff8ec;">
+        <p style="margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink); text-align: left;">
+          Para enviar seu pedido via <strong>Correios / Transportadora (SuperFrete)</strong>, precisamos que informe o CPF do destinatário para a emissão da etiqueta de postagem.
+        </p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--muted); font-weight: 600; background: rgba(89, 54, 34, 0.05); padding: 10px 12px; border-radius: 8px; border: 1px dashed rgba(89, 54, 34, 0.15); text-align: left;">
+          🔒 <strong>Segurança dos dados:</strong> Seu CPF será usado única e exclusivamente para a geração da etiqueta oficial de envio e será armazenado de forma segura.
+        </p>
+        <div class="field" style="margin: 0;">
+          <label for="cpfInputModal">CPF do Destinatário *</label>
+          <input id="cpfInputModal" inputmode="numeric" placeholder="000.000.000-00" required />
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end; width: 100%; margin-top: 6px;">
+          <button class="remove-item" type="button" id="cpfModalCancel" style="width: auto; height: 44px; border-radius: 10px; padding: 0 20px; background: #f1dfce; font-size: 15px; font-weight: 800; cursor: pointer;">Cancelar</button>
+          <button class="add-item" type="button" id="cpfModalConfirm" style="box-shadow: none; min-height: 44px; padding: 0 20px; font-size: 15px; font-weight: 800; cursor: pointer;">Confirmar e Enviar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT DO CHECKOUT E PEDIDO INTEGRADO DO INDEX.HTML ORIGINAL -->
+  <script>
+    const SELLER_WHATSAPP = "5521969467886";
+    // URL do Web App do Google Apps Script (Deixe em branco ou insira a URL implantada)
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbycjYy2UiWKMJAQcrFEs9IFJ42LTKtSJMgUufCYErjlX9U80m6V7M1pHvRb0gbH5TSF/exec"; 
+
+    let selectedShipping = null;
+    let deliveryRua = "";
+    let deliveryNumero = "";
+    let deliveryComplemento = "";
+    let deliveryBairro = "";
+    let deliveryCidade = "";
+    let deliveryEstado = "";
+    let lastCalculatedServices = [];
+    let wasLastLocal = false;
+    let isCepValid = false;
+    let lastOrderId = null;
+    let isOrderSaved = false;
+    let lastSavedOrderKey = "";
+    let lastCepResponseData = null;
+    let activeCoupon = null;
+    let couponDiscountValue = 0;
+
+    function updateDisabledState() {
+      const elementsToDisable = [
+        "quantity", "minus", "plus", "addItem",
+        "name", "phone", "cep", "calcShipping", "notes",
+        "couponInput", "applyCouponBtn"
+      ];
+      
+      elementsToDisable.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.disabled = isOrderSaved;
+          if (isOrderSaved) {
+            el.classList.add("is-disabled");
+            if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+              el.style.backgroundColor = "#e9ecef";
+              el.style.cursor = "not-allowed";
+              el.style.opacity = "0.7";
+            }
+          } else {
+            el.classList.remove("is-disabled");
+            if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+              el.style.backgroundColor = "";
+              el.style.cursor = "";
+              el.style.opacity = "";
+            }
+          }
+        }
+      });
+
+      // Seletor de Capas e Miolos
+      const coverOptions = document.querySelectorAll(".cover-option");
+      coverOptions.forEach(opt => {
+        if (isOrderSaved) {
+          opt.style.pointerEvents = "none";
+          opt.style.opacity = "0.6";
+        } else {
+          opt.style.pointerEvents = "";
+          opt.style.opacity = "";
+        }
+      });
+
+      const interiorOptions = document.querySelectorAll(".interior-option");
+      interiorOptions.forEach(opt => {
+        if (isOrderSaved) {
+          opt.style.pointerEvents = "none";
+          opt.style.opacity = "0.6";
+        } else {
+          opt.style.pointerEvents = "";
+          opt.style.opacity = "";
+        }
+      });
+
+      // Opções de frete
+      const shippingRadios = document.querySelectorAll('input[name="shipping_option"]');
+      shippingRadios.forEach(radio => {
+        radio.disabled = isOrderSaved;
+        const container = radio.closest("label") || radio.parentNode;
+        if (container) {
+          if (isOrderSaved) {
+            container.style.pointerEvents = "none";
+            container.style.opacity = "0.7";
+          } else {
+            container.style.pointerEvents = "";
+            container.style.opacity = "";
+          }
+        }
+      });
+    }
+
+    function getOrderKey() {
+      const nameVal = document.getElementById("name") ? document.getElementById("name").value.trim() : "";
+      const phoneVal = document.getElementById("phone") ? document.getElementById("phone").value.trim() : "";
+      const deliveryVal = document.getElementById("delivery") ? document.getElementById("delivery").value.trim() : "";
+      const cepVal = document.getElementById("cep") ? document.getElementById("cep").value.trim() : "";
+      const notesVal = document.getElementById("notes") ? document.getElementById("notes").value.trim() : "";
+      const shippingId = selectedShipping ? selectedShipping.id : null;
+      const cartItems = cart.map(item => `${item.coverName}-${item.interiorName}-${item.qty}`).join("|");
+      return `${nameVal};${phoneVal};${deliveryVal};${cepVal};${notesVal};${shippingId};${cartItems};${state.cpf}`;
+    }
+
+    function crc16(data) {
+      let crc = 0xFFFF;
+      for (let i = 0; i < data.length; i++) {
+        crc ^= data.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
+          if ((crc & 0x8000) !== 0) {
+            crc = ((crc << 1) ^ 0x1021) & 0xFFFF;
+          } else {
+            crc = (crc << 1) & 0xFFFF;
+          }
+        }
+      }
+      return crc.toString(16).toUpperCase().padStart(4, "0");
+    }
+
+    function generateMerchantAccountInfo(orderId) {
+      const ddi = "0014BR.GOV.BCB.PIX";
+      const key = "0136ba2d7d8e-3a98-4379-8a26-0f97f45375c9";
+      let desc = "0208Cadernos";
+      if (orderId) {
+        const descText = `Pedido${orderId}`;
+        const descLen = String(descText.length).padStart(2, "0");
+        desc = `02${descLen}${descText}`;
+      }
+      const combined = ddi + key + desc;
+      const totalLen = String(combined.length).padStart(2, "0");
+      return `26${totalLen}${combined}`;
+    }
+
+    function generatePixCopiaCola(amount, orderId) {
+      const part1 = "000201" + generateMerchantAccountInfo(orderId) + "520400005303986";
+      let amountField = "";
+      if (amount !== undefined && amount !== null && amount > 0) {
+        const amountStr = amount.toFixed(2);
+        const length = String(amountStr.length).padStart(2, "0");
+        amountField = `54${length}${amountStr}`;
+      }
+      const part2 = "5802BR5922ANDRE MARTINS FIGUEIRA6009Sao Paulo62070503***6304";
+      const combined = part1 + amountField + part2;
+      const checksum = crc16(combined);
+      return combined + checksum;
+    }
+
+    let covers = [
+      ...Array.from({ length: 12 }, (_, index) => {
+        const number = String(index + 1).padStart(2, "0");
+        return {
+          name: `Capa ${index + 1}`,
+          src: `assets/capa-${number}n.webp`,
+          thumbSrc: `assets/capa-${number}.webp`
+        };
+      }),
+      { name: "Capa 13", src: "assets/capa-13n.webp", thumbSrc: "assets/capa-13n.webp" },
+      { name: "Capa 14", src: "assets/capa-14n.webp", thumbSrc: "assets/capa-14n.webp" },
+      { name: "Capa lisa", src: "assets/mockup-capa-lisa.webp", thumbSrc: "assets/mockup-capa-lisa.webp" }
+    ];
+
+    let interiors = [
+      {
+        name: "Pautado simples",
+        detail: "Linhas sem data e sem dias.",
+        src: "assets/miolo-pautado-sem-data-dias.webp"
+      },
+      {
+        name: "Pautado com data",
+        detail: "Com dias da semana, quadrinhos e data.",
+        src: "assets/miolo-pautado-com-data-dias-01.webp"
+      },
+      {
+        name: "Sem pauta com data",
+        detail: "Sem linhas, com dias da semana e data.",
+        src: "assets/miolo-liso-com-data-dias.webp"
+      },
+      {
+        name: "Sem pauta liso",
+        detail: "Páginas totalmente livres.",
+        src: "assets/miolo-liso-sem-data-dias.webp"
+      },
+      {
+        name: "Pontilhado simples",
+        detail: "Grade de pontos sem data.",
+        src: "assets/miolo-pontilhado-sem-data.webp"
+      },
+      {
+        name: "Pontilhado com data",
+        detail: "Grade de pontos com dias da semana e data.",
+        src: "assets/miolo-pontilhado-com-data.webp"
+      },
+      {
+        name: "Quadriculado simples",
+        detail: "Grade quadriculada sem data.",
+        src: "assets/miolo-quadriculado-sem-data.webp"
+      },
+      {
+        name: "Quadriculado com data",
+        detail: "Grade quadriculada com dias da semana e data.",
+        src: "assets/miolo-quadriculado-com-data.webp"
+      }
+    ];
+
+    const KNOWN_INTERIORS_METADATA = {
+      "miolo-pautado-sem-data-dias.webp": {
+        name: "Pautado simples",
+        detail: "Linhas sem data e sem dias."
+      },
+      "miolo-pautado-com-data-dias-01.webp": {
+        name: "Pautado com data",
+        detail: "Com dias da semana, quadrinhos e data."
+      },
+      "miolo-liso-com-data-dias.webp": {
+        name: "Sem pauta com data",
+        detail: "Sem linhas, com dias da semana e data."
+      },
+      "miolo-liso-sem-data-dias.webp": {
+        name: "Sem pauta liso",
+        detail: "Páginas totalmente livres."
+      },
+      "miolo-pontilhado-sem-data.webp": {
+        name: "Pontilhado simples",
+        detail: "Grade de pontos sem data."
+      },
+      "miolo-pontilhado-com-data.webp": {
+        name: "Pontilhado com data",
+        detail: "Grade de pontos com dias da semana e data."
+      },
+      "miolo-quadriculado-sem-data.webp": {
+        name: "Quadriculado simples",
+        detail: "Grade quadriculada sem data."
+      },
+      "miolo-quadriculado-com-data.webp": {
+        name: "Quadriculado com data",
+        detail: "Grade quadriculada com dias da semana e data."
+      }
+    };
+
+    async function fileExists(url) {
+      try {
+        const response = await fetch(url, { method: "HEAD" });
+        return response.ok;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    async function detectAssetsDynamically() {
+      if (window.location.protocol === "file:") {
+        console.log("Executando localmente via file://. Usando lista de ativos padrão.");
+        return;
+      }
+
+      console.log("Iniciando varredura dinâmica de ativos...");
+
+      const detectedCovers = [];
+      let index = 1;
+      const maxCheck = 99;
+      
+      while (index <= maxCheck) {
+        const number = String(index).padStart(2, "0");
+        const src = `assets/capa-${number}n.webp`;
+        const thumbSrc = `assets/capa-${number}.webp`;
+        
+        const mainExists = await fileExists(src);
+        if (mainExists) {
+          const thumbExists = await fileExists(thumbSrc);
+          detectedCovers.push({
+            name: `Capa ${index}`,
+            src: src,
+            thumbSrc: thumbExists ? thumbSrc : src
+          });
+          index++;
+        } else {
+          break;
+        }
+      }
+      
+      const lisaSrc = "assets/mockup-capa-lisa.webp";
+      const lisaExists = await fileExists(lisaSrc);
+      if (lisaExists) {
+        detectedCovers.push({
+          name: "Capa lisa",
+          src: lisaSrc,
+          thumbSrc: lisaSrc
+        });
+      }
+      
+      const detectedInteriors = [];
+      const keys = Object.keys(KNOWN_INTERIORS_METADATA);
+      for (const filename of keys) {
+        const src = `assets/${filename}`;
+        const exists = await fileExists(src);
+        if (exists) {
+          detectedInteriors.push({
+            name: KNOWN_INTERIORS_METADATA[filename].name,
+            detail: KNOWN_INTERIORS_METADATA[filename].detail,
+            src: src
+          });
+        }
+      }
+
+      let changed = false;
+      
+      if (detectedCovers.length > 0) {
+        const listStr = JSON.stringify(covers);
+        const newListStr = JSON.stringify(detectedCovers);
+        if (listStr !== newListStr) {
+          covers = detectedCovers;
+          changed = true;
+          console.log(`Detectadas ${covers.length} capas dinamicamente.`);
+        }
+      }
+      
+      if (detectedInteriors.length > 0) {
+        const listStr = JSON.stringify(interiors);
+        const newListStr = JSON.stringify(detectedInteriors);
+        if (listStr !== newListStr) {
+          interiors = detectedInteriors;
+          changed = true;
+          console.log(`Detectados ${interiors.length} miolos dinamicamente.`);
+        }
+      }
+      
+      if (changed) {
+        const stillHasSelectedCover = covers.some(c => c.name === state.coverName);
+        if (!stillHasSelectedCover && covers.length > 0) {
+          state.coverName = covers[0].name;
+          state.coverSrc = covers[0].src;
+          state.coverThumb = covers[0].thumbSrc;
+        }
+        
+        const stillHasSelectedInterior = interiors.some(i => i.name === state.interiorName);
+        if (!stillHasSelectedInterior && interiors.length > 0) {
+          state.interiorName = interiors[0].name;
+          state.interiorSrc = interiors[0].src;
+        }
+
+        renderCovers();
+        renderInteriors();
+        updateSummary();
+      }
+    }
+
+    const state = {
+      coverName: covers[0].name,
+      coverSrc: covers[0].src,
+      coverThumb: covers[0].thumbSrc,
+      interiorName: interiors[0].name,
+      interiorSrc: interiors[0].src,
+      cpf: ""
+    };
+
+    const cart = [];
+
+    let promocoesAtivas = [];
+
+    function obterPrecoItem(item) {
+      if (promocoesAtivas.length === 0) return null;
+      
+      const coverNameLower = item.coverName.trim().toLowerCase();
+      const interiorNameLower = item.interiorName.trim().toLowerCase();
+      
+      for (const p of promocoesAtivas) {
+        const pCapaLower = String(p.Capa || "Qualquer").trim().toLowerCase();
+        const pMioloLower = String(p.Miolo || "Qualquer").trim().toLowerCase();
+        
+        // Divide por vírgula para suportar múltiplos itens específicos (exatamente como nos cupons)
+        const capasElegiveis = pCapaLower.split(/\s*,\s*/);
+        const miolosElegiveis = pMioloLower.split(/\s*,\s*/);
+        
+        const capaMatch = pCapaLower === "qualquer" || capasElegiveis.some(c => c === coverNameLower);
+        const mioloMatch = pMioloLower === "qualquer" || miolosElegiveis.some(m => m === interiorNameLower);
+        
+        if (capaMatch && mioloMatch) {
+          let precoUnitario = 15;
+          const val = Number(p.Valor) || 0;
+          if (String(p.Tipo_Valor).trim().toLowerCase() === "percentual") {
+            precoUnitario = 15 * (1 - val / 100);
+          } else if (String(p.Tipo_Valor).trim().toLowerCase() === "fixo") {
+            precoUnitario = Math.max(0, 15 - val);
+          }
+          return {
+            nome: p.Nome,
+            precoUnitario: precoUnitario,
+            precoTotal: precoUnitario * item.qty,
+            descontoUnitario: 15 - precoUnitario
+          };
+        }
+      }
+      return null;
+    }
+
+    async function carregarPromocoes() {
+      if (!BACKEND_URL) return;
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "get_promocoes" })
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.promocoes) {
+            promocoesAtivas = data.promocoes.filter(p => String(p.Ativa).trim().toLowerCase() === "sim");
+            console.log("Promoções ativas carregadas:", promocoesAtivas);
+            updateSummary();
+          }
+        }
+      } catch (e) {
+        console.error("Erro ao carregar promoções:", e);
+      }
+    }
+
+    function calcularTotalProdutosCarrinho() {
+      let totalQty = 0;
+      let totalQtyNormais = 0;
+      let totalPromocionais = 0;
+      let totalDescontoPromocionais = 0;
+      const promocoesAplicadasMap = {};
+      
+      const itemsPorPromo = {}; // nomePromo -> { promoObj: p, items: [] }
+      const itemsNormais = [];
+      
+      cart.forEach(item => {
+        totalQty += item.qty;
+        let matched = false;
+        
+        if (promocoesAtivas.length > 0) {
+          const coverNameLower = item.coverName.trim().toLowerCase();
+          const interiorNameLower = item.interiorName.trim().toLowerCase();
+          
+          for (const p of promocoesAtivas) {
+            const pCapaLower = String(p.Capa || "Qualquer").trim().toLowerCase();
+            const pMioloLower = String(p.Miolo || "Qualquer").trim().toLowerCase();
+            
+            const capasElegiveis = pCapaLower.split(/\s*,\s*/);
+            const miolosElegiveis = pMioloLower.split(/\s*,\s*/);
+            
+            const capaMatch = pCapaLower === "qualquer" || capasElegiveis.some(c => c === coverNameLower);
+            const mioloMatch = pMioloLower === "qualquer" || miolosElegiveis.some(m => m === interiorNameLower);
+            
+            if (capaMatch && mioloMatch) {
+              const nome = p.Nome;
+              if (!itemsPorPromo[nome]) {
+                itemsPorPromo[nome] = {
+                  promoObj: p,
+                  items: []
+                };
+              }
+              itemsPorPromo[nome].items.push(item);
+              matched = true;
+              break;
+            }
+          }
+        }
+        
+        if (!matched) {
+          itemsNormais.push(item);
+        }
+      });
+      
+      totalQtyNormais = itemsNormais.reduce((acc, item) => acc + item.qty, 0);
+      const productTotalNormais = calculateTotal(totalQtyNormais);
+      
+      Object.keys(itemsPorPromo).forEach(nomePromo => {
+        const promoInfo = itemsPorPromo[nomePromo];
+        const p = promoInfo.promoObj;
+        const matchingItems = promoInfo.items;
+        
+        const normalValue = matchingItems.reduce((acc, item) => acc + (15 * item.qty), 0);
+        const val = Number(p.Valor) || 0;
+        
+        let discount = 0;
+        if (String(p.Tipo_Valor).trim().toLowerCase() === "percentual") {
+          discount = normalValue * (val / 100);
+        } else if (String(p.Tipo_Valor).trim().toLowerCase() === "fixo") {
+          discount = Math.min(val, normalValue);
+        }
+        
+        promocoesAplicadasMap[nomePromo] = discount;
+        totalPromocionais += (normalValue - discount);
+        totalDescontoPromocionais += discount;
+      });
+      
+      const productTotal = productTotalNormais + totalPromocionais;
+      const precoCheio = totalQty * 15;
+      const descontoValor = precoCheio - productTotal;
+      const descontoPercentual = precoCheio > 0 ? Math.round((descontoValor / precoCheio) * 100) : 0;
+      const descontoKitNormais = (totalQtyNormais * 15) - productTotalNormais;
+      
+      return {
+        totalQty: totalQty,
+        totalQtyNormais: totalQtyNormais,
+        productTotalNormais: productTotalNormais,
+        totalPromocionais: totalPromocionais,
+        totalDescontoPromocionais: totalDescontoPromocionais,
+        promocoesAplicadasMap: promocoesAplicadasMap,
+        productTotal: productTotal,
+        precoCheio: precoCheio,
+        descontoValor: descontoValor,
+        descontoPercentual: descontoPercentual,
+        descontoKitNormais: descontoKitNormais
+      };
+    }
+
+    const currency = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+
+    const coverGrid = document.getElementById("coverGrid");
+    const interiorGrid = document.getElementById("interiorGrid");
+    const currentSelection = document.getElementById("currentSelection");
+    const quantityInput = document.getElementById("quantity");
+    const cartList = document.getElementById("cartList");
+    const summaryQty = document.getElementById("summaryQty");
+    const summaryTotal = document.getElementById("summaryTotal");
+    const discountNote = document.getElementById("discountNote");
+    const whatsappButton = document.getElementById("whatsappButton");
+    const previewModal = document.getElementById("previewModal");
+    const previewTitle = document.getElementById("previewTitle");
+    const previewBody = document.getElementById("previewBody");
+    const previewClose = document.getElementById("previewClose");
+
+    function scrollPanelIntoView(panel) {
+      if (!panel) return;
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const topOffset = window.innerWidth <= 720 ? 28 : 36;
+      const targetTop = Math.max(panel.getBoundingClientRect().top + window.pageYOffset - topOffset, 0);
+      window.scrollTo({
+        top: targetTop,
+        behavior: prefersReducedMotion ? "auto" : "smooth"
+      });
+    }
+
+    const zoomIcon = `
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="6"></circle>
+        <path d="m16 16 4 4"></path>
+      </svg>
+    `;
+
+    function calculateTotal(qty) {
+      if (qty <= 0) return 0;
+      
+      const fixedPrices = {
+        1: 15,
+        2: 28,
+        3: 45,
+        4: 45,
+        5: 60,
+        6: 75,
+        7: 90,
+        8: 79,
+        9: 94,
+        10: 109,
+        11: 124,
+        12: 109
+      };
+      
+      if (qty <= 12) {
+        return fixedPrices[qty];
+      }
+      
+      const kits12 = Math.floor(qty / 12);
+      const remainder = qty % 12;
+      const remainderPrice = remainder > 0 ? fixedPrices[remainder] : 0;
+      return kits12 * 109 + remainderPrice;
+    }
+
+    function normalizeQuantity() {
+      const qty = Math.min(50, Math.max(1, Number(quantityInput.value) || 1));
+      quantityInput.value = qty;
+      return qty;
+    }
+
+    function updateCurrentSelection() {
+      const qty = normalizeQuantity();
+      currentSelection.innerHTML = `Selecionado agora: <strong>${qty}x ${state.coverName}</strong> com miolo <strong>${state.interiorName}</strong>.`;
+    }
+
+    function getTotalQuantity() {
+      return cart.reduce((sum, item) => sum + item.qty, 0);
+    }
+
+    function getOrderMessage(orderId) {
+      const name = document.getElementById("name").value.trim() || "Não informado";
+      const phone = document.getElementById("phone").value.trim() || "Não informado";
+      const delivery = document.getElementById("delivery").value.trim() || "Combinar";
+      const notes = document.getElementById("notes").value.trim() || "Nenhuma";
+      
+      const calcResult = calcularTotalProdutosCarrinho();
+      const totalQty = calcResult.totalQty;
+      const productTotal = calcResult.productTotal;
+      
+      let grandTotal = productTotal;
+      let shippingText = "Não selecionado";
+      if (selectedShipping) {
+        grandTotal += selectedShipping.price;
+        shippingText = `${selectedShipping.name} (${currency.format(selectedShipping.price)}) - CEP: ${document.getElementById("cep").value.trim()}`;
+      }
+
+      if (activeCoupon) {
+        grandTotal -= couponDiscountValue;
+      }
+
+      const itemLines = cart.map((item, index) => `${index + 1}. ${item.qty}x ${item.coverName} - miolo: ${item.interiorName}`);
+
+      const header = orderId 
+        ? `Novo pedido de caderninho de bolso 14 x 9 cm (Pedido #${orderId})`
+        : `Novo pedido de caderninho de bolso 14 x 9 cm`;
+
+      const lines = [
+        header,
+        "",
+        `Nome: ${name}`,
+        `WhatsApp do cliente: ${phone}`
+      ];
+
+      if (state.cpf) {
+        lines.push(`CPF do cliente: ${formatCpf(state.cpf)}`);
+      }
+
+      lines.push(
+        "",
+        "Itens:",
+        ...itemLines,
+        "",
+        `Total de cadernos: ${totalQty}`,
+        `Subtotal dos Cadernos: ${currency.format(calcResult.precoCheio)}`
+      );
+
+      lines.push(`Frete: ${shippingText}`);
+
+      if (calcResult.descontoValor > 0) {
+        if (calcResult.descontoKitNormais > 0) {
+          lines.push(`\u{1F525} Desconto de Volume (Kits): -${currency.format(calcResult.descontoKitNormais)}`);
+        }
+        Object.keys(calcResult.promocoesAplicadasMap).forEach(nomePromo => {
+          const descVal = calcResult.promocoesAplicadasMap[nomePromo];
+          if (descVal > 0) {
+            lines.push(`\u{1F525} Promoção ${nomePromo}: -${currency.format(descVal)}`);
+          }
+        });
+      }
+
+      if (activeCoupon) {
+        lines.push(`\u{1F39F}\u{FE0F} Cupom: ${activeCoupon.codigo} (-${currency.format(couponDiscountValue)})`);
+      }
+
+      const economiaTotal = calcResult.descontoValor + (activeCoupon ? couponDiscountValue : 0);
+      if (economiaTotal > 0) {
+        lines.push(`(Você economizou ${currency.format(economiaTotal)} neste pedido! \u{1F31F})`);
+      }
+
+      lines.push(
+        "",
+        `Total Geral: ${currency.format(grandTotal)}`,
+        "",
+        `Entrega: ${delivery}`,
+        "",
+        `Observações: ${notes}`,
+        "",
+        "Pix Copia e Cola (para pagamento):",
+        "",
+        generatePixCopiaCola(grandTotal)
+      );
+
+      return lines.join("\n");
+    }
+
+    function renderCart() {
+      cartList.innerHTML = "";
+
+      if (cart.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "empty-cart";
+        empty.textContent = "Escolha capa, miolo e quantidade. Depois clique em “Adicionar esta configuração”.";
+        cartList.appendChild(empty);
+      } else {
+        cart.forEach((item, index) => {
+          const row = document.createElement("div");
+          row.className = "cart-item";
+          row.innerHTML = `
+            <div class="cart-item-info">
+              <div class="cart-item-thumb">
+                <img src="${item.coverThumb}" alt="${item.coverName}">
+              </div>
+              <div class="cart-item-details">
+                <strong>${item.coverName}</strong>
+                <span>Miolo: ${item.interiorName}</span>
+                <div class="cart-item-qty" style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+                  <button class="qty-btn minus" type="button" style="width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(89, 54, 34, 0.25); background: #fff; color: var(--ink); font-size: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; font-weight: 700; line-height: 1;" title="Diminuir quantidade">-</button>
+                  <span class="qty-val" style="font-size: 13px; font-weight: 800; min-width: 16px; text-align: center; color: var(--ink);">${item.qty}</span>
+                  <button class="qty-btn plus" type="button" style="width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(89, 54, 34, 0.25); background: #fff; color: var(--ink); font-size: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; font-weight: 700; line-height: 1;" title="Aumentar quantidade">+</button>
+                </div>
+              </div>
+            </div>
+            <button class="remove-item" type="button" aria-label="Remover item ${index + 1}">×</button>
+          `;
+          const infoEl = row.querySelector(".cart-item-info");
+          infoEl.setAttribute("role", "button");
+          infoEl.setAttribute("tabindex", "0");
+          infoEl.setAttribute("title", "Clique para ver a imagem ampliada");
+
+          const showZoom = () => {
+            const cover = covers.find(c => c.name === item.coverName);
+            if (cover) {
+              openZoomSingleImage(cover.src, cover.name);
+            }
+          };
+
+          infoEl.addEventListener("click", showZoom);
+          infoEl.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              showZoom();
+            }
+          });
+
+          // Controle de Alteração de Quantidade no Carrinho
+          const qtyContainer = row.querySelector(".cart-item-qty");
+          const minusBtn = qtyContainer.querySelector(".minus");
+          const plusBtn = qtyContainer.querySelector(".plus");
+          const removeBtn = row.querySelector(".remove-item");
+
+          if (isOrderSaved) {
+            minusBtn.disabled = true;
+            plusBtn.disabled = true;
+            removeBtn.disabled = true;
+            minusBtn.style.opacity = "0.5";
+            minusBtn.style.cursor = "not-allowed";
+            minusBtn.style.pointerEvents = "none";
+            plusBtn.style.opacity = "0.5";
+            plusBtn.style.cursor = "not-allowed";
+            plusBtn.style.pointerEvents = "none";
+            removeBtn.style.opacity = "0.5";
+            removeBtn.style.cursor = "not-allowed";
+            removeBtn.style.pointerEvents = "none";
+          }
+
+          qtyContainer.addEventListener("click", event => {
+            event.stopPropagation(); // Evita abrir o preview de zoom ao clicar na quantidade
+          });
+          qtyContainer.addEventListener("keydown", event => {
+            event.stopPropagation();
+          });
+
+          minusBtn.addEventListener("click", () => {
+            if (isOrderSaved) return;
+            if (item.qty > 1) {
+              item.qty--;
+              updateSummary();
+              autoRecalculateShipping();
+            }
+          });
+
+          plusBtn.addEventListener("click", () => {
+            if (isOrderSaved) return;
+            if (item.qty < 50) {
+              item.qty++;
+              updateSummary();
+              autoRecalculateShipping();
+            }
+          });
+
+          removeBtn.addEventListener("click", () => {
+            if (isOrderSaved) return;
+            openDeleteConfirm(index);
+          });
+          cartList.appendChild(row);
+        });
+      }
+    }
+
+    function updateSummary() {
+      const checkEligibility = (item, listEspec) => {
+        const coverNameLower = item.coverName.trim().toLowerCase();
+        const interiorNameLower = item.interiorName.trim().toLowerCase();
+        const specifiedCovers = [];
+        const specifiedInteriors = [];
+        listEspec.forEach(espec => {
+          const especLower = espec.trim().toLowerCase();
+          if (especLower.length === 0) return;
+          const isCover = covers.some(c => c.name.trim().toLowerCase() === especLower);
+          const isInterior = interiors.some(i => i.name.trim().toLowerCase() === especLower);
+          if (isCover) {
+            specifiedCovers.push(especLower);
+          } else if (isInterior) {
+            specifiedInteriors.push(especLower);
+          }
+        });
+        if (specifiedCovers.length === 0 && specifiedInteriors.length === 0) {
+          return listEspec.some(espec => 
+            coverNameLower.includes(espec) || espec.includes(coverNameLower) ||
+            interiorNameLower.includes(espec) || espec.includes(interiorNameLower)
+          );
+        }
+        const coverMatch = specifiedCovers.length === 0 || specifiedCovers.includes(coverNameLower);
+        const interiorMatch = specifiedInteriors.length === 0 || specifiedInteriors.includes(interiorNameLower);
+        return coverMatch && interiorMatch;
+      };
+
+      if (isOrderSaved) {
+        const currentKey = getOrderKey();
+        if (currentKey !== lastSavedOrderKey) {
+          isOrderSaved = false;
+          const btn = document.getElementById("reopenPixButton");
+          if (btn) btn.style.display = "none";
+        }
+      }
+
+      updateCurrentSelection();
+      renderCart();
+
+      const calcResult = calcularTotalProdutosCarrinho();
+      const totalQty = calcResult.totalQty;
+      const productTotal = calcResult.productTotal;
+      const totalQtyNormais = calcResult.totalQtyNormais;
+      const productTotalNormais = calcResult.productTotalNormais;
+      const precoCheio = calcResult.precoCheio;
+      const descontoValor = calcResult.descontoValor;
+      const descontoPercentual = calcResult.descontoPercentual;
+      const descontoKitNormais = calcResult.descontoKitNormais;
+
+      const fullPriceLine = document.getElementById("fullPriceLine");
+      const kitDiscountLine = document.getElementById("kitDiscountLine");
+      const summaryFullPrice = document.getElementById("summaryFullPrice");
+      const summaryKitDiscount = document.getElementById("summaryKitDiscount");
+      const kitDiscountPercent = document.getElementById("kitDiscountPercent");
+
+      if (descontoValor > 0) {
+        fullPriceLine.style.display = "flex";
+        summaryFullPrice.textContent = currency.format(precoCheio);
+      } else {
+        fullPriceLine.style.display = "none";
+      }
+
+      if (descontoKitNormais > 0) {
+        kitDiscountLine.style.display = "flex";
+        summaryKitDiscount.textContent = "-" + currency.format(descontoKitNormais);
+        const percentKit = Math.round(descontoKitNormais / (totalQtyNormais * 15) * 100);
+        kitDiscountPercent.textContent = `${percentKit}%`;
+      } else {
+        kitDiscountLine.style.display = "none";
+      }
+
+      // Renderizar as promoções automáticas de produto
+      const autoPromosContainer = document.getElementById("autoPromotionsContainer");
+      autoPromosContainer.innerHTML = "";
+      Object.keys(calcResult.promocoesAplicadasMap).forEach(nomePromo => {
+        const descVal = calcResult.promocoesAplicadasMap[nomePromo];
+        if (descVal > 0) {
+          const promoObj = promocoesAtivas.find(p => p.Nome === nomePromo);
+          let pctText = "";
+          if (promoObj) {
+            const val = Number(promoObj.Valor) || 0;
+            if (String(promoObj.Tipo_Valor).trim().toLowerCase() === "percentual") {
+              pctText = ` (${Math.round(val)}%)`;
+            } else {
+              pctText = ` (${currency.format(val)})`;
+            }
+          }
+          const promoLine = document.createElement("div");
+          promoLine.className = "summary-line";
+          promoLine.style.cssText = "display: flex; justify-content: space-between; gap: 14px; padding: 12px 0; color: #28a745; font-weight: 600;";
+          promoLine.innerHTML = `<span>Promoção: ${nomePromo}${pctText}</span><strong style="color: inherit;">-${currency.format(descVal)}</strong>`;
+          autoPromosContainer.appendChild(promoLine);
+        }
+      });
+
+      let grandTotal = productTotal;
+      if (selectedShipping) {
+        grandTotal += selectedShipping.price;
+        document.getElementById("shippingSummaryLine").style.display = "flex";
+        document.getElementById("shippingMethodName").textContent = selectedShipping.name;
+        const shippingPriceEl = document.getElementById("shippingSummaryPrice");
+        if (selectedShipping.price === 0) {
+          shippingPriceEl.innerHTML = `<span style="color: #28a745; font-weight: 800;">Grátis</span>`;
+        } else {
+          shippingPriceEl.textContent = currency.format(selectedShipping.price);
+        }
+      } else {
+        document.getElementById("shippingSummaryLine").style.display = "none";
+      }
+
+      // Cálculo do Desconto do Cupom
+      couponDiscountValue = 0;
+      if (activeCoupon) {
+        const type = activeCoupon.tipo_desconto;
+        const valType = activeCoupon.tipo_valor;
+        const val = activeCoupon.valor;
+        
+        let valorElegivel = 0;
+        
+        if (type === "produto") {
+          const especStr = activeCoupon.produtos_especificos || "";
+          const listEspec = especStr.split(",")
+            .map(c => c.trim().toLowerCase())
+            .filter(c => c.length > 0);
+          
+          if (listEspec.length === 0 || listEspec.includes("qualquer")) {
+            valorElegivel = productTotal;
+          } else {
+            const precoMedioUnitario = totalQty > 0 ? (productTotal / totalQty) : 0;
+            let qtyElegiveis = 0;
+            cart.forEach(item => {
+              const isMatch = checkEligibility(item, listEspec);
+              if (isMatch) {
+                qtyElegiveis += item.qty;
+              }
+            });
+            valorElegivel = qtyElegiveis * precoMedioUnitario;
+          }
+        } else if (type === "frete") {
+          if (selectedShipping) {
+            valorElegivel = selectedShipping.price;
+          }
+        } else if (type === "carrinho") {
+          valorElegivel = productTotal + (selectedShipping ? selectedShipping.price : 0);
+        }
+        
+        if (valType === "percentual") {
+          couponDiscountValue = valorElegivel * (val / 100);
+        } else if (valType === "fixo") {
+          couponDiscountValue = Math.min(val, valorElegivel);
+        }
+        
+        couponDiscountValue = Math.max(0, Math.min(couponDiscountValue, grandTotal));
+        grandTotal -= couponDiscountValue;
+        
+        document.getElementById("couponSummaryLine").style.display = "flex";
+        document.getElementById("couponSummaryCode").textContent = activeCoupon.codigo;
+        document.getElementById("couponSummaryDiscount").textContent = "-" + currency.format(couponDiscountValue);
+        
+        const feedback = document.getElementById("couponFeedback");
+        if (feedback) {
+          feedback.style.display = "block";
+          if (type === "produto") {
+            const especStr = activeCoupon.produtos_especificos || "";
+            const listEspec = especStr.split(",")
+              .map(c => c.trim().toLowerCase())
+              .filter(c => c.length > 0);
+            let qtyElegiveis = 0;
+            if (listEspec.length === 0 || listEspec.includes("qualquer")) {
+              qtyElegiveis = totalQty;
+            } else {
+              cart.forEach(item => {
+                const isMatch = checkEligibility(item, listEspec);
+                if (isMatch) qtyElegiveis += item.qty;
+              });
+            }
+            if (qtyElegiveis === 0) {
+              feedback.style.color = "#c87955";
+              feedback.textContent = "Cupom válido, mas nenhum item elegível no carrinho.";
+            } else {
+              feedback.style.color = "#28a745";
+              feedback.textContent = `Cupom "${activeCoupon.codigo}" aplicado!`;
+            }
+          } else if (type === "frete") {
+            if (!selectedShipping) {
+              feedback.style.color = "#c87955";
+              feedback.textContent = "Cupom válido! Calcule e selecione o frete para obter o desconto.";
+            } else {
+              feedback.style.color = "#28a745";
+              feedback.textContent = `Cupom "${activeCoupon.codigo}" aplicado!`;
+            }
+          } else {
+            feedback.style.color = "#28a745";
+            feedback.textContent = `Cupom "${activeCoupon.codigo}" aplicado!`;
+          }
+        }
+      } else {
+        document.getElementById("couponSummaryLine").style.display = "none";
+      }
+
+      summaryQty.textContent = totalQty;
+      summaryTotal.textContent = currency.format(grandTotal);
+
+      let noteText = "";
+      if (totalQtyNormais === 0) {
+        if (totalQty > 0) {
+          noteText = "Você selecionou caderno(s) com desconto especial da planilha! Adicione itens normais para economizar com os kits progressivos.";
+        } else {
+          noteText = "Para aproveitar melhor a produção e reduzir desperdício, compre em quantidades pares e aproveite nossos kits promocionais!";
+        }
+      } else if (totalQtyNormais === 1) {
+        noteText = "Você selecionou 1 caderno normal. Adicione mais 1 normal e leve o Kit com 2 por R$ 28 (desconto de R$ 2)!";
+      } else if (totalQtyNormais === 2) {
+        noteText = "Promoção aplicada nos normais: Kit 2 (R$ 14,00 por caderninho). Adicione mais 2 normais e aproveite o Kit com 4 por R$ 45!";
+      } else if (totalQtyNormais === 3) {
+        noteText = "Dica: Adicione mais 1 caderno normal e leve o Kit com 4 pelo mesmo preço (R$ 45)! É um caderno normal a mais grátis.";
+      } else if (totalQtyNormais === 4) {
+        noteText = "Promoção aplicada nos normais: Kit 4 (R$ 11,25 por caderninho). Leve mais cadernos e economize ainda mais!";
+      } else if (totalQtyNormais >= 5 && totalQtyNormais <= 7) {
+        const falta = 8 - totalQtyNormais;
+        const txtFalta = falta === 1 ? "mais 1 caderno normal" : `mais ${falta} cadernos normais`;
+        if (totalQtyNormais === 7) {
+          noteText = `Dica: Adicione mais 1 caderno normal e leve o Kit com 8 pagando R$ 11,00 a MENOS (R$ 79 pelo Kit 8 vs R$ 90 por 7 cadernos)!`;
+        } else {
+          noteText = `Selecione ${txtFalta} para atingir o Kit com 8 por R$ 79 e economize muito no custo unitário (R$ 9,88 por caderninho)!`;
+        }
+      } else if (totalQtyNormais === 8) {
+        noteText = "Promoção aplicada nos normais: Kit 8 (R$ 9,88 por caderninho). Excelente escolha!";
+      } else if (totalQtyNormais >= 9 && totalQtyNormais <= 11) {
+        const falta = 12 - totalQtyNormais;
+        const txtFalta = falta === 1 ? "mais 1 caderno normal" : `mais ${falta} cadernos normais`;
+        if (totalQtyNormais === 11) {
+          noteText = `Dica: Adicione mais 1 caderno normal e leve o Kit com 12 pagando R$ 15,00 a MENOS (R$ 109 pelo Kit 12 vs R$ 124 por 11 cadernos)!`;
+        } else {
+          noteText = `Selecione ${txtFalta} para atingir o Kit com 12 por R$ 109 e tenha o melhor custo-benefício (R$ 9,08 por caderninho)!`;
+        }
+      } else if (totalQtyNormais === 12) {
+        noteText = "Promoção aplicada nos normais: Kit 12 (R$ 9,08 por caderninho). Perfeito para presentear ou revender!";
+      } else {
+        noteText = `Kits combinados aplicados para ${totalQtyNormais} cadernos normais! Para quantidades personalizadas ou atacado, fale conosco.`;
+      }
+      
+      discountNote.textContent = noteText;
+
+      const nameVal = document.getElementById("name").value.trim();
+      const deliveryVal = document.getElementById("delivery").value.trim();
+      const cepVal = document.getElementById("cep").value.trim();
+      const isCartEmpty = cart.length === 0;
+      const isNameEmpty = nameVal.length === 0;
+      const nameParts = nameVal.split(/\s+/).filter(part => part.length > 0);
+      const isNameIncomplete = nameParts.length < 2;
+      const isDeliveryEmpty = deliveryVal.length === 0;
+      const isCepEmpty = cepVal.length === 0;
+      const isShippingEmpty = !selectedShipping;
+      
+      // Valida se o campo de entrega não está incompleto (deve conter número/complemento além do autocompletado do CEP)
+      const isDeliveryIncomplete = isDeliveryEmpty || /,\s*(nº\s*)?$/i.test(deliveryVal);
+      
+      const isDisabled = isCartEmpty || isNameEmpty || isNameIncomplete || isDeliveryIncomplete || isCepEmpty || !isCepValid || isShippingEmpty;
+
+      whatsappButton.classList.toggle("is-disabled", isDisabled);
+      
+      if (isCartEmpty) {
+        whatsappButton.textContent = "Adicione itens ao pedido";
+      } else if (isNameEmpty) {
+        whatsappButton.textContent = "Preencha seu Nome para enviar";
+      } else if (isNameIncomplete) {
+        whatsappButton.textContent = "Preencha Nome e Sobrenome";
+      } else if (isCepEmpty) {
+        whatsappButton.textContent = "Preencha o CEP para enviar";
+      } else if (!isCepValid) {
+        whatsappButton.textContent = "CEP inválido ou não encontrado";
+      } else if (isShippingEmpty) {
+        whatsappButton.textContent = "Selecione o Frete para enviar";
+      } else if (isDeliveryIncomplete) {
+        whatsappButton.textContent = "Informe o Número/Complemento";
+      } else {
+        whatsappButton.textContent = isOrderSaved ? "Reenviar pedido pelo WhatsApp" : "Enviar pedido pelo WhatsApp";
+      }
+      updateDisabledState();
+    }
+
+    let zoomItems = [];
+    function openZoomCarousel(type, startIndex) {
+      zoomItems = type === "covers" ? covers : interiors;
+      
+      previewTitle.textContent = zoomItems[startIndex].name;
+      
+      let html = `
+        <button class="carousel-btn prev-btn" id="carouselPrev" type="button" aria-label="Anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <div class="preview-carousel" id="previewCarousel">
+      `;
+      
+      zoomItems.forEach((item, index) => {
+        html += `
+          <div class="preview-slide" data-index="${index}">
+        `;
+        if (type === "covers") {
+          html += `
+            <div class="preview-cover-large">
+              <img class="preview-cover-base" src="${item.src}" alt="${item.name}">
+            </div>
+          `;
+        } else {
+          html += `
+            <img class="preview-interior-large" src="${item.src}" alt="${item.name}">
+          `;
+        }
+        html += `</div>`;
+      });
+      
+      html += `
+        </div>
+        <button class="carousel-btn next-btn" id="carouselNext" type="button" aria-label="Próximo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      `;
+      
+      previewBody.innerHTML = html;
+      
+      const carousel = document.getElementById("previewCarousel");
+      const prevBtn = document.getElementById("carouselPrev");
+      const nextBtn = document.getElementById("carouselNext");
+      
+      previewModal.classList.add("is-open");
+      previewModal.setAttribute("aria-hidden", "false");
+      previewClose.focus();
+      
+      const scrollToActive = () => {
+        const activeSlide = carousel.querySelector(`.preview-slide[data-index="${startIndex}"]`);
+        if (activeSlide) {
+          carousel.scrollLeft = activeSlide.offsetLeft;
+        }
+      };
+      
+      scrollToActive();
+      setTimeout(scrollToActive, 50);
+      setTimeout(() => {
+        carousel.style.scrollBehavior = "smooth";
+      }, 100);
+      
+      const updateButtons = (index) => {
+        prevBtn.style.display = index === 0 ? "none" : "flex";
+        nextBtn.style.display = index === zoomItems.length - 1 ? "none" : "flex";
+      };
+
+      updateButtons(startIndex);
+
+      let lastIndex = startIndex;
+      carousel.addEventListener("scroll", () => {
+        const width = carousel.clientWidth || 1;
+        const index = Math.round(carousel.scrollLeft / width);
+        if (index >= 0 && index < zoomItems.length) {
+          updateButtons(index);
+          if (index !== lastIndex) {
+            lastIndex = index;
+            previewTitle.textContent = zoomItems[index].name;
+          }
+        }
+      });
+      
+      prevBtn.addEventListener("click", () => {
+        const width = carousel.clientWidth || 1;
+        const index = Math.round(carousel.scrollLeft / width);
+        if (index > 0) {
+          carousel.scrollLeft = (index - 1) * width;
+        }
+      });
+      
+      nextBtn.addEventListener("click", () => {
+        const width = carousel.clientWidth || 1;
+        const index = Math.round(carousel.scrollLeft / width);
+        if (index < zoomItems.length - 1) {
+          carousel.scrollLeft = (index + 1) * width;
+        }
+      });
+    }
+
+    function openZoomSingleImage(src, title) {
+      previewTitle.textContent = title;
+      
+      let html = `
+        <div class="preview-body-container" style="padding: 24px; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
+          <div class="preview-cover-large">
+            <img class="preview-cover-base" src="${src}" alt="${title}">
+          </div>
+        </div>
+      `;
+      
+      previewBody.innerHTML = html;
+      
+      previewModal.classList.add("is-open");
+      previewModal.setAttribute("aria-hidden", "false");
+      previewClose.focus();
+    }
+
+    function closePreview() {
+      previewModal.classList.remove("is-open");
+      previewModal.setAttribute("aria-hidden", "true");
+      previewBody.innerHTML = "";
+    }
+
+    function renderCovers() {
+      coverGrid.innerHTML = "";
+      covers.forEach((cover, index) => {
+        const button = document.createElement("div");
+        button.setAttribute("role", "button");
+        button.tabIndex = 0;
+        button.className = `cover-option${index === 0 ? " is-selected" : ""}`;
+        button.dataset.coverName = cover.name;
+        button.innerHTML = `
+          <span class="cover-thumb">
+            <img class="cover-thumb-base" src="${cover.src}" alt="${cover.name}">
+            <button class="zoom-button" type="button" aria-label="Ver detalhes de ${cover.name}">${zoomIcon}</button>
+          </span>
+          <span class="cover-name">${cover.name}</span>
+        `;
+
+        const selectCover = (shouldScroll = false) => {
+          document.querySelectorAll(".cover-option").forEach(item => item.classList.remove("is-selected"));
+          button.classList.add("is-selected");
+          state.coverName = cover.name;
+          state.coverSrc = cover.src;
+          state.coverThumb = cover.thumbSrc;
+          updateSummary();
+
+          if (typeof gtag === "function") {
+            gtag('event', 'select_item', {
+              item_list_id: 'covers',
+              item_list_name: 'Capas dos Caderninhos',
+              items: [{
+                item_id: cover.name.toLowerCase().replace(/\s+/g, '_'),
+                item_name: cover.name,
+                item_category: 'Capas'
+              }]
+            });
+          }
+
+          if (shouldScroll) {
+            const step2Panel = document.getElementById("interiorGrid") ? document.getElementById("interiorGrid").closest(".panel") : null;
+            if (step2Panel) {
+              scrollPanelIntoView(step2Panel);
+            }
+          }
+        };
+
+        button.addEventListener("click", event => {
+          if (isOrderSaved) return;
+          if (event.target.closest(".zoom-button")) return;
+          selectCover(true);
+        });
+
+        button.addEventListener("keydown", event => {
+          if (isOrderSaved) return;
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectCover(true);
+          }
+        });
+
+        button.querySelector(".zoom-button").addEventListener("click", event => {
+          event.stopPropagation();
+          openZoomCarousel("covers", index);
+        });
+
+        coverGrid.appendChild(button);
+      });
+    }
+
+    function renderInteriors() {
+      interiorGrid.innerHTML = "";
+      interiors.forEach((interior, index) => {
+        const button = document.createElement("div");
+        button.setAttribute("role", "button");
+        button.tabIndex = 0;
+        button.className = `interior-option${index === 0 ? " is-selected" : ""}`;
+        button.innerHTML = `
+          <span class="interior-preview">
+            <img src="${interior.src}" alt="${interior.name}">
+            <button class="zoom-button" type="button" aria-label="Ver detalhes de ${interior.name}">${zoomIcon}</button>
+          </span>
+          <strong>${interior.name}</strong>
+          <span>${interior.detail}</span>
+        `;
+
+        const selectInterior = (shouldScroll = false) => {
+          document.querySelectorAll(".interior-option").forEach(item => item.classList.remove("is-selected"));
+          button.classList.add("is-selected");
+          state.interiorName = interior.name;
+          state.interiorSrc = interior.src;
+          updateSummary();
+
+          if (typeof gtag === "function") {
+            gtag('event', 'select_item', {
+              item_list_id: 'interiors',
+              item_list_name: 'Miolos dos Caderninhos',
+              items: [{
+                item_id: interior.name.toLowerCase().replace(/\s+/g, '_'),
+                item_name: interior.name,
+                item_category: 'Miolos'
+              }]
+            });
+          }
+
+          if (shouldScroll) {
+            const step3Panel = document.getElementById("currentSelection") ? document.getElementById("currentSelection").closest(".panel") : null;
+            if (step3Panel) {
+              scrollPanelIntoView(step3Panel);
+            }
+          }
+        };
+
+        button.addEventListener("click", event => {
+          if (isOrderSaved) return;
+          if (event.target.closest(".zoom-button")) return;
+          selectInterior(true);
+        });
+
+        button.addEventListener("keydown", event => {
+          if (isOrderSaved) return;
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectInterior(true);
+          }
+        });
+
+        button.querySelector(".zoom-button").addEventListener("click", event => {
+          event.stopPropagation();
+          openZoomCarousel("interiors", index);
+        });
+
+        interiorGrid.appendChild(button);
+      });
+    }
+
+    previewClose.addEventListener("click", closePreview);
+    previewModal.addEventListener("click", event => {
+      if (event.target === previewModal) closePreview();
+    });
+
+    // Configuração do Modal de Confirmação Customizado
+    const confirmModal = document.getElementById("confirmModal");
+    const confirmYes = document.getElementById("confirmYes");
+    const confirmNo = document.getElementById("confirmNo");
+
+    function closeConfirm() {
+      confirmModal.classList.remove("is-open");
+      confirmModal.setAttribute("aria-hidden", "true");
+    }
+
+    confirmModal.addEventListener("click", event => {
+      if (event.target === confirmModal) closeConfirm();
+    });
+
+    // Configuração do Modal de Confirmação de Exclusão
+    const deleteConfirmModal = document.getElementById("deleteConfirmModal");
+    const deleteConfirmYes = document.getElementById("deleteConfirmYes");
+    const deleteConfirmNo = document.getElementById("deleteConfirmNo");
+    let itemIndexToDelete = null;
+
+    function openDeleteConfirm(index) {
+      itemIndexToDelete = index;
+      deleteConfirmModal.classList.add("is-open");
+      deleteConfirmModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeDeleteConfirm() {
+      itemIndexToDelete = null;
+      deleteConfirmModal.classList.remove("is-open");
+      deleteConfirmModal.setAttribute("aria-hidden", "true");
+    }
+
+    deleteConfirmYes.addEventListener("click", () => {
+      if (itemIndexToDelete !== null) {
+        cart.splice(itemIndexToDelete, 1);
+        updateSummary();
+        autoRecalculateShipping();
+      }
+      closeDeleteConfirm();
+    });
+
+    deleteConfirmNo.addEventListener("click", () => {
+      closeDeleteConfirm();
+    });
+
+    deleteConfirmModal.addEventListener("click", event => {
+      if (event.target === deleteConfirmModal) closeDeleteConfirm();
+    });
+
+    // Configuração do Modal de Alerta Customizado (Bonito)
+    const alertModal = document.getElementById("alertModal");
+    const alertTitle = document.getElementById("alertTitle");
+    const alertMessage = document.getElementById("alertMessage");
+    const alertOk = document.getElementById("alertOk");
+    const alertClose = document.getElementById("alertClose");
+    let pendingFocusElement = null;
+
+    function showCustomAlert(title, message, focusElement) {
+      alertTitle.textContent = title;
+      alertMessage.innerHTML = message;
+      pendingFocusElement = focusElement;
+      alertModal.classList.add("is-open");
+      alertModal.setAttribute("aria-hidden", "false");
+      alertOk.focus();
+    }
+
+    function closeAlert() {
+      alertModal.classList.remove("is-open");
+      alertModal.setAttribute("aria-hidden", "true");
+      if (pendingFocusElement) {
+        pendingFocusElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        pendingFocusElement.focus();
+        pendingFocusElement = null;
+      }
+    }
+
+    alertOk.addEventListener("click", closeAlert);
+    alertClose.addEventListener("click", closeAlert);
+    alertModal.addEventListener("click", event => {
+      if (event.target === alertModal) closeAlert();
+    });
+
+    // Configuração do Modal de Endereço Customizado (Número e Complemento)
+    const addressModal = document.getElementById("addressModal");
+    const addressClose = document.getElementById("addressClose");
+    const addressModalSummary = document.getElementById("addressModalSummary");
+    const addressModalManualFields = document.getElementById("addressModalManualFields");
+    const addressModalStreet = document.getElementById("addressModalStreet");
+    const addressModalDistrict = document.getElementById("addressModalDistrict");
+    const addressModalNum = document.getElementById("addressModalNum");
+    const addressModalComp = document.getElementById("addressModalComp");
+    const addressModalConfirm = document.getElementById("addressModalConfirm");
+    const addressModalCancel = document.getElementById("addressModalCancel");
+    let currentCepData = null;
+
+    function openAddressModal(cep, data) {
+      currentCepData = { cep, ...data };
+      
+      // Limpa os campos
+      addressModalNum.value = "";
+      addressModalComp.value = "";
+      addressModalStreet.value = "";
+      addressModalDistrict.value = "";
+
+      if (data.logradouro) {
+        addressModalSummary.innerHTML = `<strong>CEP ${cep}:</strong> ${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}`;
+        addressModalManualFields.style.display = "none";
+        addressModalStreet.required = false;
+        addressModalDistrict.required = false;
+      } else {
+        addressModalSummary.innerHTML = `<strong>CEP ${cep} (Geral):</strong> ${data.localidade}/${data.uf}`;
+        addressModalManualFields.style.display = "flex";
+        addressModalStreet.required = true;
+        addressModalDistrict.required = true;
+      }
+
+      addressModal.classList.add("is-open");
+      addressModal.setAttribute("aria-hidden", "false");
+      
+      // Foco automático no primeiro campo a preencher
+      setTimeout(() => {
+        if (data.logradouro) {
+          addressModalNum.focus();
+        } else {
+          addressModalStreet.focus();
+        }
+      }, 50);
+    }
+
+    function closeAddressModal() {
+      const cepInput = document.getElementById("cep");
+      if (cepInput) {
+        cepInput.focus();
+      }
+      addressModal.classList.remove("is-open");
+      addressModal.setAttribute("aria-hidden", "true");
+      currentCepData = null;
+    }
+
+    addressClose.addEventListener("click", closeAddressModal);
+    addressModalCancel.addEventListener("click", closeAddressModal);
+    addressModal.addEventListener("click", event => {
+      if (event.target === addressModal) closeAddressModal();
+    });
+
+    addressModalConfirm.addEventListener("click", () => {
+      if (!currentCepData) return;
+      
+      const numVal = addressModalNum.value.trim();
+      const compVal = addressModalComp.value.trim();
+      
+      let streetVal = (currentCepData.logradouro || "").trim();
+      let districtVal = (currentCepData.bairro || "").trim();
+
+      if (!currentCepData.logradouro) {
+        streetVal = addressModalStreet.value.trim();
+        districtVal = addressModalDistrict.value.trim();
+        
+        if (!streetVal) {
+          showCustomAlert("Rua obrigatória", "Por favor, preencha o nome da sua rua.", addressModalStreet);
+          return;
+        }
+        if (!districtVal) {
+          showCustomAlert("Bairro obrigatório", "Por favor, preencha o nome do seu bairro.", addressModalDistrict);
+          return;
+        }
+      }
+
+      if (!numVal) {
+        showCustomAlert("Número obrigatório", "Por favor, preencha o número para entrega.", addressModalNum);
+        return;
+      }
+
+      // Monta o endereço final no formato: Rua, Nº [Num] [- Compl] - Bairro - Cidade/UF
+      let finalAddress = `${streetVal}, Nº ${numVal}`;
+      if (compVal) {
+        finalAddress += ` - ${compVal}`;
+      }
+      finalAddress += ` - ${districtVal} - ${currentCepData.localidade}/${currentCepData.uf}`;
+
+      deliveryRua = streetVal;
+      deliveryNumero = numVal;
+      deliveryComplemento = compVal;
+      deliveryBairro = districtVal;
+      deliveryCidade = (currentCepData.localidade || "").trim();
+      deliveryEstado = (currentCepData.uf || "").trim();
+
+      document.getElementById("delivery").value = finalAddress;
+      closeAddressModal();
+      updateSummary();
+    });
+
+    [addressModalStreet, addressModalDistrict, addressModalNum, addressModalComp].forEach(input => {
+      input.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          addressModalConfirm.click();
+        }
+      });
+    });
+
+    addressModalNum.addEventListener("input", () => {
+      addressModalNum.value = addressModalNum.value.replace(/\D/g, "");
+    });
+
+     // Configuração do Modal do Pix Copia e Cola
+    const pixModal = document.getElementById("pixModal");
+    const pixClose = document.getElementById("pixClose");
+    const pixCodeText = document.getElementById("pixCodeText");
+    const copyPixCodeBtn = document.getElementById("copyPixCodeBtn");
+    const pixCloseBtn = document.getElementById("pixCloseBtn");
+    const reopenPixButton = document.getElementById("reopenPixButton");
+
+    function openPixModal(amount) {
+      const payload = generatePixCopiaCola(amount, lastOrderId);
+      pixCodeText.value = payload;
+      
+      // Gera o QR Code dinamicamente se a biblioteca estiver disponível
+      if (typeof QRCode !== "undefined") {
+        document.getElementById("qrcode").innerHTML = "";
+        try {
+          new QRCode(document.getElementById("qrcode"), {
+            text: payload,
+            width: 160,
+            height: 160,
+            colorDark: "#3a1d16", // Cor escura do tema
+            colorLight: "#ffffff", // Cor clara do tema (fundo branco puro)
+            correctLevel: QRCode.CorrectLevel.M
+          });
+        } catch (e) {
+          console.error("Erro ao gerar QR Code:", e);
+        }
+      }
+      
+      pixModal.classList.add("is-open");
+      pixModal.setAttribute("aria-hidden", "false");
+      reopenPixButton.style.display = "inline-flex";
+    }
+
+    function closePixModal() {
+      pixModal.classList.remove("is-open");
+      pixModal.setAttribute("aria-hidden", "true");
+    }
+
+    pixClose.addEventListener("click", closePixModal);
+    pixCloseBtn.addEventListener("click", closePixModal);
+    pixModal.addEventListener("click", event => {
+      if (event.target === pixModal) closePixModal();
+    });
+
+    copyPixCodeBtn.addEventListener("click", () => {
+      pixCodeText.select();
+      pixCodeText.setSelectionRange(0, 99999);
+      
+      navigator.clipboard.writeText(pixCodeText.value).then(() => {
+        const originalText = copyPixCodeBtn.innerHTML;
+        copyPixCodeBtn.innerHTML = `
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          Código Copiado!
+        `;
+        copyPixCodeBtn.style.background = "#28a745";
+        setTimeout(() => {
+          copyPixCodeBtn.innerHTML = originalText;
+          copyPixCodeBtn.style.background = "#32BCAD";
+        }, 2000);
+      }).catch(err => {
+        console.error("Erro ao copiar código PIX:", err);
+      });
+    });
+
+    reopenPixButton.addEventListener("click", () => {
+      const calcResult = calcularTotalProdutosCarrinho();
+      const productTotal = calcResult.productTotal;
+      const grandTotal = Math.max(0, productTotal + (selectedShipping ? selectedShipping.price : 0) - couponDiscountValue);
+      openPixModal(grandTotal);
+    });
+
+    // Configuração do Modal de Solicitação de CPF
+    const cpfModal = document.getElementById("cpfModal");
+    const cpfClose = document.getElementById("cpfClose");
+    const cpfInputModal = document.getElementById("cpfInputModal");
+    const cpfModalConfirm = document.getElementById("cpfModalConfirm");
+    const cpfModalCancel = document.getElementById("cpfModalCancel");
+    
+    function openCpfModal() {
+      cpfInputModal.value = state.cpf ? formatCpf(state.cpf) : "";
+      cpfModal.classList.add("is-open");
+      cpfModal.setAttribute("aria-hidden", "false");
+      setTimeout(() => cpfInputModal.focus(), 50);
+    }
+    
+    function closeCpfModal() {
+      cpfModal.classList.remove("is-open");
+      cpfModal.setAttribute("aria-hidden", "true");
+    }
+    
+    cpfClose.addEventListener("click", closeCpfModal);
+    cpfModalCancel.addEventListener("click", closeCpfModal);
+    cpfModal.addEventListener("click", event => {
+      if (event.target === cpfModal) closeCpfModal();
+    });
+    
+    function formatCpf(val) {
+      let digits = val.replace(/\D/g, "").substring(0, 11);
+      if (digits.length <= 3) return digits;
+      if (digits.length <= 6) return digits.substring(0, 3) + "." + digits.substring(3);
+      if (digits.length <= 9) return digits.substring(0, 3) + "." + digits.substring(3, 6) + "." + digits.substring(6);
+      return digits.substring(0, 3) + "." + digits.substring(3, 6) + "." + digits.substring(6, 9) + "-" + digits.substring(9);
+    }
+    
+    cpfInputModal.addEventListener("input", () => {
+      const selectionStart = cpfInputModal.selectionStart;
+      const originalValue = cpfInputModal.value;
+      const formatted = formatCpf(originalValue);
+      
+      if (formatted !== originalValue) {
+        cpfInputModal.value = formatted;
+        
+        // Ajustar cursor
+        const digitsBefore = originalValue.substring(0, selectionStart).replace(/\D/g, "").length;
+        let cursor = 0;
+        let digitsSeen = 0;
+        for (let i = 0; i < formatted.length; i++) {
+          if (digitsSeen < digitsBefore) {
+            cursor = i + 1;
+            if (/\d/.test(formatted[i])) digitsSeen++;
+          } else {
+            break;
+          }
+        }
+        cpfInputModal.setSelectionRange(cursor, cursor);
+      }
+    });
+
+    function validateCpf(cpf) {
+      const cleanCpf = cpf.replace(/\D/g, "");
+      if (cleanCpf.length !== 11) return false;
+      if (/^(\d)\1{10}$/.test(cleanCpf)) return false;
+      
+      let sum = 0;
+      let remainder;
+      
+      for (let i = 1; i <= 9; i++) {
+        sum = sum + parseInt(cleanCpf.substring(i - 1, i)) * (11 - i);
+      }
+      remainder = (sum * 10) % 11;
+      if ((remainder === 10) || (remainder === 11)) remainder = 0;
+      if (remainder !== parseInt(cleanCpf.substring(9, 10))) return false;
+      
+      sum = 0;
+      for (let i = 1; i <= 10; i++) {
+        sum = sum + parseInt(cleanCpf.substring(i - 1, i)) * (12 - i);
+      }
+      remainder = (sum * 10) % 11;
+      if ((remainder === 10) || (remainder === 11)) remainder = 0;
+      if (remainder !== parseInt(cleanCpf.substring(10, 11))) return false;
+      
+      return true;
+    }
+
+    cpfModalConfirm.addEventListener("click", async () => {
+      const cpfVal = cpfInputModal.value.trim();
+      if (!cpfVal) {
+        showCustomAlert("CPF obrigatório", "Por favor, preencha o CPF do destinatário para envio.", cpfInputModal);
+        return;
+      }
+      if (!validateCpf(cpfVal)) {
+        showCustomAlert("CPF inválido", "O CPF informado é inválido. Por favor, confira os números digitados.", cpfInputModal);
+        return;
+      }
+      
+      state.cpf = cpfVal.replace(/\D/g, "");
+      closeCpfModal();
+      await processOrderSubmission();
+    });
+
+    cpfInputModal.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        cpfModalConfirm.click();
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        if (previewModal.classList.contains("is-open")) closePreview();
+        if (confirmModal.classList.contains("is-open")) closeConfirm();
+        if (deleteConfirmModal.classList.contains("is-open")) closeDeleteConfirm();
+        if (alertModal.classList.contains("is-open")) closeAlert();
+        if (addressModal.classList.contains("is-open")) closeAddressModal();
+        if (pixModal.classList.contains("is-open")) closePixModal();
+        if (cpfModal.classList.contains("is-open")) closeCpfModal();
+      }
+    });
+
+    document.getElementById("minus").addEventListener("click", () => {
+      quantityInput.value = Math.max(1, Number(quantityInput.value) - 1);
+      updateSummary();
+    });
+
+    document.getElementById("plus").addEventListener("click", () => {
+      quantityInput.value = Math.min(50, Number(quantityInput.value) + 1);
+      updateSummary();
+    });
+
+    confirmYes.addEventListener("click", () => {
+      closeConfirm();
+      // Zera as seleções de capa, miolo e quantidade
+      state.coverName = covers[0].name;
+      state.coverSrc = covers[0].src;
+      state.coverThumb = covers[0].thumbSrc;
+      state.interiorName = interiors[0].name;
+      state.interiorSrc = interiors[0].src;
+      quantityInput.value = 1;
+      
+      renderCovers();
+      renderInteriors();
+      updateSummary();
+
+      // Posiciona a tela no topo da escolha da capa (Step 1)
+      const choiceRow = document.querySelector(".choice-row");
+      if (choiceRow) {
+        choiceRow.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+
+    confirmNo.addEventListener("click", () => {
+      closeConfirm();
+      const nameInput = document.getElementById("name");
+      if (nameInput) {
+        nameInput.focus();
+        // Pequeno atraso para aguardar a subida do teclado no mobile e centralizar o campo sem cortes
+        setTimeout(() => {
+          nameInput.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 200);
+      }
+    });
+
+    document.getElementById("addItem").addEventListener("click", () => {
+      const qty = normalizeQuantity();
+      const existing = cart.find(item => item.coverName === state.coverName && item.interiorName === state.interiorName);
+      if (existing) {
+        existing.qty += qty;
+      } else {
+        cart.push({
+          coverName: state.coverName,
+          coverThumb: state.coverThumb,
+          interiorName: state.interiorName,
+          qty
+        });
+      }
+      quantityInput.value = 1;
+      updateSummary();
+      autoRecalculateShipping();
+
+      if (typeof gtag === "function") {
+        const itemPrice = calculateTotal(qty) / qty;
+        gtag('event', 'add_to_cart', {
+          currency: 'BRL',
+          value: calculateTotal(qty),
+          items: [{
+            item_id: `${state.coverName.toLowerCase().replace(/\s+/g, '_')}_${state.interiorName.toLowerCase().replace(/\s+/g, '_')}`,
+            item_name: `${state.coverName} - Miolo: ${state.interiorName}`,
+            item_category: 'Caderno Customizado',
+            price: itemPrice,
+            quantity: qty
+          }]
+        });
+      }
+
+      // Abre o modal de confirmação customizado e bonito
+      confirmModal.classList.add("is-open");
+      confirmModal.setAttribute("aria-hidden", "false");
+    });
+
+    let checkoutStarted = false;
+    function startCheckoutEvent() {
+      if (!checkoutStarted && cart.length > 0) {
+        checkoutStarted = true;
+        if (typeof gtag === "function") {
+          const calcResult = calcularTotalProdutosCarrinho();
+          gtag('event', 'begin_checkout', {
+            currency: 'BRL',
+            value: calcResult.productTotal,
+            items: cart.map(item => ({
+              item_id: `${item.coverName.toLowerCase().replace(/\s+/g, '_')}_${item.interiorName.toLowerCase().replace(/\s+/g, '_')}`,
+              item_name: `${item.coverName} - Miolo: ${item.interiorName}`,
+              item_category: 'Caderno Customizado',
+              price: calculateTotal(item.qty) / item.qty,
+              quantity: item.qty
+            }))
+          });
+        }
+      }
+    }
+
+    ["name", "delivery", "notes", "cep", "phone", "cpf"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("input", () => {
+          updateSummary();
+          startCheckoutEvent();
+        });
+      }
+    });
+
+    async function calculateShipping(silent = false) {
+      const cepVal = cepInput.value.replace(/\D/g, "");
+      const totalQty = getTotalQuantity();
+
+      if (totalQty === 0) {
+        if (!silent) {
+          showCustomAlert("Carrinho vazio", "Adicione pelo menos um caderno ao pedido antes de calcular o frete.", null);
+        }
+        selectedShipping = null;
+        lastCalculatedServices = [];
+        shippingOptionsList.innerHTML = "";
+        shippingOptionsField.style.display = "none";
+        updateSummary();
+        return;
+      }
+
+      if (cepVal.length !== 8) {
+        if (!silent) {
+          showCustomAlert("CEP inválido", "Por favor, informe um CEP válido com 8 dígitos.", cepInput);
+        }
+        return;
+      }
+
+      if (!isCepValid) {
+        if (!silent) {
+          showCustomAlert("CEP inválido", "O CEP informado não é válido ou não foi encontrado. Por favor, corrija-o antes de calcular o frete.", cepInput);
+        }
+        return;
+      }
+
+      if (!deliveryNumero || !deliveryRua) {
+        if (!silent) {
+          const fallbackData = {
+            logradouro: deliveryRua,
+            bairro: deliveryBairro,
+            localidade: deliveryCidade,
+            uf: deliveryEstado
+          };
+          openAddressModal(cepVal, lastCepResponseData || fallbackData);
+          if (deliveryNumero) addressModalNum.value = deliveryNumero;
+          if (deliveryComplemento) addressModalComp.value = deliveryComplemento;
+          if (lastCepResponseData && !lastCepResponseData.logradouro) {
+            addressModalStreet.value = deliveryRua;
+            addressModalDistrict.value = deliveryBairro;
+          } else if (!lastCepResponseData) {
+            addressModalStreet.value = deliveryRua;
+            addressModalDistrict.value = deliveryBairro;
+          }
+        }
+        return;
+      }
+
+      if (checkIfLocalDelivery()) {
+        renderShippingOptions([
+          { id: "LOCAL_GRATIS", name: "Entrega Local (Grátis)", price: 0, discountPrice: 0, deliveryTime: 1 }
+        ]);
+        return;
+      }
+
+      if (!BACKEND_URL) {
+        if (!silent) {
+          showCustomAlert("Simulação de Frete", "O Backend URL ainda não foi configurado. Carregando opções simuladas para teste de layout.", null);
+        }
+        renderSimulatedShippingOptions();
+        return;
+      }
+
+      calcShippingBtn.disabled = true;
+      calcShippingBtn.textContent = "Calculando...";
+      shippingOptionsField.style.display = "block";
+      shippingOptionsList.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 24px; background: rgba(89, 54, 34, 0.03); border-radius: 10px; border: 1px dashed rgba(89, 54, 34, 0.15); color: var(--muted); font-size: 14.5px; font-weight: 600;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite; flex-shrink: 0;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+          Buscando opções de frete...
+        </div>
+      `;
+
+      selectedShipping = null;
+      updateSummary();
+
+      try {
+        const calcResult = calcularTotalProdutosCarrinho();
+        const productTotal = calcResult.productTotal;
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "calcular_frete",
+            cep_destino: cepVal,
+            quantidade: totalQty,
+            valor_produtos: Math.max(0, productTotal - (activeCoupon && activeCoupon.tipo_desconto !== "frete" ? couponDiscountValue : 0))
+          })
+        });
+
+        if (!response.ok) throw new Error("Falha na resposta do servidor.");
+        const data = await response.json();
+
+        if (data.success) {
+          renderShippingOptions(data.services);
+        } else {
+          if (!silent) {
+            showCustomAlert("Erro no cálculo", "Não foi possível calcular o frete: " + data.error, null);
+          }
+          shippingOptionsField.style.display = "none";
+          shippingOptionsList.innerHTML = "";
+          updateSummary();
+        }
+      } catch (err) {
+        console.error("Erro ao calcular frete:", err);
+        if (!silent) {
+          showCustomAlert("Erro de conexão", "Ocorreu um erro ao conectar ao servidor de frete. Carregando opções simuladas para testes.", null);
+        }
+        renderSimulatedShippingOptions();
+      } finally {
+        calcShippingBtn.disabled = false;
+        calcShippingBtn.textContent = "Calcular Frete";
+      }
+    }
+
+    // Reabrir o modal de endereço ao clicar no campo de Entrega (que é readonly)
+    const deliveryInput = document.getElementById("delivery");
+    deliveryInput.addEventListener("click", () => {
+      if (isOrderSaved) return;
+      const cepVal = cepInput.value.replace(/\D/g, "");
+      if (cepVal.length === 8 && isCepValid) {
+        const fallbackData = {
+          logradouro: deliveryRua,
+          bairro: deliveryBairro,
+          localidade: deliveryCidade,
+          uf: deliveryEstado
+        };
+        openAddressModal(cepVal, lastCepResponseData || fallbackData);
+        if (deliveryNumero) addressModalNum.value = deliveryNumero;
+        if (deliveryComplemento) addressModalComp.value = deliveryComplemento;
+        if (lastCepResponseData && !lastCepResponseData.logradouro) {
+          addressModalStreet.value = deliveryRua;
+          addressModalDistrict.value = deliveryBairro;
+        } else if (!lastCepResponseData) {
+          addressModalStreet.value = deliveryRua;
+          addressModalDistrict.value = deliveryBairro;
+        }
+      } else {
+        showCustomAlert("CEP necessário", "Por favor, digite o seu CEP primeiro para preencher o endereço de entrega.", cepInput);
+      }
+    });
+
+    // --- MÁSCARA E BUSCA AUTOMÁTICA DE CEP (VIACEP) ---
+    function formatCep(val) {
+      let digits = val.replace(/\D/g, "");
+      digits = digits.substring(0, 8);
+      if (digits.length <= 5) {
+        return digits;
+      }
+      return digits.substring(0, 5) + "-" + digits.substring(5);
+    }
+
+    const cepInput = document.getElementById("cep");
+    cepInput.addEventListener("input", async () => {
+      const selectionStart = cepInput.selectionStart;
+      const originalValue = cepInput.value;
+      const formatted = formatCep(originalValue);
+      
+      if (formatted !== originalValue) {
+        cepInput.value = formatted;
+        
+        // Ajustar cursor
+        const digitsBefore = originalValue.substring(0, selectionStart).replace(/\D/g, "").length;
+        let cursor = 0;
+        let digitsSeen = 0;
+        for (let i = 0; i < formatted.length; i++) {
+          if (digitsSeen < digitsBefore) {
+            cursor = i + 1;
+            if (/\d/.test(formatted[i])) digitsSeen++;
+          } else {
+            break;
+          }
+        }
+        cepInput.setSelectionRange(cursor, cursor);
+      }
+
+      // Se alterou o CEP, reseta o estado de validade, o frete e o CPF
+      isCepValid = false;
+      selectedShipping = null;
+      state.cpf = "";
+      lastCalculatedServices = [];
+      lastCepResponseData = null;
+      shippingOptionsList.innerHTML = "";
+      shippingOptionsField.style.display = "none";
+      updateSummary();
+
+      // Busca no ViaCEP quando completar 8 dígitos
+      const cleanCep = formatted.replace(/\D/g, "");
+      if (cleanCep.length === 8) {
+        await lookupCep(cleanCep);
+      }
+      
+      updateSummary();
+    });
+
+    async function lookupCep(cep) {
+      try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        if (!response.ok) {
+          // Em caso de falha de conexão com a API, permitimos prosseguir para não travar o fluxo
+          isCepValid = true;
+          return;
+        }
+        const data = await response.json();
+        if (data.erro) {
+          showCustomAlert("CEP não encontrado", "O CEP informado não foi encontrado. Por favor, confira os números digitados.", cepInput);
+          isCepValid = false;
+          updateSummary();
+          return;
+        }
+
+        lastCepResponseData = data;
+        isCepValid = true;
+        updateSummary();
+        openAddressModal(cep, data);
+      } catch (e) {
+        console.error("Erro no ViaCEP:", e);
+        // Fallback caso dê erro de rede na consulta
+        isCepValid = true;
+        updateSummary();
+      }
+    }
+
+    // --- CÁLCULO DE FRETE (SUPERFRETE VIA APPS SCRIPT) ---
+    const calcShippingBtn = document.getElementById("calcShipping");
+    const shippingOptionsField = document.getElementById("shippingOptionsField");
+    const shippingOptionsList = document.getElementById("shippingOptionsList");
+
+    calcShippingBtn.addEventListener("click", () => calculateShipping(false));
+
+    function autoRecalculateShipping() {
+      const cepVal = cepInput.value.replace(/\D/g, "");
+      if (isCepValid && cepVal.length === 8 && lastCalculatedServices && lastCalculatedServices.length > 0) {
+        calculateShipping(true);
+      }
+    }
+
+    function isLocalDeliveryNeighborhood(bairro) {
+      if (!bairro) return false;
+      const normalized = bairro.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return normalized === "grajau" || normalized === "andarai";
+    }
+
+    function checkIfLocalDelivery() {
+      if (isLocalDeliveryNeighborhood(deliveryBairro)) {
+        return true;
+      }
+      const deliveryVal = document.getElementById("delivery").value;
+      if (deliveryVal) {
+        const cleanVal = deliveryVal.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        if (cleanVal.includes("grajau") || cleanVal.includes("andarai")) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function renderShippingOptions(services) {
+      // Filtra qualquer LOCAL_GRATIS anterior para guardar apenas os serviços originais
+      lastCalculatedServices = services.filter(s => s.id !== "LOCAL_GRATIS");
+      
+      shippingOptionsList.innerHTML = "";
+      
+      let displayServices = [...lastCalculatedServices];
+      
+      // Se for entrega local (Grajaú ou Andaraí), força apenas a opção Grátis e descarta os outros fretes
+      if (checkIfLocalDelivery()) {
+        displayServices = [
+          { id: "LOCAL_GRATIS", name: "Entrega Local (Grátis)", price: 0, discountPrice: 0, deliveryTime: 1 }
+        ];
+      }
+      
+      // Ordena por valor (menor primeiro) e por prazo (menor primeiro) em caso de empate
+      displayServices.sort((a, b) => {
+        const priceA = a.discountPrice !== undefined ? a.discountPrice : a.price;
+        const priceB = b.discountPrice !== undefined ? b.discountPrice : b.price;
+        if (priceA !== priceB) {
+          return priceA - priceB;
+        }
+        return a.deliveryTime - b.deliveryTime;
+      });
+      
+      if (displayServices.length === 0) {
+        shippingOptionsList.innerHTML = `<p style="margin: 0; color: var(--muted); font-size: 14px;">Nenhuma opção de envio disponível para esta quantidade/região.</p>`;
+        shippingOptionsField.style.display = "block";
+        return;
+      }
+
+      displayServices.forEach((service, idx) => {
+        const card = document.createElement("label");
+        card.className = "shipping-option-card";
+        
+        const isSelected = selectedShipping && selectedShipping.id === service.id;
+        
+        const originalPrice = service.price;
+        const finalPrice = service.discountPrice !== undefined ? service.discountPrice : service.price;
+        
+        let priceHtml = "";
+        if (finalPrice === 0) {
+          if (originalPrice > 0) {
+            priceHtml = `<span style="text-decoration: line-through; color: var(--muted); font-size: 13px; font-weight: 400; margin-right: 6px;">${currency.format(originalPrice)}</span><span style="color: #28a745; font-weight: 800;">Grátis</span>`;
+          } else {
+            priceHtml = `<span style="color: #28a745; font-weight: 800;">Grátis</span>`;
+          }
+        } else if (finalPrice < originalPrice) {
+          priceHtml = `<span style="text-decoration: line-through; color: var(--muted); font-size: 13px; font-weight: 400; margin-right: 6px;">${currency.format(originalPrice)}</span><span>${currency.format(finalPrice)}</span>`;
+        } else {
+          priceHtml = `<span>${currency.format(finalPrice)}</span>`;
+        }
+        
+        card.innerHTML = `
+          <input type="radio" name="shipping_option" value="${service.id}" ${idx === 0 && !selectedShipping ? "checked" : isSelected ? "checked" : ""}>
+          <div class="shipping-option-details">
+            <div>
+              <span class="shipping-option-name">${service.name}</span>
+              <span class="shipping-option-time" style="display: block; margin-top: 2px;">Prazo: ${service.deliveryTime} dia(s), após o envio.</span>
+            </div>
+            <span class="shipping-option-price">${priceHtml}</span>
+          </div>
+        `;
+        
+        const radio = card.querySelector('input[type="radio"]');
+        
+        if (idx === 0 && !selectedShipping) {
+          selectedShipping = {
+            id: service.id,
+            name: service.name,
+            price: finalPrice,
+            deliveryTime: service.deliveryTime
+          };
+        }
+
+        radio.addEventListener("change", () => {
+          selectedShipping = {
+            id: service.id,
+            name: service.name,
+            price: finalPrice,
+            deliveryTime: service.deliveryTime
+          };
+          if (selectedShipping.id === "LOCAL_GRATIS") {
+            state.cpf = "";
+          }
+          updateSummary();
+          const summaryEl = document.getElementById("orderSummary");
+          if (summaryEl) {
+            summaryEl.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+
+        shippingOptionsList.appendChild(card);
+      });
+
+      shippingOptionsField.style.display = "block";
+      updateSummary();
+    }
+
+    function refreshShippingOptions() {
+      const isCurrentlyLocal = checkIfLocalDelivery();
+      
+      // Se mudou o status de local (entrou ou saiu do Grajaú/Andaraí), resetamos a seleção
+      if (isCurrentlyLocal !== wasLastLocal) {
+        selectedShipping = null;
+        wasLastLocal = isCurrentlyLocal;
+        
+        if (isCurrentlyLocal) {
+          renderShippingOptions([]);
+        } else {
+          lastCalculatedServices = [];
+          shippingOptionsList.innerHTML = "";
+          shippingOptionsField.style.display = "none";
+          updateSummary();
+        }
+        return;
+      }
+      
+      if (lastCalculatedServices && lastCalculatedServices.length > 0) {
+        const prevSelectedId = selectedShipping ? selectedShipping.id : null;
+        
+        renderShippingOptions(lastCalculatedServices);
+        
+        // Se havia uma seleção anterior e ela ainda é válida, mantém
+        if (prevSelectedId) {
+          const radioToSelect = shippingOptionsList.querySelector(`input[value="${prevSelectedId}"]`);
+          if (radioToSelect) {
+            radioToSelect.checked = true;
+            let matching = lastCalculatedServices.find(s => s.id === prevSelectedId);
+            if (!matching && prevSelectedId === "LOCAL_GRATIS" && isCurrentlyLocal) {
+              matching = { id: "LOCAL_GRATIS", name: "Entrega Local (Grátis)", price: 0, deliveryTime: 1 };
+            }
+            if (matching) {
+              selectedShipping = {
+                id: matching.id,
+                name: matching.name,
+                price: matching.discountPrice || matching.price,
+                deliveryTime: matching.deliveryTime
+              };
+            }
+          }
+        }
+      }
+    }
+
+    document.getElementById("delivery").addEventListener("input", () => {
+      refreshShippingOptions();
+    });
+
+    function renderSimulatedShippingOptions() {
+      const simulated = [
+        { id: "PAC", name: "Simulado PAC", price: 14.90, discountPrice: 14.90, deliveryTime: 8 },
+        { id: "SEDEX", name: "Simulado SEDEX", price: 23.50, discountPrice: 23.50, deliveryTime: 3 },
+        { id: "MINI", name: "Simulado Mini Envios", price: 9.90, discountPrice: 9.90, deliveryTime: 12 }
+      ];
+      renderShippingOptions(simulated);
+    }
+
+    function cleanPhoneDigits(val) {
+      let digits = val.replace(/\D/g, "");
+      
+      if (digits.startsWith("0") && digits.length > 1) {
+        digits = digits.substring(1);
+      }
+      
+      if (digits.startsWith("55") && (digits.length === 12 || digits.length === 13)) {
+        digits = digits.substring(2);
+      }
+      
+      return digits.substring(0, 11);
+    }
+
+    function formatPhone(val) {
+      let digits = cleanPhoneDigits(val);
+      if (digits.length <= 2) {
+        return digits.length > 0 ? "(" + digits : "";
+      } else if (digits.length <= 6) {
+        return "(" + digits.substring(0, 2) + ") " + digits.substring(2);
+      } else if (digits.length <= 10) {
+        return "(" + digits.substring(0, 2) + ") " + digits.substring(2, 6) + "-" + digits.substring(6);
+      } else {
+        return "(" + digits.substring(0, 2) + ") " + digits.substring(2, 7) + "-" + digits.substring(7, 11);
+      }
+    }
+
+    const phoneInput = document.getElementById("phone");
+    phoneInput.addEventListener("input", () => {
+      const selectionStart = phoneInput.selectionStart;
+      const originalValue = phoneInput.value;
+      const formatted = formatPhone(originalValue);
+      
+      if (formatted !== originalValue) {
+        phoneInput.value = formatted;
+        
+        const digitsBeforeCursor = originalValue.substring(0, selectionStart).replace(/\D/g, "").length;
+        let cursorInFormatted = 0;
+        let digitsSeen = 0;
+        for (let i = 0; i < formatted.length; i++) {
+          if (digitsSeen < digitsBeforeCursor) {
+            cursorInFormatted = i + 1;
+            if (/\d/.test(formatted[i])) {
+              digitsSeen++;
+            }
+          } else {
+            break;
+          }
+        }
+        phoneInput.setSelectionRange(cursorInFormatted, cursorInFormatted);
+      }
+      
+      updateSummary();
+    });
+
+    whatsappButton.addEventListener("click", async () => {
+      // Se o pedido já foi salvo com sucesso, apenas reabre o WhatsApp e o modal sem salvar duplicado no Sheets
+      if (isOrderSaved) {
+        const calcResult = calcularTotalProdutosCarrinho();
+        const productTotal = calcResult.productTotal;
+        const grandTotal = Math.max(0, productTotal + (selectedShipping ? selectedShipping.price : 0) - couponDiscountValue);
+        const msg = getOrderMessage(lastOrderId);
+        const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+        window.open(whatsappUrl, "_blank");
+        openPixModal(grandTotal);
+        return;
+      }
+
+      const nameVal = document.getElementById("name").value.trim();
+      const phoneVal = document.getElementById("phone").value.trim();
+      const deliveryVal = document.getElementById("delivery").value.trim();
+      const cepVal = document.getElementById("cep").value.trim();
+      
+      const isCartEmpty = cart.length === 0;
+      const isNameEmpty = nameVal.length === 0;
+      const isCepEmpty = cepVal.length === 0;
+      const isShippingEmpty = !selectedShipping;
+      const isDeliveryEmpty = deliveryVal.length === 0;
+      const isDeliveryIncomplete = isDeliveryEmpty || /,\s*(nº\s*)?$/i.test(deliveryVal);
+
+      if (isCartEmpty) {
+        showCustomAlert("Resumo do pedido vazio", "Seu resumo está vazio! Por favor, escolha e adicione pelo menos um caderno antes de enviar.", null);
+        return;
+      }
+      
+      if (isNameEmpty) {
+        showCustomAlert("Nome obrigatório", "Por favor, preencha o campo de <strong>Nome</strong> para podermos identificar seu pedido.", document.getElementById("name"));
+        return;
+      }
+
+      const nameParts = nameVal.trim().split(/\s+/).filter(part => part.length > 0);
+      if (nameParts.length < 2) {
+        showCustomAlert("Nome incompleto", "Por favor, insira o seu <strong>Nome Completo</strong> (Nome e Sobrenome) para a emissão da etiqueta de envio.", document.getElementById("name"));
+        return;
+      }
+
+      if (phoneVal.length > 0) {
+        const phoneDigits = phoneVal.replace(/\D/g, "");
+        if (phoneDigits.length < 10 || phoneDigits.length > 11) {
+          showCustomAlert("WhatsApp incompleto", "Por favor, insira o número do seu <strong>WhatsApp com o DDD</strong> completo (10 ou 11 dígitos).", document.getElementById("phone"));
+          return;
+        }
+      }
+
+      if (isCepEmpty) {
+        showCustomAlert("CEP obrigatório", "Por favor, preencha o campo de <strong>CEP</strong> e calcule o frete.", document.getElementById("cep"));
+        return;
+      }
+
+      if (!isCepValid) {
+        showCustomAlert("CEP inválido", "O CEP informado não é válido ou não foi encontrado. Por favor, digite um CEP correto.", document.getElementById("cep"));
+        return;
+      }
+
+      if (isShippingEmpty) {
+        showCustomAlert("Frete obrigatório", "Por favor, escolha uma opção de frete após informar o seu CEP.", document.getElementById("calcShipping"));
+        return;
+      }
+
+      if (isDeliveryIncomplete) {
+        showCustomAlert("Entrega incompleta", "Por favor, complete o campo de <strong>Entrega</strong> informando o número e o complemento (se houver).", document.getElementById("delivery"));
+        return;
+      }
+
+      // Validação de formato para parsing seguro da SuperFrete
+      if (!deliveryVal.includes(",") || !deliveryVal.includes("-")) {
+        showCustomAlert("Formato de Endereço Inválido", "Por favor, estruture seu endereço separando o número por vírgula e o bairro/cidade por traço, seguindo o exemplo:<br><strong>Rua, Nº, complemento - Bairro - Cidade/UF</strong>", document.getElementById("delivery"));
+        return;
+      }
+
+      // CPF condicional: se o frete for cobrado (não local grátis) e não tiver CPF preenchido
+      const isCpfRequired = selectedShipping && selectedShipping.id !== "LOCAL_GRATIS";
+      if (isCpfRequired && !state.cpf) {
+        openCpfModal();
+        return;
+      }
+
+      await processOrderSubmission();
+    });
+
+    function sendGA4PurchaseEvent(orderId, grandTotal) {
+      if (typeof gtag === "function") {
+        gtag('event', 'purchase', {
+          transaction_id: orderId || ('TX_' + new Date().getTime()),
+          value: grandTotal,
+          currency: 'BRL',
+          items: cart.map(item => ({
+            item_id: `${item.coverName.toLowerCase().replace(/\s+/g, '_')}_${item.interiorName.toLowerCase().replace(/\s+/g, '_')}`,
+            item_name: `${item.coverName} - Miolo: ${item.interiorName}`,
+            item_category: 'Caderno Customizado',
+            price: calculateTotal(item.qty) / item.qty,
+            quantity: item.qty
+          }))
+        });
+      }
+    }
+
+    async function processOrderSubmission() {
+      const nameVal = document.getElementById("name").value.trim();
+      const phoneVal = document.getElementById("phone").value.trim();
+      const deliveryVal = document.getElementById("delivery").value.trim();
+      const cepVal = document.getElementById("cep").value.trim();
+      
+      const calcResult = calcularTotalProdutosCarrinho();
+      const totalQty = calcResult.totalQty;
+      const productTotal = calcResult.productTotal;
+      const grandTotal = Math.max(0, productTotal + selectedShipping.price - couponDiscountValue);
+      const itemLines = cart.map(item => `${item.qty}x ${item.coverName} (${item.interiorName})`).join(", ");
+
+      // Fallback robusto se as variáveis globais não estiverem preenchidas (ex.: preenchimento manual)
+      let rua = deliveryRua;
+      let numero = deliveryNumero;
+      let complemento = deliveryComplemento;
+      let bairro = deliveryBairro;
+      let cidade = deliveryCidade;
+      let estado = deliveryEstado;
+
+      if (!rua && deliveryVal) {
+        const parts = deliveryVal.split(/\s*-\s*/);
+        if (parts.length >= 3) {
+          bairro = parts[parts.length - 2].trim();
+          const cityUf = parts[parts.length - 1].split("/");
+          cidade = cityUf[0].trim();
+          estado = cityUf[1] ? cityUf[1].trim() : "";
+          
+          const logradouroNum = parts[0];
+          const commaIndex = logradouroNum.lastIndexOf(",");
+          if (commaIndex !== -1) {
+            rua = logradouroNum.substring(0, commaIndex).trim();
+            const numRest = logradouroNum.substring(commaIndex + 1).trim();
+            if (parts.length > 3) {
+              complemento = parts.slice(1, parts.length - 2).join(" - ").trim();
+              numero = numRest.replace(/(?:Nº|N°|N\.|No)/gi, "").trim();
+            } else {
+              numero = numRest.replace(/(?:Nº|N°|N\.|No)/gi, "").trim();
+            }
+          }
+        }
+      }
+
+      const pedido = {
+        nome: nameVal,
+        whatsapp: phoneVal,
+        cpf: state.cpf ? formatCpf(state.cpf) : "",
+        cep: cepVal.replace(/\D/g, ""),
+        entrega_rua: rua || deliveryVal,
+        entrega_numero: numero || "S/N",
+        entrega_complemento: complemento || "",
+        entrega_bairro: bairro || "",
+        entrega_cidade: cidade || "",
+        entrega_estado: estado || "",
+        itens: itemLines,
+        qtd_total: totalQty,
+        valor_produtos: productTotal,
+        frete_metodo: selectedShipping.name,
+        valor_frete: selectedShipping.price,
+        total_geral: grandTotal,
+        observacoes: document.getElementById("notes").value.trim(),
+        pix_payload: generatePixCopiaCola(grandTotal),
+        cupom_codigo: activeCoupon ? activeCoupon.codigo : "",
+        cupom_desconto_valor: couponDiscountValue
+      };
+
+      if (!BACKEND_URL) {
+        showCustomAlert("Simulação de Envio", "O Backend URL não está configurado. Abrindo WhatsApp direto com as informações simuladas.", null);
+        const msg = getOrderMessage();
+        const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+        window.open(whatsappUrl, "_blank");
+        
+        isOrderSaved = true;
+        lastSavedOrderKey = getOrderKey();
+        sendGA4PurchaseEvent('TX_SIM_' + new Date().getTime(), grandTotal);
+        
+        openPixModal(grandTotal);
+        return;
+      }
+
+      whatsappButton.disabled = true;
+      whatsappButton.textContent = "Enviando Pedido...";
+
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "salvar_pedido",
+            pedido: pedido
+          })
+        });
+
+        if (!response.ok) throw new Error("Erro na conexão com o servidor.");
+        const data = await response.json();
+
+        if (data.success) {
+          lastOrderId = data.orderId;
+          isOrderSaved = true;
+          lastSavedOrderKey = getOrderKey();
+          sendGA4PurchaseEvent(data.orderId, grandTotal);
+          
+          const msg = getOrderMessage(data.orderId);
+          const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+          window.open(whatsappUrl, "_blank");
+          openPixModal(grandTotal);
+        } else {
+          showCustomAlert("Erro ao salvar", "Ocorreu um erro ao salvar o pedido na planilha: " + data.error, null);
+        }
+      } catch (err) {
+        console.error("Erro ao salvar pedido:", err);
+        showCustomAlert("Erro de salvamento", "Erro ao registrar o pedido no banco de dados. Direcionando para o WhatsApp diretamente.", null);
+        const msg = getOrderMessage();
+        const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+        window.open(whatsappUrl, "_blank");
+        
+        isOrderSaved = true;
+        lastSavedOrderKey = getOrderKey();
+        sendGA4PurchaseEvent('TX_ERR_' + new Date().getTime(), grandTotal);
+        
+        openPixModal(grandTotal);
+      } finally {
+        whatsappButton.disabled = false;
+        updateSummary();
+      }
+    }
+
+    // --- CUPOM DE DESCONTO ---
+    async function handleCouponAction() {
+      const couponInput = document.getElementById("couponInput");
+      const applyBtn = document.getElementById("applyCouponBtn");
+      const feedback = document.getElementById("couponFeedback");
+      
+      if (activeCoupon) {
+        activeCoupon = null;
+        couponDiscountValue = 0;
+        couponInput.value = "";
+        couponInput.disabled = false;
+        applyBtn.textContent = "Aplicar";
+        applyBtn.style.background = "var(--kraft)";
+        feedback.style.display = "none";
+        feedback.textContent = "";
+        updateSummary();
+        return;
+      }
+      
+      const code = couponInput.value.trim().toUpperCase();
+      if (!code) {
+        feedback.style.display = "block";
+        feedback.style.color = "#dc3545";
+        feedback.textContent = "Por favor, digite o código de um cupom.";
+        return;
+      }
+      
+      applyBtn.disabled = true;
+      couponInput.disabled = true;
+      applyBtn.textContent = "Validando...";
+      feedback.style.display = "none";
+      
+      try {
+        if (!BACKEND_URL) {
+          throw new Error("Backend URL não configurada.");
+        }
+        
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "validar_cupom",
+            cupom: code
+          })
+        });
+        
+        if (!response.ok) throw new Error("Erro de comunicação com o servidor.");
+        const data = await response.json();
+        
+        if (data.success) {
+          activeCoupon = data.cupom;
+          applyBtn.disabled = false;
+          applyBtn.textContent = "Remover";
+          applyBtn.style.background = "#dc3545";
+          feedback.style.display = "block";
+          feedback.style.color = "#28a745";
+          feedback.textContent = `Cupom "${activeCoupon.codigo}" applied!`;
+          updateSummary();
+        } else {
+          activeCoupon = null;
+          couponDiscountValue = 0;
+          applyBtn.disabled = false;
+          couponInput.disabled = false;
+          applyBtn.textContent = "Aplicar";
+          feedback.style.display = "block";
+          feedback.style.color = "#dc3545";
+          feedback.textContent = data.error || "Cupom inválido.";
+          updateSummary();
+        }
+      } catch (err) {
+        console.error("Erro ao validar cupom:", err);
+        activeCoupon = null;
+        couponDiscountValue = 0;
+        applyBtn.disabled = false;
+        couponInput.disabled = false;
+        applyBtn.textContent = "Aplicar";
+        feedback.style.display = "block";
+        feedback.style.color = "#dc3545";
+        feedback.textContent = "Erro ao validar cupom. Verifique sua conexão.";
+        updateSummary();
+      }
+    }
+
+    document.getElementById("applyCouponBtn").addEventListener("click", handleCouponAction);
+    document.getElementById("couponInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleCouponAction();
+      }
+    });
+
+    quantityInput.addEventListener("input", updateCurrentSelection);
+
+    renderCovers();
+    renderInteriors();
+    updateSummary();
+    carregarPromocoes();
+    // detectAssetsDynamically();
+  </script>
 
 </body>
 </html>
