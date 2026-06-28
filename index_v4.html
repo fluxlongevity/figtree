@@ -846,28 +846,27 @@
 
     .steps-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+      grid-template-columns: 1fr;
+      gap: 8px;
     }
 
     .step-card {
       background: #ffffff;
       border: 1px solid var(--line);
       border-radius: 12px;
-      padding: 16px 12px;
-      text-align: left;
-      position: relative;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
       box-shadow: 0 4px 14px rgba(66, 39, 22, 0.01);
     }
 
     .step-number {
       font-family: var(--serif);
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 700;
-      color: rgba(200, 121, 85, 0.15);
-      position: absolute;
-      top: 8px;
-      right: 12px;
+      color: var(--accent);
+      flex-shrink: 0;
       line-height: 1;
     }
 
@@ -875,8 +874,8 @@
       font-size: 13px;
       font-weight: 700;
       color: var(--ink);
-      margin-bottom: 4px;
-      margin-top: 2px;
+      margin-bottom: 2px;
+      margin-top: 0;
     }
 
     .step-desc {
@@ -897,16 +896,21 @@
         gap: 20px;
       }
       .step-card {
+        display: block;
         padding: 28px 20px;
+        position: relative;
       }
       .step-number {
-        font-size: 40px;
+        position: absolute;
         top: 14px;
         right: 18px;
+        font-size: 40px;
+        color: rgba(200, 121, 85, 0.15);
       }
       .step-title {
         font-size: 15px;
         margin-top: 12px;
+        margin-bottom: 6px;
       }
     }
 
