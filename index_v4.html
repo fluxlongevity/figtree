@@ -55,11 +55,19 @@
     }
 
     .logo {
-      font-family: var(--serif);
-      font-size: 22px;
-      font-weight: 700;
-      color: #ffffff;
-      letter-spacing: 0.5px;
+      display: block;
+      height: 32px;
+      transition: transform 0.2s ease;
+    }
+
+    .logo img {
+      height: 100%;
+      width: auto;
+      display: block;
+    }
+
+    .logo:hover {
+      transform: scale(1.02);
     }
 
     .nav-links {
@@ -88,7 +96,7 @@
         padding: 20px 24px;
       }
       .logo {
-        font-size: 24px;
+        height: 38px;
       }
       .nav-links {
         display: flex;
@@ -979,10 +987,14 @@
     }
 
     .footer-logo {
-      font-family: var(--serif);
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
+      height: 35px;
+      margin-bottom: 6px;
+    }
+
+    .footer-logo img {
+      height: 100%;
+      width: auto;
+      display: block;
     }
 
     .footer-desc {
@@ -1093,7 +1105,9 @@
 
   <!-- 1. TOPBAR / NAVEGAÇÃO -->
   <nav class="topbar" aria-label="Navegação principal">
-    <div class="logo">FIGTREE</div>
+    <a href="#" class="logo">
+      <img src="assets/logo/10-figtree_logo_horizontal_branco_flor-vazada_transparente_sem-margem.webp" alt="FigTree Logo">
+    </a>
     <div class="nav-links">
       <a href="#kits" class="nav-link">Kits</a>
       <a href="#diferenciais" class="nav-link">Diferenciais</a>
@@ -1390,7 +1404,9 @@
     <div class="footer-watermark">FIGTREE</div>
     <div class="footer-container">
       <div class="footer-about">
-        <div class="footer-logo">FIGTREE</div>
+        <div class="footer-logo">
+          <img src="assets/logo/10-figtree_logo_horizontal_branco_flor-vazada_transparente_sem-margem.webp" alt="FigTree Logo">
+        </div>
         <p class="footer-desc">
           Papelaria artesanal focada em criar blocos e cadernos funcionais e duráveis, feitos no Rio de Janeiro com carinho.
         </p>
