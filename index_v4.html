@@ -833,17 +833,28 @@
     /* ============================================ */
     /*  6. HOW IT WORKS (STEPS - MOBILE-FIRST)      */
     /* ============================================ */
+    .how-it-works-section {
+      background-color: var(--bg-cream);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 36px 16px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
     .steps-grid {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
     }
 
     .step-card {
       background: #ffffff;
       border: 1px solid var(--line);
       border-radius: 12px;
-      padding: 24px 20px;
+      padding: 16px 12px;
       text-align: left;
       position: relative;
       box-shadow: 0 4px 14px rgba(66, 39, 22, 0.01);
@@ -851,31 +862,36 @@
 
     .step-number {
       font-family: var(--serif);
-      font-size: 34px;
+      font-size: 28px;
       font-weight: 700;
       color: rgba(200, 121, 85, 0.15);
       position: absolute;
-      top: 10px;
-      right: 16px;
+      top: 8px;
+      right: 12px;
       line-height: 1;
     }
 
     .step-title {
-      font-size: 14.5px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--ink);
-      margin-bottom: 6px;
-      margin-top: 4px;
+      margin-bottom: 4px;
+      margin-top: 2px;
     }
 
     .step-desc {
-      font-size: 12.5px;
+      font-size: 11.5px;
       color: var(--muted);
-      line-height: 1.45;
+      line-height: 1.4;
     }
 
     /* Desktop overrides para Passos do Pedido */
     @media (min-width: 769px) {
+      .how-it-works-section {
+        min-height: auto;
+        display: block;
+        padding: 80px 24px;
+      }
       .steps-grid {
         grid-template-columns: repeat(4, 1fr);
         gap: 20px;
@@ -1453,6 +1469,40 @@
     </div>
   </section>
 
+  <!-- 6. HOW IT WORKS (STEPS SECTION) -->
+  <section class="section-padding how-it-works-section" id="como-funciona" aria-labelledby="stepsTitle">
+    <div class="section-header">
+      <h2 class="section-title" id="stepsTitle">Como Funciona o seu Pedido</h2>
+      <p class="section-subtitle">Escolha e monte seus caderninhos com total flexibilidade.</p>
+    </div>
+    <div class="steps-grid">
+      <!-- Step 1 -->
+      <div class="step-card">
+        <div class="step-number">01</div>
+        <h4 class="step-title">Defina a Quantidade</h4>
+        <p class="step-desc">Selecione quantos caderninhos você deseja no seu kit (de 1 a 8 ou mais, com descontos cumulativos).</p>
+      </div>
+      <!-- Step 2 -->
+      <div class="step-card">
+        <div class="step-number">02</div>
+        <h4 class="step-title">Escolha as Capas</h4>
+        <p class="step-desc">Misture e combine entre as nossas 15 capas autorais cariocas, lisas e ilustradas.</p>
+      </div>
+      <!-- Step 3 -->
+      <div class="step-card">
+        <div class="step-number">03</div>
+        <h4 class="step-title">Selecione os Miolos</h4>
+        <p class="step-desc">Defina o tipo de miolo (pautado, liso, pontilhado...) individualmente para cada caderno do kit.</p>
+      </div>
+      <!-- Step 4 -->
+      <div class="step-card">
+        <div class="step-number">04</div>
+        <h4 class="step-title">Conclua o Pedido</h4>
+        <p class="step-desc">Finalize de forma rápida por PIX ou WhatsApp e enviamos rapidamente pelos Correios ou Entrega Local.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- 5. PRODUCT GRID (MIOLOS PREVIEW) -->
   <div class="product-grid-section" id="miolos">
     <div class="product-grid-container">
@@ -1509,39 +1559,7 @@
     </div>
   </div>
 
-  <!-- 6. HOW IT WORKS (STEPS SECTION) -->
-  <section class="section-padding" aria-labelledby="stepsTitle">
-    <div class="section-header">
-      <h2 class="section-title" id="stepsTitle">Como Funciona o seu Pedido</h2>
-      <p class="section-subtitle">Escolha e monte seus caderninhos com total flexibilidade.</p>
-    </div>
-    <div class="steps-grid">
-      <!-- Step 1 -->
-      <div class="step-card">
-        <div class="step-number">01</div>
-        <h4 class="step-title">Defina a Quantidade</h4>
-        <p class="step-desc">Selecione quantos caderninhos você deseja no seu kit (de 1 a 12 ou mais, com descontos cumulativos).</p>
-      </div>
-      <!-- Step 2 -->
-      <div class="step-card">
-        <div class="step-number">02</div>
-        <h4 class="step-title">Escolha as Capas</h4>
-        <p class="step-desc">Misture e combine entre as nossas 15 capas autorais cariocas, lisas e ilustradas.</p>
-      </div>
-      <!-- Step 3 -->
-      <div class="step-card">
-        <div class="step-number">03</div>
-        <h4 class="step-title">Selecione os Miolos</h4>
-        <p class="step-desc">Defina o tipo de miolo (pautado, liso, pontilhado...) individualmente para cada caderno do kit.</p>
-      </div>
-      <!-- Step 4 -->
-      <div class="step-card">
-        <div class="step-number">04</div>
-        <h4 class="step-title">Conclua o Pedido</h4>
-        <p class="step-desc">Finalize de forma rápida por PIX ou WhatsApp e enviamos rapidamente pelos Correios ou Entrega Local.</p>
-      </div>
-    </div>
-  </section>
+
 
   <!-- 7. TESTIMONIALS SECTION -->
   <div class="testimonials-section" id="depoimentos">
