@@ -438,35 +438,35 @@
     /* ============================================ */
     .split-section {
       display: flex;
-      flex-direction: column;
-      gap: 32px;
+      flex-direction: row;
+      align-items: center;
+      gap: 16px;
     }
 
     .split-text-col {
+      width: 60%;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 8px;
     }
 
     .split-text-title {
       font-family: var(--serif);
-      font-size: clamp(24px, 3.5vw, 34px);
+      font-size: 15px;
       font-weight: 700;
       color: var(--ink);
       line-height: 1.15;
     }
 
     .split-text-desc {
-      font-size: 14px;
-      line-height: 1.55;
-      color: var(--muted);
+      display: none;
     }
 
     .feature-list {
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      margin-top: 4px;
+      gap: 6px;
+      margin-top: 2px;
     }
 
     .feature-item {
@@ -476,34 +476,35 @@
     }
 
     .feature-check-icon {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--accent);
-      margin-top: 2px;
+      margin-top: 0px;
     }
 
     .feature-item-title {
-      font-size: 14px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--ink);
-      margin-bottom: 2px;
+      margin-bottom: 0px;
     }
 
     .feature-item-desc {
-      font-size: 12.5px;
-      color: var(--muted);
-      line-height: 1.4;
+      display: none;
     }
 
     .split-image-col {
-      border-radius: 16px;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 12px 30px rgba(66, 39, 22, 0.08);
-      width: 100%;
+      box-shadow: 0 6px 15px rgba(66, 39, 22, 0.05);
+      width: 38%;
+      max-width: 140px;
+      margin: 0 auto;
     }
 
     .split-image-col img {
       width: 100%;
       display: block;
+      height: auto;
     }
 
     /* Desktop overrides para Split Section */
@@ -515,9 +516,29 @@
         gap: 56px;
       }
       .split-text-col {
+        width: 100%;
         gap: 24px;
       }
+      .split-text-title {
+        font-size: clamp(24px, 3.5vw, 34px);
+      }
+      .split-text-desc {
+        display: block;
+      }
+      .feature-list {
+        gap: 14px;
+        margin-top: 4px;
+      }
+      .feature-item-title {
+        font-size: 14px;
+        margin-bottom: 2px;
+      }
+      .feature-item-desc {
+        display: block;
+      }
       .split-image-col {
+        width: 100%;
+        max-width: none;
         border-radius: 20px;
       }
       .split-image-col img {
