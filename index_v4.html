@@ -556,13 +556,18 @@
       background-color: var(--paper);
       border-top: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
-      padding: 24px 16px;
+      padding: 36px 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .specs-layout {
       display: flex;
       flex-direction: column;
       gap: 16px;
+      width: 100%;
     }
 
     .specs-info-col {
@@ -645,8 +650,8 @@
 
     .specs-image-col {
       width: 100%;
-      max-width: 160px;
-      margin: 8px auto 0;
+      max-width: 220px;
+      margin: 12px auto 0;
       border-radius: 12px;
       overflow: hidden;
     }
@@ -660,6 +665,8 @@
     @media (min-width: 769px) {
       .specs-section {
         padding: 80px 24px;
+        min-height: auto;
+        display: block;
       }
       .specs-layout {
         display: grid;
