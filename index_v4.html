@@ -2203,13 +2203,24 @@ line-height: 1.15;
     .discount-note {
       margin: 0 0 14px;
       color: var(--accent);
-      font-size: 12.5px;
-      line-height: 1.45;
-      padding: 12px;
-      background: rgba(200, 121, 85, 0.04);
-      border: 1px dashed rgba(200, 121, 85, 0.2);
-      border-radius: 10px;
-      font-weight: 600;
+      font-size: 13.5px;
+      line-height: 1.5;
+      padding: 14px 16px;
+      background: rgba(200, 121, 85, 0.08);
+      border: 1.5px dashed rgba(200, 121, 85, 0.35);
+      border-radius: 12px;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+
+    @keyframes notePulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); background: rgba(200, 121, 85, 0.16); border-color: rgba(200, 121, 85, 0.65); }
+      100% { transform: scale(1); }
+    }
+
+    .discount-note.pulse-active {
+      animation: notePulse 0.45s ease-out;
     }
 
     .whatsapp-button {
@@ -4107,43 +4118,48 @@ line-height: 1.15;
       let noteText = "";
       if (totalQtyNormais === 0) {
         if (totalQty > 0) {
-          noteText = "Você selecionou caderno(s) com desconto especial da planilha! Adicione itens normais para economizar com os kits progressivos.";
+          noteText = "🏷️ Você selecionou caderno(s) com desconto especial da planilha! Adicione itens normais para economizar com os kits progressivos.";
         } else {
-          noteText = "Para aproveitar melhor a produção e reduzir desperdício, compre em quantidades pares e aproveite nossos kits promocionais!";
+          noteText = "💡 Para aproveitar melhor a produção e reduzir desperdício, compre em quantidades pares e aproveite nossos kits promocionais!";
         }
       } else if (totalQtyNormais === 1) {
-        noteText = "Você selecionou 1 caderno normal. Adicione mais 1 normal e leve o Kit com 2 por R$ 28 (desconto de R$ 2)!";
+        noteText = "🎁 Você selecionou 1 caderno normal. Adicione mais 1 normal e leve o Kit com 2 por R$ 28 (desconto de R$ 2)!";
       } else if (totalQtyNormais === 2) {
-        noteText = "Promoção aplicada nos normais: Kit 2 (R$ 14,00 por caderninho). Adicione mais 2 normais e aproveite o Kit com 4 por R$ 45!";
+        noteText = "✨ Promoção aplicada nos normais: Kit 2 (R$ 14,00 por caderninho). Adicione mais 2 normais e aproveite o Kit com 4 por R$ 45!";
       } else if (totalQtyNormais === 3) {
-        noteText = "Dica: Adicione mais 1 caderno normal e leve o Kit com 4 pelo mesmo preço (R$ 45)! É um caderno normal a mais grátis.";
+        noteText = "🎁 Dica: Adicione mais 1 caderno normal e leve o Kit com 4 pelo mesmo preço (R$ 45)! É um caderno normal a mais grátis.";
       } else if (totalQtyNormais === 4) {
-        noteText = "Promoção aplicada nos normais: Kit 4 (R$ 11,25 por caderninho). Leve mais cadernos e economize ainda mais!";
+        noteText = "✨ Promoção aplicada nos normais: Kit 4 (R$ 11,25 por caderninho). Leve mais cadernos e economize ainda mais!";
       } else if (totalQtyNormais >= 5 && totalQtyNormais <= 7) {
         const falta = 8 - totalQtyNormais;
         const txtFalta = falta === 1 ? "mais 1 caderno normal" : `mais ${falta} cadernos normais`;
         if (totalQtyNormais === 7) {
-          noteText = `Dica: Adicione mais 1 caderno normal e leve o Kit com 8 pagando R$ 11,00 a MENOS (R$ 79 pelo Kit 8 vs R$ 90 por 7 cadernos)!`;
+          noteText = `🎁 Dica: Adicione mais 1 caderno normal e leve o Kit com 8 pagando R$ 11,00 a MENOS (R$ 79 pelo Kit 8 vs R$ 90 por 7 cadernos)!`;
         } else {
-          noteText = `Selecione ${txtFalta} para atingir o Kit com 8 por R$ 79 e economize muito no custo unitário (R$ 9,88 por caderninho)!`;
+          noteText = `🏷️ Selecione ${txtFalta} para atingir o Kit com 8 por R$ 79 e economize muito no custo unitário (R$ 9,88 por caderninho)!`;
         }
       } else if (totalQtyNormais === 8) {
-        noteText = "Promoção aplicada nos normais: Kit 8 (R$ 9,88 por caderninho). Excelente escolha!";
+        noteText = "✨ Promoção aplicada nos normais: Kit 8 (R$ 9,88 por caderninho). Excelente escolha!";
       } else if (totalQtyNormais >= 9 && totalQtyNormais <= 11) {
         const falta = 12 - totalQtyNormais;
         const txtFalta = falta === 1 ? "mais 1 caderno normal" : `mais ${falta} cadernos normais`;
         if (totalQtyNormais === 11) {
-          noteText = `Dica: Adicione mais 1 caderno normal e leve o Kit com 12 pagando R$ 15,00 a MENOS (R$ 109 pelo Kit 12 vs R$ 124 por 11 cadernos)!`;
+          noteText = `🎁 Dica: Adicione mais 1 caderno normal e leve o Kit com 12 pagando R$ 15,00 a MENOS (R$ 109 pelo Kit 12 vs R$ 124 por 11 cadernos)!`;
         } else {
-          noteText = `Selecione ${txtFalta} para atingir o Kit com 12 por R$ 109 e tenha o melhor custo-benefício (R$ 9,08 por caderninho)!`;
+          noteText = `🏷️ Selecione ${txtFalta} para atingir o Kit com 12 por R$ 109 e tenha o melhor custo-benefício (R$ 9,08 por caderninho)!`;
         }
       } else if (totalQtyNormais === 12) {
-        noteText = "Promoção aplicada nos normais: Kit 12 (R$ 9,08 por caderninho). Perfeito para presentear ou revender!";
+        noteText = "✨ Promoção aplicada nos normais: Kit 12 (R$ 9,08 por caderninho). Perfeito para presentear ou revender!";
       } else {
-        noteText = `Kits combinados aplicados para ${totalQtyNormais} cadernos normais! Para quantidades personalizadas ou atacado, fale conosco.`;
+        noteText = `✨ Kits combinados aplicados para ${totalQtyNormais} cadernos normais! Para quantidades personalizadas ou atacado, fale conosco.`;
       }
       
-      discountNote.textContent = noteText;
+      if (discountNote.textContent !== noteText) {
+        discountNote.textContent = noteText;
+        discountNote.classList.remove("pulse-active");
+        void discountNote.offsetWidth; // Força reflow para reiniciar a animação CSS
+        discountNote.classList.add("pulse-active");
+      }
 
       const nameVal = document.getElementById("name").value.trim();
       const deliveryVal = document.getElementById("delivery").value.trim();
