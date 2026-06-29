@@ -1770,12 +1770,19 @@ line-height: 1.15;
       inset: 0;
       z-index: 9999;
       display: none;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
-      padding: 16px;
+      padding: 40px 16px;
       background: rgba(43, 26, 17, 0.35);
       backdrop-filter: blur(4px);
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    @media (max-width: 580px) {
+      .preview-modal {
+        padding: 16px 12px;
+      }
     }
 
     .preview-modal.is-open {
