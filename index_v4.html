@@ -5228,13 +5228,23 @@ line-height: 1.15;
         ];
       }
       
-      // Ordena por valor (menor primeiro) e por prazo (menor primeiro) em caso de empate
+      // Ordena por valor (menor primeiro) e em caso de empate prioriza Loggi/Jadlog antes dos Correios (PAC/SEDEX/etc.)
       displayServices.sort((a, b) => {
         const priceA = a.discountPrice !== undefined ? a.discountPrice : a.price;
         const priceB = b.discountPrice !== undefined ? b.discountPrice : b.price;
         if (priceA !== priceB) {
           return priceA - priceB;
         }
+        
+        // Em caso de empate de preço, prioriza Loggi e Jadlog frente a Correios (PAC/SEDEX/etc.)
+        const isLoggiOrJadlog = name => /loggi|jadlog/i.test(name || "");
+        const aIsPriority = isLoggiOrJadlog(a.name);
+        const bIsPriority = isLoggiOrJadlog(b.name);
+        
+        if (aIsPriority && !bIsPriority) return -1;
+        if (!aIsPriority && bIsPriority) return 1;
+        
+        // Se ambos forem da mesma categoria, desempata pelo prazo (menor primeiro)
         return a.deliveryTime - b.deliveryTime;
       });
       
