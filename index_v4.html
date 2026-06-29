@@ -1805,6 +1805,23 @@ line-height: 1.15;
         max-height: calc(100vh - 20px);
         border-radius: 12px;
       }
+
+      /* Evita corte e rolagem dupla nos modais de formulário no mobile */
+      #addressModal .preview-dialog,
+      #cpfModal .preview-dialog {
+        max-height: none !important;
+        height: auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: visible !important;
+      }
+
+      #addressModal .preview-body,
+      #cpfModal .preview-body {
+        overflow-y: visible !important;
+        height: auto !important;
+        flex: none !important;
+      }
     }
 
     .preview-header {
