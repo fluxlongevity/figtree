@@ -2487,7 +2487,7 @@ line-height: 1.15;
       <div class="hero-content">
         <h1 class="hero-title" id="heroTitle">Ideias únicas para levar no bolso</h1>
         <p class="hero-desc">
-          Caderninhos estilo <em>Memo Book</em> (14 × 9 cm), grampeados no centro e feitos à mão. Personalize o seu kit combinando 15 opções de capa e 8 tipos de miolo.
+          Caderninhos estilo <em>Memo Book</em> (14 × 9 cm), grampeados no centro e feitos à mão. Personalize o seu kit combinando <span class="dynamic-covers-count">15</span> opções de capa e <span class="dynamic-interiors-count">8</span> tipos de miolo.
         </p>
         <a href="#order-form" class="hero-cta-btn">
           <span>Escolher meu Kit</span>
@@ -2609,7 +2609,7 @@ line-height: 1.15;
       <div class="step-card">
         <div class="step-number">01</div>
         <h4 class="step-title">Escolha as Capas</h4>
-        <p class="step-desc">Escolha entre as nossas 15 capas autorais, lisas e ilustradas.</p>
+        <p class="step-desc">Escolha entre as nossas <span class="dynamic-covers-count">15</span> capas autorais, lisas e ilustradas.</p>
       </div>
       <!-- Step 2 -->
       <div class="step-card">
@@ -2634,7 +2634,7 @@ line-height: 1.15;
     <!-- Stats Grid integrada no mesmo bloco para evitar aspecto vazio no celular -->
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-number">15</div>
+        <div class="stat-number dynamic-covers-count">15</div>
         <div class="stat-label">Opções de Capa</div>
         <div class="stat-sub">Artes exclusivas e lisas</div>
       </div>
@@ -2644,7 +2644,7 @@ line-height: 1.15;
         <div class="stat-sub">Excelente volume de escrita</div>
       </div>
       <div class="stat-card">
-        <div class="stat-number">8</div>
+        <div class="stat-number dynamic-interiors-count">8</div>
         <div class="stat-label">Tipos de Miolo</div>
         <div class="stat-sub">Pautados, lisos, pontilhados e quadriculados</div>
       </div>
@@ -5738,10 +5738,23 @@ line-height: 1.15;
 
     quantityInput.addEventListener("input", updateCurrentSelection);
 
+    function updateDynamicCounts() {
+      try {
+        const coverCountEl = document.querySelectorAll('.dynamic-covers-count');
+        const interiorCountEl = document.querySelectorAll('.dynamic-interiors-count');
+        
+        coverCountEl.forEach(el => el.textContent = covers.length);
+        interiorCountEl.forEach(el => el.textContent = interiors.length);
+      } catch (err) {
+        console.error("Erro ao atualizar contadores dinâmicos:", err);
+      }
+    }
+
     renderCovers();
     renderInteriors();
     updateSummary();
     carregarPromocoes();
+    updateDynamicCounts();
     // detectAssetsDynamically();
   </script>
 
