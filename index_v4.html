@@ -2827,9 +2827,9 @@ line-height: 1.15;
 
         <!-- Seção do Cupom de Desconto (Input e Botão) -->
         <div class="coupon-section" id="couponSection" style="margin: 14px 0; padding: 14px 0; border-top: 1px dashed var(--line); border-bottom: 1px dashed var(--line);">
-          <div style="display: flex; gap: 8px; align-items: center;">
-            <input type="text" id="couponInput" placeholder="CUPOM DE DESCONTO" style="flex: 1; padding: 10px 12px; border: 1px solid rgba(89, 54, 34, .25); border-radius: 8px; background: var(--paper-strong); font-size: 13px; text-transform: uppercase;" />
-            <button id="applyCouponBtn" type="button" class="add-item" style="min-height: 38px; box-shadow: none; font-size: 13px; padding: 0 14px; margin-top: 0; background: var(--kraft); color: #fff; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s;">Aplicar</button>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <input type="text" id="couponInput" placeholder="CUPOM DE DESCONTO" style="flex: 1; border: none; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; padding: 8px 2px; font-size: 13px; text-transform: uppercase;" />
+            <button id="applyCouponBtn" type="button" class="add-item" style="min-height: 38px; box-shadow: none; font-size: 12.5px; padding: 0 20px; margin-top: 0; background: var(--ink); color: #fff; border-radius: 99px; font-weight: 700; cursor: pointer; transition: background 0.2s;">Aplicar</button>
           </div>
           <div id="couponFeedback" style="display: none; font-size: 12px; margin-top: 6px; font-weight: 600;"></div>
           <div style="font-size: 11px; color: var(--muted); margin-top: 5px; font-weight: 500; text-align: center;">Apenas um cupom por pedido (não acumulativo).</div>
@@ -5629,7 +5629,7 @@ line-height: 1.15;
         couponInput.value = "";
         couponInput.disabled = false;
         applyBtn.textContent = "Aplicar";
-        applyBtn.style.background = "var(--kraft)";
+        applyBtn.style.background = "var(--ink)";
         feedback.style.display = "none";
         feedback.textContent = "";
         updateSummary();
