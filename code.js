@@ -5,6 +5,27 @@ const ORIGIN_CEP = "20541280";
 const PRODUCT_WIDTH_CM = 13;
 const PRODUCT_LENGTH_CM = 18;
 
+// Cache para o ID da Planilha Google (evita consumo excessivo de cota)
+var _cachedSpreadsheetId = null;
+
+/**
+ * Obtém o ID da planilha a partir das Propriedades do Script (PropertiesService) do Google Apps Script.
+ * Caso não esteja configurado, utiliza o ID padrão como fallback.
+ */
+function getSpreadsheetId() {
+  if (!_cachedSpreadsheetId) {
+    try {
+      _cachedSpreadsheetId = PropertiesService.getScriptProperties().getProperty("SPREADSHEET_ID");
+    } catch(err) {
+      Logger.log("Erro ao acessar PropertiesService: " + err.message);
+    }
+    if (!_cachedSpreadsheetId) {
+      _cachedSpreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+    }
+  }
+  return _cachedSpreadsheetId;
+}
+
 function doPost(e) {
   // Intercepta chamadas de Webhook do Superfrete via query parameter
   if (e.parameter && e.parameter.source === "superfrete") {
@@ -107,7 +128,7 @@ function doPost(e) {
 
     if (action === "test_clear_tracking") {
       const orderId = requestData.orderId;
-      const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+      const spreadsheetId = getSpreadsheetId();
       let ss = null;
       try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
       if (!ss) ss = SpreadsheetApp.openById(spreadsheetId);
@@ -209,7 +230,7 @@ function doPost(e) {
     if (action === "reset_order") {
       try {
         const orderId = requestData.orderId;
-        const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+        const spreadsheetId = getSpreadsheetId();
         let ss = null;
         try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
         if (!ss) ss = SpreadsheetApp.openById(spreadsheetId);
@@ -340,7 +361,7 @@ function doPost(e) {
     }
 
     if (action === "recalcular_tudo") {
-      const ss = SpreadsheetApp.openById("1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0");
+      const ss = SpreadsheetApp.openById(getSpreadsheetId());
       const sheetInsumos = obterPlanilhaInsumos(ss);
       const insumosData = sheetInsumos.getDataRange().getValues();
       const headers = insumosData[0];
@@ -375,7 +396,7 @@ function calcularFrete(cepDestino, quantidade, extraParams = {}) {
 
   const qty = parseInt(quantidade) || 1;
   
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
   if (!ss) ss = SpreadsheetApp.openById(spreadsheetId);
@@ -642,7 +663,7 @@ function selecionarCaixaLogistica(ss, qty) {
 }
 
 function salvarPedido(pedido) {
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -781,7 +802,7 @@ function salvarPedido(pedido) {
 }
 
 function getPedido(orderId) {
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -808,7 +829,7 @@ function getPedido(orderId) {
 }
 
 function getRecentOrders() {
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -837,7 +858,7 @@ function getRecentOrders() {
 }
 
 function getAllOrders() {
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -871,7 +892,7 @@ function getAllOrders() {
 }
 
 function atualizarStatusPedido(orderId, novoStatus, dataPagamento) {
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -1283,7 +1304,7 @@ function parseEndereco(enderecoStr, cep) {
 }
 
 function emitirEtiquetaPedido(orderId) {
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -1726,7 +1747,7 @@ function conciliarRecibos() {
 }
 
 function getPedidoStatusLocal(orderId) {
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -1826,7 +1847,7 @@ function doGet(e) {
 }
 
 function reordenarColunasPlanilha() {
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -1920,7 +1941,7 @@ function atualizarRastreamentoPedido(orderId, skipLock) {
   }
 
   try {
-    const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+    const spreadsheetId = getSpreadsheetId();
     let ss = null;
     try {
       ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -2263,7 +2284,7 @@ function sincronizarTodosRastreamentos() {
   }
 
   try {
-    const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+    const spreadsheetId = getSpreadsheetId();
     let ss = null;
     try {
       ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -2366,7 +2387,7 @@ function validarCupom(cupomCodigo) {
     return { success: false, error: "Código do cupom não fornecido." };
   }
   
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -2445,7 +2466,7 @@ function validarCupom(cupomCodigo) {
 }
 
 function getCupons() {
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -2518,7 +2539,7 @@ function salvarCupom(cupomData) {
     return { success: false, error: "Código do cupom inválido." };
   }
   
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -2580,7 +2601,7 @@ function excluirCupom(cupomCodigo) {
     return { success: false, error: "Código do cupom inválido." };
   }
   
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -2612,7 +2633,7 @@ function alternarStatusCupom(cupomCodigo) {
     return { success: false, error: "Código do cupom inválido." };
   }
   
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -2659,7 +2680,7 @@ function obterPlanilhaPromocoes(ss) {
 }
 
 function getPromocoes() {
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -2690,7 +2711,7 @@ function salvarPromocao(promoData) {
     return { success: false, error: "Nome da promoção inválido." };
   }
   
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -2753,7 +2774,7 @@ function excluirPromocao(promoNome) {
     return { success: false, error: "Nome da promoção inválido." };
   }
   
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -2785,7 +2806,7 @@ function alternarStatusPromocao(promoNome) {
     return { success: false, error: "Nome da promoção inválido." };
   }
   
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -2943,7 +2964,7 @@ function recalcularCustoMedioInsumo(ss, idInsumo) {
 }
 
 function getCustosData() {
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try {
     ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -3001,7 +3022,7 @@ function salvarInsumo(insumoData) {
   if (!insumoData || !insumoData.id_insumo) {
     return { success: false, error: "ID do insumo inválido." };
   }
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
   if (!ss) ss = SpreadsheetApp.openById(spreadsheetId);
@@ -3044,7 +3065,7 @@ function salvarCompraInsumo(compraData) {
   if (!compraData || !compraData.id_insumo) {
     return { success: false, error: "ID do insumo inválido para a compra." };
   }
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
   if (!ss) ss = SpreadsheetApp.openById(spreadsheetId);
@@ -3090,7 +3111,7 @@ function salvarFichaTecnica(fichaData) {
   if (!fichaData || !fichaData.id_insumo) {
     return { success: false, error: "Dados da ficha técnica inválidos." };
   }
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
   if (!ss) ss = SpreadsheetApp.openById(spreadsheetId);
@@ -3134,7 +3155,7 @@ function excluirItemFichaTecnica(prodId, insumoId) {
   if (!insumoId) {
     return { success: false, error: "Insumo inválido." };
   }
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
   if (!ss) ss = SpreadsheetApp.openById(spreadsheetId);
@@ -3162,7 +3183,7 @@ function salvarCaixa(caixaData) {
   if (!caixaData || !caixaData.id_caixa) {
     return { success: false, error: "ID da caixa inválido." };
   }
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
   if (!ss) ss = SpreadsheetApp.openById(spreadsheetId);
@@ -3215,7 +3236,7 @@ function excluirCaixa(caixaId) {
   if (!caixaId) {
     return { success: false, error: "ID de caixa inválido." };
   }
-  const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+  const spreadsheetId = getSpreadsheetId();
   let ss = null;
   try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
   if (!ss) ss = SpreadsheetApp.openById(spreadsheetId);
@@ -3281,7 +3302,7 @@ function processarWebhookSuperFreteDirect(payload) {
         .setMimeType(ContentService.MimeType.JSON);
     }
     
-    const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+    const spreadsheetId = getSpreadsheetId();
     let ss = null;
     try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
     if (!ss) ss = SpreadsheetApp.openById(spreadsheetId);
@@ -3699,7 +3720,7 @@ function sincronizarMovimentacoesPublicas(skipLock) {
   }
 
   try {
-    const spreadsheetId = "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0";
+    const spreadsheetId = getSpreadsheetId();
     let ss = null;
     try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
     if (!ss) ss = SpreadsheetApp.openById(spreadsheetId);
