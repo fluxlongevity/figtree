@@ -26,6 +26,20 @@ function getSpreadsheetId() {
   return _cachedSpreadsheetId;
 }
 
+/**
+ * Executa a configuração automática das Propriedades do Script.
+ * Selecione esta função no editor do Google Apps Script e clique em "Executar" para cadastrar
+ * o ID da Planilha nas configurações do seu projeto na nuvem de forma automática.
+ */
+function configurarPropriedadesIniciais() {
+  try {
+    PropertiesService.getScriptProperties().setProperty("SPREADSHEET_ID", "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0");
+    Logger.log("Sucesso! A propriedade SPREADSHEET_ID foi gravada nas configurações do script.");
+  } catch(err) {
+    Logger.log("Erro ao gravar propriedade: " + err.message);
+  }
+}
+
 function doPost(e) {
   // Intercepta chamadas de Webhook do Superfrete via query parameter
   if (e.parameter && e.parameter.source === "superfrete") {
