@@ -128,11 +128,7 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
-    if (action === "configurar_ambiente") {
-      PropertiesService.getScriptProperties().setProperty("SUPERFRETE_ENVIRONMENT", requestData.ambiente);
-      return ContentService.createTextOutput(JSON.stringify({ success: true, ambiente: requestData.ambiente }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
+    // Ação 'configurar_ambiente' removida por segurança (obsoleta)
 
     if (action === "reordenar_colunas") {
       reordenarColunasPlanilha();
@@ -183,24 +179,7 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
-    if (action === "set_property") {
-      PropertiesService.getScriptProperties().setProperty(requestData.name, requestData.value);
-      return ContentService.createTextOutput(JSON.stringify({ success: true }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-
-    if (action === "delete_property") {
-      PropertiesService.getScriptProperties().deleteProperty(requestData.name);
-      return ContentService.createTextOutput(JSON.stringify({ success: true }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-
-
-    if (action === "get_properties") {
-      const props = PropertiesService.getScriptProperties().getProperties();
-      return ContentService.createTextOutput(JSON.stringify({ success: true, properties: props }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
+    // Ações de gerenciamento direto de propriedades (set_property, delete_property, get_properties) removidas por segurança (obsoletas)
 
     if (action === "validar_cupom") {
       const response = validarCupom(requestData.cupom);
