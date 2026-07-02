@@ -27,16 +27,20 @@ function getSpreadsheetId() {
 }
 
 /**
- * Executa a configuração automática das Propriedades do Script.
+ * Executa a configuração automática das Propriedades do Script e das abas financeiras.
  * Selecione esta função no editor do Google Apps Script e clique em "Executar" para cadastrar
- * o ID da Planilha nas configurações do seu projeto na nuvem de forma automática.
+ * o ID da Planilha nas configurações do seu projeto na nuvem e criar automaticamente
+ * as abas Financeiro e Ficha Técnica com todas as fórmulas e formatações completas.
  */
 function configurarPropriedadesIniciais() {
   try {
     PropertiesService.getScriptProperties().setProperty("SPREADSHEET_ID", "1Bm7cx-uDRJiJaRo9k8jdJfsxNUs-LhIxSkBwZ98yI-0");
     Logger.log("Sucesso! A propriedade SPREADSHEET_ID foi gravada nas configurações do script.");
+    
+    Logger.log("Iniciando a configuração das abas Financeiro e Ficha Técnica...");
+    criarAbasFinanceiroEFichaTecnica();
   } catch(err) {
-    Logger.log("Erro ao gravar propriedade: " + err.message);
+    Logger.log("Erro no setup: " + err.message);
   }
 }
 
@@ -672,7 +676,7 @@ function salvarPedido(pedido) {
   }
 
   const defaultHeaders = [
-    "ID_Pedido", "Status", "Data_Pedido", "Data_Pagamento", "Nome", "WhatsApp", "CPF",
+    "ID_Pedido", "Status", "Data_Pedido", "Data_Pagamento", "Nome", "WhatsApp", "CPF", "Metodo_Pagamento",
     "Entrega_Rua", "Entrega_Numero", "Entrega_Complemento", "Entrega_Bairro", "Entrega_Cidade", "Entrega_Estado", "Entrega_CEP",
     "Itens", "Qtd_Total", "Valor_Produtos", "Cupom_Codigo", "Cupom_Desconto_Valor", "Frete_Metodo", "Valor_Frete", "Total_Geral", "Observacoes", "Pix_Payload",
     "Superfrete_Package_ID", "Superfrete_Status", "Codigo_Rastreio", "Etiqueta_PDF_URL", "Data_Emissao_Etiqueta", "Valor_Frete_Pago", "Desconto_Frete",
@@ -719,6 +723,7 @@ function salvarPedido(pedido) {
       case "Nome": return pedido.nome || "";
       case "WhatsApp": return pedido.whatsapp || "";
       case "CPF": return pedido.cpf || "";
+      case "Metodo_Pagamento": return "Pix";
       case "Entrega_Rua": return pedido.entrega_rua || "";
       case "Entrega_Numero": return pedido.entrega_numero || "";
       case "Entrega_Complemento": return pedido.entrega_complemento || "";
@@ -1852,7 +1857,7 @@ function reordenarColunasPlanilha() {
   if (!sheet || sheet.getLastRow() === 0) return { success: false, error: "Planilha vazia ou inexistente" };
 
   const novaOrdem = [
-    "ID_Pedido", "Status", "Data_Pedido", "Data_Pagamento", "Nome", "WhatsApp", "CPF",
+    "ID_Pedido", "Status", "Data_Pedido", "Data_Pagamento", "Nome", "WhatsApp", "CPF", "Metodo_Pagamento",
     "Entrega_Rua", "Entrega_Numero", "Entrega_Complemento", "Entrega_Bairro", "Entrega_Cidade", "Entrega_Estado", "Entrega_CEP",
     "Itens", "Qtd_Total", "Valor_Produtos", "Cupom_Codigo", "Cupom_Desconto_Valor", "Frete_Metodo", "Valor_Frete", "Total_Geral", "Observacoes", "Pix_Payload",
     "Superfrete_Package_ID", "Superfrete_Status", "Codigo_Rastreio", "Etiqueta_PDF_URL", "Data_Emissao_Etiqueta", "Valor_Frete_Pago", "Desconto_Frete",
@@ -3929,5 +3934,111 @@ function sincronizarMovimentacoesPublicas(skipLock) {
       lock.releaseLock();
     }
   }
+}
+
+/**
+ * Cria e configura dinamicamente as abas Financeiro e Ficha_Tecnica na planilha do Google Sheets.
+ * Esta função é executada como parte do setup e automatiza a injeção de fórmulas e designs sage/accent.
+ */
+function criarAbasFinanceiroEFichaTecnica() {
+  const spreadsheetId = getSpreadsheetId();
+  let ss = null;
+  try {
+    ss = SpreadsheetApp.getActiveSpreadsheet();
+  } catch (e) {}
+  if (!ss) {
+    ss = SpreadsheetApp.openById(spreadsheetId);
+  }
+
+  // --- 1. CONFIGURAÇÃO DA ABA FICHA TÉCNICA ---
+  let sheetFT = ss.getSheetByName("Ficha_Tecnica");
+  if (!sheetFT) {
+    sheetFT = ss.insertSheet("Ficha_Tecnica");
+  }
+  
+  // Cabeçalhos para a Ficha Técnica
+  const headersFT = [
+    "ID do Produto", "Item / Insumo", "Qtd Utilizada", 
+    "Preço Unitário (R$)", "Custo do Item (R$)", 
+    "Custo Total de Prod. (R$)", "% de Representação"
+  ];
+  
+  sheetFT.clear();
+  sheetFT.appendRow(headersFT);
+  
+  // Dados de Exemplo na Ficha Técnica (1 caderno com custo unitário dinâmico)
+  const dadosFT = [
+    ["A6_Refinado", "Papel de Capa", 1, "=IFERROR(VLOOKUP(B2; 'Insumos'!A:B; 2; FALSE); 0.90)", "=C2*D2", "=SUM(E$2:E$5)", "=IF(F$2>0; E2/F$2; 0)"],
+    ["A6_Refinado", "Folhas do Miolo", 40, "=IFERROR(VLOOKUP(B3; 'Insumos'!A:B; 2; FALSE); 0.02)", "=C3*D3", "", "=IF(F$2>0; E3/F$2; 0)"],
+    ["A6_Refinado", "Linha de Costura", 1, "=IFERROR(VLOOKUP(B4; 'Insumos'!A:B; 2; FALSE); 0.10)", "=C4*D4", "", "=IF(F$2>0; E4/F$2; 0)"],
+    ["A6_Refinado", "Embalagem / Tag", 1, "=IFERROR(VLOOKUP(B5; 'Insumos'!A:B; 2; FALSE); 0.20)", "=C5*D5", "", "=IF(F$2>0; E5/F$2; 0)"]
+  ];
+  
+  sheetFT.getRange(2, 1, dadosFT.length, headersFT.length).setValues(dadosFT);
+  
+  // Formata as colunas da Ficha Técnica
+  sheetFT.getRange("D2:E5").setNumberFormat("R$ #,##0.00");
+  sheetFT.getRange("F2").setNumberFormat("R$ #,##0.00");
+  sheetFT.getRange("G2:G5").setNumberFormat("0.0%");
+  
+  // Design do cabeçalho Ficha Técnica (Cor Sage do Tema)
+  sheetFT.getRange(1, 1, 1, headersFT.length).setFontWeight("bold").setBackground("#b9c5a8");
+
+  // --- 2. CONFIGURAÇÃO DA ABA FINANCEIRO ---
+  let sheetFin = ss.getSheetByName("Financeiro");
+  if (!sheetFin) {
+    sheetFin = ss.insertSheet("Financeiro");
+  }
+  
+  sheetFin.clear();
+  
+  const headersFin = [
+    "ID do Pedido", "Data do Pedido", "Nome do Cliente", "Valor Recebido (R$)", 
+    "Método de Pagamento", "Taxa Pix (R$)", "Taxa Crédito (R$)", "Taxa Débito (R$)", 
+    "Custo de Frete (R$)", "% Custo de Frete", "Custo de Insumos (R$)", "% Custo de Insumos", 
+    "Mão de Obra (R$)", "% Mão de Obra", "Lucro Líquido (R$)", "Margem de Lucro (%)"
+  ];
+  
+  sheetFin.appendRow(headersFin);
+  sheetFin.getRange(1, 1, 1, headersFin.length).setFontWeight("bold").setBackground("#c87955").setFontColor("#ffffff");
+
+  // Injetamos as fórmulas automáticas para as primeiras 1.000 linhas
+  const formulasFin = [];
+  for (let i = 2; i <= 1001; i++) {
+    formulasFin.push([
+      `=IF(Pedidos!A${i}>0; Pedidos!A${i}; "")`, // ID do Pedido
+      `=IF(A${i}>0; Pedidos!C${i}; "")`,        // Data
+      `=IF(A${i}>0; Pedidos!E${i}; "")`,        // Nome
+      `=IF(A${i}>0; Pedidos!V${i}; 0)`,         // Valor Recebido (Total_Geral)
+      `=IF(A${i}>0; Pedidos!H${i}; "")`,        // Método de Pagamento (coluna H na aba Pedidos)
+      `=IF(E${i}="Pix"; D${i} * 0.00; 0)`,      // Taxa Pix (0%)
+      `=IF(E${i}="Crédito"; D${i} * 0.032; 0)`,  // Taxa Crédito (3.2%)
+      `=IF(E${i}="Débito"; D${i} * 0.018; 0)`,   // Taxa Débito (1.8%)
+      `=IF(A${i}>0; Pedidos!AD${i}; 0)`,        // Custo Frete (Valor_Frete_Pago na coluna AD)
+      `=IF(D${i}>0; I${i}/D${i}; 0)`,           // % Frete
+      `=Pedidos!P${i} * Ficha_Tecnica!$F$2`,    // Custo Insumos (Qtd_Total coluna P * Custo Unitário fabricação em F2)
+      `=IF(D${i}>0; K${i}/D${i}; 0)`,           // % Insumos
+      `=Pedidos!P${i} * 1.87`,                  // Mão de Obra (Qtd_Total * 1.87)
+      `=IF(D${i}>0; M${i}/D${i}; 0)`,           // % Mão de Obra
+      `=D${i} - F${i} - G${i} - H${i} - I${i} - K${i} - M${i}`, // Lucro Líquido
+      `=IF(D${i}>0; O${i}/D${i}; 0)`            // Margem de Lucro
+    ]);
+  }
+  
+  sheetFin.getRange(2, 1, formulasFin.length, headersFin.length).setFormulas(formulasFin);
+  
+  // Formatação das colunas financeiras
+  sheetFin.getRange("D2:D1001").setNumberFormat("R$ #,##0.00");
+  sheetFin.getRange("F2:I1001").setNumberFormat("R$ #,##0.00");
+  sheetFin.getRange("J2:J1001").setNumberFormat("0.0%");
+  sheetFin.getRange("K2:K1001").setNumberFormat("R$ #,##0.00");
+  sheetFin.getRange("L2:L1001").setNumberFormat("0.0%");
+  sheetFin.getRange("M2:M1001").setNumberFormat("R$ #,##0.00");
+  sheetFin.getRange("N2:N1001").setNumberFormat("0.0%");
+  sheetFin.getRange("O2:O1001").setNumberFormat("R$ #,##0.00");
+  sheetFin.getRange("P2:P1001").setNumberFormat("0.0%");
+  
+  SpreadsheetApp.flush();
+  Logger.log("Abas Financeiro e Ficha_Tecnica criadas e formatadas com sucesso!");
 }
 
