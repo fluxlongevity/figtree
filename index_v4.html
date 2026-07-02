@@ -2559,7 +2559,7 @@ line-height: 1.15;
       <div class="hero-content">
         <h1 class="hero-title" id="heroTitle">Ideias únicas para levar no bolso</h1>
         <p class="hero-desc">
-          Caderninhos estilo <em>Memo Book</em> (14 × 9 cm), grampeados no centro e feitos à mão. Personalize o seu kit combinando <span class="dynamic-covers-count">15</span> opções de capa e <span class="dynamic-interiors-count">8</span> tipos de miolo.
+          Caderninhos estilo <em>Memo Book</em> (14 × 9 cm), grampeados no centro e feitos à mão. Personalize o seu kit combinando <span class="dynamic-covers-count">18</span> opções de capa e <span class="dynamic-interiors-count">8</span> tipos de miolo.
         </p>
         <a href="#order-form" class="hero-cta-btn">
           <span>Escolher meu Kit</span>
@@ -2683,7 +2683,7 @@ line-height: 1.15;
       <div class="step-card">
         <div class="step-number">01</div>
         <h4 class="step-title">Escolha as Capas</h4>
-        <p class="step-desc">Escolha entre as nossas <span class="dynamic-covers-count">15</span> capas autorais, lisas e ilustradas.</p>
+        <p class="step-desc">Escolha entre as nossas <span class="dynamic-covers-count">18</span> capas autorais, lisas e ilustradas.</p>
       </div>
       <!-- Step 2 -->
       <div class="step-card">
@@ -2708,7 +2708,7 @@ line-height: 1.15;
     <!-- Stats Grid integrada no mesmo bloco para evitar aspecto vazio no celular -->
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-number dynamic-covers-count">15</div>
+        <div class="stat-number dynamic-covers-count">18</div>
         <div class="stat-label">Opções de Capa</div>
         <div class="stat-sub">Artes exclusivas e lisas</div>
       </div>
@@ -3360,6 +3360,9 @@ line-height: 1.15;
       }),
       { name: "Capa 13", src: "assets/capa-13n.webp", thumbSrc: "assets/capa-13n.webp" },
       { name: "Capa 14", src: "assets/capa-14n.webp", thumbSrc: "assets/capa-14n.webp" },
+      { name: "Capa 15", src: "assets/capa-15n.webp", thumbSrc: "assets/capa-15n.webp" },
+      { name: "Capa 16", src: "assets/capa-16n.webp", thumbSrc: "assets/capa-16n.webp" },
+      { name: "Capa 17", src: "assets/capa-17n.webp", thumbSrc: "assets/capa-17n.webp" },
       { name: "Capa lisa", src: "assets/mockup-capa-lisa.webp", thumbSrc: "assets/mockup-capa-lisa.webp" }
     ];
 
@@ -3405,148 +3408,6 @@ line-height: 1.15;
         src: "assets/miolo-quadriculado-com-data.webp"
       }
     ];
-
-    const KNOWN_INTERIORS_METADATA = {
-      "miolo-pautado-sem-data-dias.webp": {
-        name: "Pautado simples",
-        detail: "Linhas sem data e sem dias."
-      },
-      "miolo-pautado-com-data-dias-01.webp": {
-        name: "Pautado com data",
-        detail: "Com dias da semana, quadrinhos e data."
-      },
-      "miolo-liso-com-data-dias.webp": {
-        name: "Sem pauta com data",
-        detail: "Sem linhas, com dias da semana e data."
-      },
-      "miolo-liso-sem-data-dias.webp": {
-        name: "Sem pauta liso",
-        detail: "Páginas totalmente livres."
-      },
-      "miolo-pontilhado-sem-data.webp": {
-        name: "Pontilhado simples",
-        detail: "Grade de pontos sem data."
-      },
-      "miolo-pontilhado-com-data.webp": {
-        name: "Pontilhado com data",
-        detail: "Grade de pontos com dias da semana e data."
-      },
-      "miolo-quadriculado-sem-data.webp": {
-        name: "Quadriculado simples",
-        detail: "Grade quadriculada sem data."
-      },
-      "miolo-quadriculado-com-data.webp": {
-        name: "Quadriculado com data",
-        detail: "Grade quadriculada com dias da semana e data."
-      }
-    };
-
-    async function fileExists(url) {
-      try {
-        const response = await fetch(url, { method: "HEAD" });
-        return response.ok;
-      } catch (e) {
-        return false;
-      }
-    }
-
-    async function detectAssetsDynamically() {
-      if (window.location.protocol === "file:") {
-        console.log("Executando localmente via file://. Usando lista de ativos padrão.");
-        return;
-      }
-
-      console.log("Iniciando varredura dinâmica de ativos...");
-
-      const detectedCovers = [];
-      let index = 1;
-      const maxCheck = 99;
-      
-      while (index <= maxCheck) {
-        const number = String(index).padStart(2, "0");
-        const src = `assets/capa-${number}n.webp`;
-        const thumbSrc = `assets/capa-${number}.webp`;
-        
-        const mainExists = await fileExists(src);
-        if (mainExists) {
-          const thumbExists = await fileExists(thumbSrc);
-          detectedCovers.push({
-            name: `Capa ${index}`,
-            src: src,
-            thumbSrc: thumbExists ? thumbSrc : src
-          });
-          index++;
-        } else {
-          break;
-        }
-      }
-      
-      const lisaSrc = "assets/mockup-capa-lisa.webp";
-      const lisaExists = await fileExists(lisaSrc);
-      if (lisaExists) {
-        detectedCovers.push({
-          name: "Capa lisa",
-          src: lisaSrc,
-          thumbSrc: lisaSrc
-        });
-      }
-      
-      const detectedInteriors = [];
-      const keys = Object.keys(KNOWN_INTERIORS_METADATA);
-      for (const filename of keys) {
-        const src = `assets/${filename}`;
-        const exists = await fileExists(src);
-        if (exists) {
-          detectedInteriors.push({
-            name: KNOWN_INTERIORS_METADATA[filename].name,
-            detail: KNOWN_INTERIORS_METADATA[filename].detail,
-            src: src
-          });
-        }
-      }
-
-      let changed = false;
-      
-      if (detectedCovers.length > 0) {
-        const listStr = JSON.stringify(covers);
-        const newListStr = JSON.stringify(detectedCovers);
-        if (listStr !== newListStr) {
-          covers = detectedCovers;
-          changed = true;
-          console.log(`Detectadas ${covers.length} capas dinamicamente.`);
-        }
-      }
-      
-      if (detectedInteriors.length > 0) {
-        const listStr = JSON.stringify(interiors);
-        const newListStr = JSON.stringify(detectedInteriors);
-        if (listStr !== newListStr) {
-          interiors = detectedInteriors;
-          changed = true;
-          console.log(`Detectados ${interiors.length} miolos dinamicamente.`);
-        }
-      }
-      
-      if (changed) {
-        const stillHasSelectedCover = covers.some(c => c.name === state.coverName);
-        if (!stillHasSelectedCover && covers.length > 0) {
-          state.coverName = covers[0].name;
-          state.coverSrc = covers[0].src;
-          state.coverThumb = covers[0].thumbSrc;
-        }
-        
-        const stillHasSelectedInterior = interiors.some(i => i.name === state.interiorName);
-        if (!stillHasSelectedInterior && interiors.length > 0) {
-          state.interiorName = interiors[0].name;
-          state.interiorSrc = interiors[0].src;
-        }
-
-        renderCovers();
-        renderInteriors();
-        updateSummary();
-      }
-    }
-
     const state = {
       coverName: covers[0].name,
       coverSrc: covers[0].src,
@@ -5853,7 +5714,6 @@ line-height: 1.15;
     updateSummary();
     carregarPromocoes();
     updateDynamicCounts();
-    // detectAssetsDynamically();
   </script>
 
 </body>
