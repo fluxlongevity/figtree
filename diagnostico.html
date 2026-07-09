@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Figtree - Diagnóstico de Conexão e Safari</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #120c08;
+      --card-bg: #1c140f;
+      --primary: #dca777;
+      --primary-hover: #e9bf98;
+      --text: #f7ede2;
+      --muted: #a89a90;
+      --border: rgba(220, 167, 119, 0.15);
+      --success: #4caf50;
+      --error: #f44336;
+      --info: #2196f3;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 24px 16px;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    p.subtitle {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    @media (min-width: 480px) {
+      .info-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .info-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .info-label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-value {
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 2px;
+      word-break: break-all;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn {
+      width: 100%;
+      min-height: 50px;
+      border: 1px solid var(--primary);
+      background: transparent;
+      color: var(--text);
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px 15px;
+      text-decoration: none;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-filled {
+      background: var(--primary);
+      color: var(--bg);
+      border-color: var(--primary);
+    }
+
+    .btn-filled:hover {
+      background: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+
+    .btn-outline:hover {
+      background: rgba(220, 167, 119, 0.08);
+    }
+
+    .btn-success {
+      background: #25D366;
+      border-color: #25D366;
+      color: #fff;
+    }
+
+    .btn-success:hover {
+      background: #20ba56;
+      border-color: #20ba56;
+    }
+
+    .console-box {
+      background: #000;
+      border-radius: 12px;
+      padding: 15px;
+      font-family: monospace;
+      font-size: 13px;
+      max-height: 250px;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .log-line {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      padding-bottom: 4px;
+      word-break: break-all;
+    }
+
+    .log-time {
+      color: var(--muted);
+      margin-right: 8px;
+    }
+
+    .log-success { color: var(--success); }
+    .log-error { color: var(--error); }
+    .log-info { color: var(--info); }
+
+    .instructions {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+
+    .instructions ul {
+      margin-left: 20px;
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Painel de Diagnóstico</h1>
+      <p class="subtitle">Use esta página no iPhone que apresentou problemas para identificar o erro.</p>
+    </header>
+
+    <!-- Informações do Dispositivo -->
+    <div class="card">
+      <div class="card-title">Informações do Sistema</div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Navegador</div>
+          <div class="info-value" id="info-browser">Detectando...</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">iOS / Apple</div>
+          <div class="info-value" id="info-ios">Detectando...</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">In-App Browser (Rede Social)</div>
+          <div class="info-value" id="info-inapp">Detectando...</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Resolução de Tela</div>
+          <div class="info-value" id="info-resolution">Detectando...</div>
+        </div>
+      </div>
+      <div style="margin-top: 12px; font-size: 11px; color: var(--muted); word-break: break-all;">
+        <strong>User Agent:</strong> <span id="info-ua">...</span>
+      </div>
+    </div>
+
+    <!-- Testes de Conectividade e WhatsApp -->
+    <div class="card">
+      <div class="card-title">Ações de Teste</div>
+      <div class="btn-group">
+        <!-- Teste 1 -->
+        <div>
+          <button class="btn btn-outline" id="btn-test-1">
+            ⚡ 1. Testar Fluxo Atual (Fetch + WhatsApp)
+          </button>
+          <div class="instructions">Simula o fluxo exato da loja: aguarda o salvamento no banco (1.5 segundos) e tenta abrir o WhatsApp via JavaScript. <strong>(Geralmente bloqueado no Safari iOS)</strong>.</div>
+        </div>
+
+        <!-- Teste 2 -->
+        <div>
+          <button class="btn btn-filled" id="btn-test-2">
+            🚀 2. Testar Correção (Abertura Direta via JS)
+          </button>
+          <div class="instructions">Tenta abrir o WhatsApp imediatamente no clique, sem esperar nenhuma chamada de rede externa. <strong>(Deve funcionar no Safari do iOS)</strong>.</div>
+        </div>
+
+        <!-- Teste 3 -->
+        <div>
+          <a class="btn btn-success" id="link-test-3" href="https://wa.me/5521969467886?text=Teste%20de%20conexão%20Figtree%20(Link%20Nativo)" target="_blank" rel="noopener noreferrer">
+            💬 3. Testar Link Nativo (Tag HTML A)
+          </a>
+          <div class="instructions">Link HTML puro redirecionando direto. É o método mais imune a bloqueios de navegadores. <strong>(Funciona em quase todos os cenários)</strong>.</div>
+        </div>
+
+        <!-- Teste 4 -->
+        <div>
+          <button class="btn btn-outline" id="btn-test-4" style="border-color: #2196f3; color: #2196f3;">
+            🌐 4. Testar Conexão com Google Sheets (API)
+          </button>
+          <div class="instructions">Faz uma chamada de rede real para o servidor do banco de dados (Google Apps Script) para testar erros de conexão (CORS/SSL).</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Console de Resultados -->
+    <div class="card">
+      <div class="card-title">
+        Console de Logs
+        <button id="btn-clear-log" style="background: transparent; border: 0; color: var(--primary); font-size: 12px; cursor: pointer; text-decoration: underline;">Limpar Logs</button>
+      </div>
+      <div class="console-box" id="console">
+        <div class="log-line log-info"><span class="log-time">[00:00:00]</span>Console iniciado. Clique em um dos botões acima para executar os testes.</div>
+      </div>
+      <div class="instructions" style="margin-top: 10px; text-align: center;">
+        📸 Tire um <strong>print desta tela</strong> após rodar os testes e nos envie!
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbycjYy2UiWKMJAQcrFEs9IFJ42LTKtSJMgUufCYErjlX9U80m6V7M1pHvRb0gbH5TSF/exec";
+    const SELLER_WHATSAPP = "5521969467886";
+    const consoleDiv = document.getElementById("console");
+
+    // Função de Log Customizada
+    function log(message, type = "info") {
+      const now = new Date();
+      const timeStr = `[${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}]`;
+      
+      const line = document.createElement("div");
+      line.className = `log-line log-${type}`;
+      line.innerHTML = `<span class="log-time">${timeStr}</span>${message}`;
+      
+      consoleDiv.appendChild(line);
+      consoleDiv.scrollTop = consoleDiv.scrollHeight;
+    }
+
+    document.getElementById("btn-clear-log").addEventListener("click", () => {
+      consoleDiv.innerHTML = "";
+      log("Console limpo.");
+    });
+
+    // 1. Detectar Informações
+    try {
+      const ua = navigator.userAgent;
+      document.getElementById("info-ua").textContent = ua;
+
+      // Resolução
+      document.getElementById("info-resolution").textContent = `${window.innerWidth} x ${window.innerHeight} (DPR: ${window.devicePixelRatio})`;
+
+      // É iOS?
+      const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      document.getElementById("info-ios").textContent = isIOS ? "Sim (Apple iOS)" : "Não";
+      if (isIOS) document.getElementById("info-ios").style.color = "var(--success)";
+
+      // Navegador
+      let browserName = "Outro";
+      if (ua.includes("Chrome")) {
+        browserName = "Google Chrome";
+      } else if (ua.includes("Safari") && !ua.includes("Chrome")) {
+        browserName = "Safari";
+      } else if (ua.includes("Firefox")) {
+        browserName = "Firefox";
+      }
+      document.getElementById("info-browser").textContent = browserName;
+      if (browserName === "Safari") document.getElementById("info-browser").style.color = "var(--primary)";
+
+      // In-App Browser
+      const isInApp = ua.includes("Instagram") || ua.includes("FBAN") || ua.includes("FBAV") || ua.includes("TikTok");
+      document.getElementById("info-inapp").textContent = isInApp ? "Sim (Rede Social)" : "Não (Navegador Comum)";
+      if (isInApp) {
+        document.getElementById("info-inapp").style.color = "var(--error)";
+      } else {
+        document.getElementById("info-inapp").style.color = "var(--success)";
+      }
+
+      log(`Dispositivo detectado: iOS=${isIOS}, Navegador=${browserName}, In-App=${isInApp}`, "info");
+    } catch (err) {
+      log(`Erro ao ler informações do sistema: ${err.message}`, "error");
+    }
+
+    // --- TESTE 1: Fluxo Atual (Fetch + WhatsApp) ---
+    document.getElementById("btn-test-1").addEventListener("click", async () => {
+      log("Iniciando Teste 1 (Simulação de Fetch assíncrono antes do link)...");
+      log("Aguardando resposta do banco de dados fictício por 1.5s...", "info");
+      
+      // Simula uma chamada assíncrona
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent("Oi, este é o Teste 1 (Fluxo Atual)")}`;
+      log(`Tentando abrir o link via JavaScript: ${whatsappUrl}`, "info");
+
+      try {
+        const win = window.open(whatsappUrl, "_blank");
+        if (win) {
+          log("Sucesso! A janela/aba do WhatsApp foi aberta pelo navegador.", "success");
+        } else {
+          log("BLOQUEADO! O navegador bloqueou a abertura da janela (provavelmente devido ao atraso do fetch).", "error");
+        }
+      } catch (err) {
+        log(`Erro ao tentar abrir janela: ${err.message}`, "error");
+      }
+    });
+
+    // --- TESTE 2: Correção Proposta (Abertura Direta via JS) ---
+    document.getElementById("btn-test-2").addEventListener("click", () => {
+      log("Iniciando Teste 2 (Abertura Direta via JS)...");
+      const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent("Oi, este é o Teste 2 (Abertura Direta)")}`;
+      log(`Tentando abrir imediatamente: ${whatsappUrl}`, "info");
+
+      try {
+        const win = window.open(whatsappUrl, "_blank");
+        if (win) {
+          log("Sucesso! A janela do WhatsApp abriu instantaneamente.", "success");
+        } else {
+          log("BLOQUEADO! O navegador impediu a abertura imediata (raro em cliques diretos).", "error");
+        }
+      } catch (err) {
+        log(`Erro ao abrir janela: ${err.message}`, "error");
+      }
+    });
+
+    // --- TESTE 3: Link Nativo (Tag A) ---
+    document.getElementById("link-test-3").addEventListener("click", () => {
+      log("Teste 3 clicado (Link Nativo). Redirecionando...", "success");
+    });
+
+    // --- TESTE 4: Conexão real com o Google Sheets ---
+    document.getElementById("btn-test-4").addEventListener("click", async () => {
+      log("Iniciando Teste 4 (Conectividade com o Google Sheets)...");
+      log("Disparando requisição real GET para a URL do Google Sheets...", "info");
+
+      const startTime = Date.now();
+      try {
+        // Envia uma ação vazia ou simples apenas para testar conexão CORS
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "ping" }),
+          mode: "cors"
+        });
+
+        const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+        if (response.ok) {
+          log(`Conexão bem sucedida com o banco! Resposta OK recebida em ${duration} segundos.`, "success");
+          try {
+            const data = await response.json();
+            log(`Dados recebidos: ${JSON.stringify(data)}`, "success");
+          } catch(e) {
+            log("Conexão OK, mas o retorno não é JSON ou está vazio (esperado para ação ping).", "info");
+          }
+        } else {
+          log(`Servidor respondeu com erro HTTP ${response.status} em ${duration}s.`, "error");
+        }
+      } catch (err) {
+        const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+        log(`FALHA na conexão após ${duration}s: ${err.message}`, "error");
+        log("Possíveis motivos no Safari: Bloqueio de rastreamento entre domínios, falta de conexão à internet, ou erro de CORS no Google Apps Script.", "error");
+      }
+    });
+  </script>
+</body>
+</html>
