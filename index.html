@@ -3180,12 +3180,12 @@ line-height: 1.15;
             Após realizar o pagamento no app do seu banco, você <strong>deve enviar o comprovante pelo WhatsApp</strong> para iniciar a confecção do seu pedido!
           </p>
           
-          <button class="add-item" type="button" id="pixSendWhatsappBtn" style="box-shadow: none; min-height: 48px; padding: 0 20px; font-size: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; background: #25D366; color: #fff; border: 0; border-radius: 10px; width: 100%;">
+          <a class="add-item" id="pixSendWhatsappBtn" target="_blank" rel="noopener noreferrer" style="box-shadow: none; min-height: 48px; padding: 0 20px; font-size: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; background: #25D366; color: #fff; border: 0; border-radius: 10px; width: 100%; text-decoration: none;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink: 0;">
               <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.197 1.45 4.817 1.452 5.432 0 9.851-4.42 9.855-9.852.002-2.63-1.023-5.101-2.883-6.963C16.578 1.928 14.107.903 11.48.903c-5.438 0-9.86 4.417-9.864 9.852-.001 1.73.457 3.412 1.32 4.904l-.994 3.633 3.715-.975zm13.114-7.97c-.073-.122-.27-.195-.565-.343-.295-.148-1.742-.86-2.011-.958-.27-.098-.466-.147-.662.147-.196.295-.76.958-.93 1.154-.173.197-.345.221-.64.073-.295-.148-1.246-.459-2.375-1.465-.878-.782-1.47-1.748-1.642-2.044-.173-.295-.018-.455.13-.602.132-.133.295-.344.442-.516.148-.172.197-.295.295-.492.099-.197.05-.369-.025-.516-.075-.148-.662-1.597-.908-2.188-.24-.576-.484-.497-.663-.506-.17-.008-.367-.01-.565-.01-.196 0-.515.074-.785.369-.27.295-1.03 1.007-1.03 2.455 0 1.448 1.054 2.846 1.202 3.043.148.197 2.075 3.168 5.028 4.444.702.304 1.25.486 1.677.622.705.224 1.346.193 1.854.117.564-.084 1.742-.712 1.988-1.4.246-.688.246-1.277.172-1.4-.074-.122-.27-.195-.565-.343z"/>
             </svg>
             Enviar Comprovante pelo WhatsApp
-          </button>
+          </a>
         </div>
         <button class="remove-item" type="button" id="pixCloseBtn" style="width: 100%; height: 44px; border-radius: 10px; padding: 0 20px; background: #f1dfce; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 4px;">Fechar</button>
       </div>
@@ -4625,6 +4625,11 @@ line-height: 1.15;
       const payload = generatePixCopiaCola(amount, lastOrderId);
       pixCodeText.value = payload;
       
+      // Atualiza o link do WhatsApp preventivamente com a mensagem formatada do pedido
+      const msg = getOrderMessage(lastOrderId);
+      const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+      pixSendWhatsappBtn.href = whatsappUrl;
+
       // Gera o QR Code dinamicamente se a biblioteca estiver disponível
       if (typeof QRCode !== "undefined") {
         document.getElementById("qrcode").innerHTML = "";
@@ -4685,11 +4690,7 @@ line-height: 1.15;
       openPixModal(grandTotal);
     });
 
-    pixSendWhatsappBtn.addEventListener("click", () => {
-      const msg = getOrderMessage(lastOrderId);
-      const whatsappUrl = `https://wa.me/${SELLER_WHATSAPP}?text=${encodeURIComponent(msg)}`;
-      window.open(whatsappUrl, "_blank");
-    });
+    // O redirecionamento para o WhatsApp é tratado nativamente pelo elemento <a> (href) atualizado em openPixModal, evitando bloqueios no iOS/Safari.
 
     // Configuração do Modal de Solicitação de CPF
     const cpfModal = document.getElementById("cpfModal");
